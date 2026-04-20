@@ -1296,11 +1296,7 @@ const enSentData = [
         correctWordsSequence = rawWords.map(w => w.toLowerCase());
         correctWordsSequence.push(endPunct);
 
-        let displayWords = rawWords.map((w, i) => {
-            if (w === 'I') return 'I';
-            if (i > 0 && w[0] === w[0].toUpperCase() && w[0] !== w[0].toLowerCase()) return w;
-            return w.toLowerCase();
-        });
+        let displayWords = [...rawWords];
         displayWords.push(endPunct);
 
         const shuffledWords = [...displayWords].sort(() => Math.random() - 0.5);
