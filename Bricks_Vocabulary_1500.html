@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BricksVocabulary 1500</title>
+    <style>
+        :root { --p: #333333; --s: #FFD384; --bg: #F0F4F8; --txt: #2D3436; }
+        body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: var(--bg); color: var(--txt); text-align: center; padding: 20px; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .container { width: 95%; max-width: 650px; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        h1 { color: #000000; font-size: 20px; margin-bottom: 25px; font-weight: bold; }
+
+        /* 모드 버튼 */
+        .mode-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px; }
+        .btn-mode { padding: 10px 8px; border: 2px solid var(--s); background: white; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 13px; flex: 1 1 45%; min-width: 80px; color: #333; }
+        .btn-mode.active { background: var(--s); color: #855b1b; }
+
+        /* 디스플레이 영역 (영어단어 모드) */
+        #word-display { font-size: 22px; font-weight: bold; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #000000; margin: 20px 0; border: 2px solid #EEEEEE; border-radius: 20px; background: #F9F9F9; padding: 20px; word-break: keep-all; line-height: 1.5; }
+
+        /* 공통 버튼 */
+        .btn-main { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button.action { padding: 20px 10px; font-size: 18px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
+        .btn-start { background: #4CB9E7; }
+        .btn-show { background: #FF5F5F; }
+
+        /* 영어단어 퀴즈 스타일 (tset_초등 방식) */
+        .btn-meaning { margin-top: 15px; padding: 10px 15px; font-size: 16px; font-weight: bold; background: #f0f0f0; border: 2px dashed #bbb; border-radius: 12px; cursor: pointer; color: #555; }
+        .meaning-text { color: #E74C3C; font-size: 22px; font-weight: bold; margin: 15px 0; }
+        .quiz-container { margin-top: 10px; text-align: left; width: 100%; border-top: 1px dashed #ccc; padding-top: 15px; }
+        .quiz-title { font-size: 16px; color: #555; margin-bottom: 12px; font-weight: bold; text-align: center; }
+        .quiz-option { display: block; width: 100%; padding: 12px; margin-bottom: 8px; background: white; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; font-size: 16px; transition: 0.2s; color: #333; text-align: left; line-height: 1.4; box-sizing: border-box; }
+        .quiz-option:hover { border-color: #4CB9E7; background: #f0faff; }
+        .highlight { color: #007AFF; font-weight: bold; }
+        .option-meaning { font-size: 14px; color: #666; font-weight: normal; margin-left: 5px; }
+
+        /* 영어문장 스크램블 스타일 (개정판 방식) */
+        #sent-display-container { min-height: 160px; margin: 10px 0 5px; border: 2px solid #EEEEEE; border-radius: 20px; background: #F9F9F9; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+        #sent-display { font-size: 20px; font-weight: bold; color: #000000; word-break: keep-all; line-height: 1.5; }
+        #sent-meaning-display { font-size: 17px; color: #666; font-weight: normal; min-height: 22px; }
+        #next-btn-wrapper { margin-top: 5px; }
+        .btn-scramble { background: #6C5CE7; color: white; border-radius: 12px; padding: 15px 25px; font-weight: bold; font-size: 18px; border: none; cursor: pointer; margin-bottom: 10px; width: 100%; box-shadow: 0 4px 0 #4834d4; }
+        #scramble-area { margin-top: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 50px; }
+        .word-chip { padding: 10px 18px; background: white; border-radius: 15px; cursor: pointer; font-weight: bold; border: 2px solid #ddd; font-size: 18px; transition: 0.2s; }
+        .word-chip.selected { background: #a29bfe; color: white; border-color: #6C5CE7; }
+        .btn-next-inline { background: #2ECC71; color: white; border-radius: 15px; padding: 10px 20px; font-weight: bold; font-size: 16px; border: none; cursor: pointer; box-shadow: 0 3px 0 #27ae60; }
+        .btn-what-meaning { background: #F1C40F !important; color: #333 !important; }
+
+        #feedback { margin-top: 5px; font-weight: bold; font-size: 20px; text-align: center; min-height: 30px; }
+        .btn-unit { padding: 5px 8px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; color: #555; transition: 0.15s; min-width: 48px; }
+        .btn-unit.active { background: #4CB9E7; color: white; border-color: #4CB9E7; }
+        .btn-unit-all { background: #FFD384; border-color: #e6b800; color: #855b1b; }
+        .btn-unit-all.active { background: #e6b800; color: #5a3e00; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>✨ 사랑스럽고 멋진 지오의 영어공부 ✨<br><span style="font-size:14px; font-weight:normal; color:#888;">(Bricks Vocabulary 1500)</span></h1>
+    <div class="mode-group">
+        <button class="btn-mode active" onclick="setMode('enWord', this)">영어단어</button>
+        <button class="btn-mode" onclick="setMode('enSent', this)">영어문장</button>
+    </div>
+
+    <!-- 영어단어 모드 UI -->
+    <div id="word-mode-ui">
+        <div id="word-unit-selector" style="margin-bottom:15px;">
+            <button onclick="toggleUnitPanel('word')" id="word-unit-toggle" style="width:100%;padding:10px 16px;background:#f8f8f8;border:2px solid #ddd;border-radius:14px;cursor:pointer;font-size:14px;font-weight:bold;color:#555;display:flex;align-items:center;justify-content:space-between;">
+                <span>📚 유닛 선택</span>
+                <span id="word-unit-label" style="color:#4CB9E7;font-size:13px;">전체 ▼</span>
+            </button>
+            <div id="word-unit-panel" style="display:none;margin-top:8px;padding:12px;background:#f8f8f8;border-radius:14px;border:2px solid #eee;">
+                <div id="word-unit-buttons" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div id="word-display">지오야 준비됐니?</div>
+        <div id="word-btn-area">
+            <button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>
+        </div>
+    </div>
+
+    <!-- 영어문장 모드 UI -->
+    <div id="sent-mode-ui" style="display:none;">
+        <div id="sent-unit-selector" style="margin-bottom:15px;">
+            <button onclick="toggleUnitPanel('sent')" id="sent-unit-toggle" style="width:100%;padding:10px 16px;background:#f8f8f8;border:2px solid #ddd;border-radius:14px;cursor:pointer;font-size:14px;font-weight:bold;color:#555;display:flex;align-items:center;justify-content:space-between;">
+                <span>📚 유닛 선택</span>
+                <span id="sent-unit-label" style="color:#6C5CE7;font-size:13px;">전체 ▼</span>
+            </button>
+            <div id="sent-unit-panel" style="display:none;margin-top:8px;padding:12px;background:#f8f8f8;border-radius:14px;border:2px solid #eee;">
+                <div id="sent-unit-buttons" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div id="sent-display-container">
+            <div id="sent-display">지오야 준비됐니?</div>
+            <div id="sent-meaning-display"></div>
+            <div id="next-btn-wrapper"></div>
+        </div>
+        <div id="scramble-wrapper">
+            <button class="btn-scramble" onclick="startScramble()">문제시작 🧩</button>
+        </div>
+        <div id="scramble-area"></div>
+    </div>
+
+    <div id="feedback"></div>
+</div>
+
+<script>
+    const enWordData = [
+        {w:"feed", m:"v. 먹이다", ex:"Please feed the hungry dog.", em:"배고픈 개에게 먹이를 주세요.", wx:["The feed runs fast across the hill.", "He will feed the big blue mountain."]},
+        {w:"address", m:"n. 주소", ex:"Please write down your address.", em:"당신의 주소를 적어 주세요.", wx:["She can address very quickly now.", "They address up the tall green fence."]},
+        {w:"lesson", m:"n. 수업, 교훈", ex:"The piano lesson was fun.", em:"피아노 수업은 재미있었습니다.", wx:["The lesson flew away over the roof.", "He will lesson all the small cups."]},
+        {w:"member", m:"n. 회원, 구성원", ex:"I am a club member.", em:"나는 클럽 회원이다.", wx:["She can member very carefully now.", "The member swam through the cold river."]},
+        {w:"monster", m:"n. 괴물", ex:"I saw a scary monster.", em:"나는 무서운 괴물을 보았다.", wx:["He will monster the green old chair.", "The monster rains down every single night."]},
+        {w:"both", m:"adj. 둘 다의, 양쪽의, pron. 둘 다, 양쪽", ex:"We like both of them.", em:"우리는 둘 다 좋아한다.", wx:["She will both the heavy wooden box.", "The both jumped over the old stone wall."]},
+        {w:"helpful", m:"adj. 도움이 되는, 유익한", ex:"My friend is very helpful.", em:"내 친구는 매우 도움이 된다.", wx:["She will helpful the big red door.", "The helpful swam far into the deep ocean."]},
+        {w:"special", m:"adj. 특별한", ex:"Today is a special day.", em:"오늘은 특별한 날이다.", wx:["He will special all the tall brown trees.", "The special flew high above the white clouds."]},
+        {w:"nature", m:"n. 자연", ex:"We love the beautiful nature.", em:"우리는 아름다운 자연을 사랑한다.", wx:["She can nature very quickly today.", "He will nature the long yellow rope."]},
+        {w:"lovely", m:"adj. 사랑스러운", ex:"You have a lovely smile.", em:"당신은 사랑스러운 미소를 가졌군요.", wx:["She will lovely all the small red cups.", "He can lovely very fast every morning."]},
+        {w:"ferry", m:"n. 여객선, 배", ex:"The ferry crosses the river.", em:"그 여객선은 강을 건넌다.", wx:["She will ferry the heavy blue backpack.", "The ferry slept quietly under the warm blanket."]},
+        {w:"parrot", m:"n. 앵무새", ex:"The parrot can speak well.", em:"그 앵무새는 말을 잘 한다.", wx:["She will parrot the long narrow road.", "The parrot melted away in the hot summer."]},
+        {w:"asleep", m:"adj. 잠든, 자고 있는", ex:"The baby is fast asleep.", em:"아기가 깊이 잠들었다.", wx:["He will asleep all the small green boxes.", "The asleep jumped over the tall wooden fence."]},
+        {w:"footprint", m:"n. 발자국", ex:"I found a large footprint.", em:"나는 커다란 발자국을 발견했다.", wx:["She can footprint very carefully today.", "He will footprint the long green garden."]},
+        {w:"parent", m:"n. (-s) 부모, 어버이", ex:"My parent loves me much.", em:"나의 부모님은 나를 많이 사랑하신다.", wx:["She can parent very quickly today.", "He will parent the tall orange building."]},
+        {w:"shell", m:"n. 껍데기, 껍질", ex:"Pick up a sea shell.", em:"조개 껍데기를 주우세요.", wx:["She can shell very quickly now.", "He will shell the tall dark mountain."]},
+        {w:"half", m:"n. 절반, 2분의 1", ex:"I ate half of it.", em:"나는 그것의 절반을 먹었다.", wx:["She can half very quickly today.", "He will half the long brown stick."]},
+        {w:"daily", m:"adj. 매일의, 일상의", ex:"Exercise is my daily work.", em:"운동은 나의 매일의 일과이다.", wx:["He will daily the big round cake.", "The daily swam deep into the blue sea."]},
+        {w:"person", m:"n. 사람, 개인", ex:"He is a kind person.", em:"그는 친절한 사람이다.", wx:["She can person very quickly now.", "He will person the tall green cactus."]},
+        {w:"nest", m:"n. 둥지", ex:"The bird built a nest.", em:"새가 둥지를 틀었다.", wx:["She can nest very quickly today.", "He will nest the long dark tunnel."]},
+        {w:"about", m:"prep. ~에 대해, ~에 대한, adv. 대략, 약", ex:"Tell me about your day.", em:"당신의 하루에 대해 말해줘요.", wx:["He will about the heavy wooden desk.", "The about ran fast down the long road."]},
+        {w:"gift", m:"n. 선물", ex:"I bought a small gift.", em:"나는 작은 선물을 샀다.", wx:["She can gift very quickly now.", "He will gift the tall brown fence."]},
+        {w:"habit", m:"n. 습관, 버릇", ex:"Reading is a good habit.", em:"독서는 좋은 습관이다.", wx:["She can habit very quickly today.", "He will habit the long green path."]},
+        {w:"lick", m:"v. 핥다", ex:"Do not lick the spoon.", em:"숟가락을 핥지 마세요.", wx:["The lick sat quietly on the cold floor.", "He will lick all the heavy gray stones."]},
+        {w:"travel", m:"v. 여행하다", ex:"I want to travel soon.", em:"나는 곧 여행하고 싶다.", wx:["The travel sat quietly under the old tree.", "He will travel the heavy brown backpack."]},
+        {w:"exercise", m:"v. 운동하다, 연습하다", ex:"I exercise in the morning.", em:"나는 아침에 운동한다.", wx:["The exercise fell down the tall steep stairs.", "He will exercise the long narrow path."]},
+        {w:"hide", m:"v. 숨기다, 숨다", ex:"Let's hide behind the tree.", em:"나무 뒤에 숨자.", wx:["The hide sat quietly on the wooden bench.", "He will hide the big round balloon."]},
+        {w:"far", m:"adv. 멀리, adj. 먼", ex:"The school is very far.", em:"학교는 매우 멀다.", wx:["The far sat quietly under the cool bridge.", "He will far the heavy old basket."]},
+        {w:"piece", m:"n. 조각", ex:"Give me a piece of cake.", em:"케이크 한 조각을 주세요.", wx:["She can piece very quickly today.", "He will piece the long winding road."]},
+        {w:"bloom", m:"v. 꽃이 피다", ex:"Flowers bloom in the spring.", em:"봄에는 꽃이 핀다.", wx:["The bloom sat quietly on the wet ground.", "He will bloom the heavy metal gate."]},
+        {w:"air", m:"n. 공기", ex:"The mountain air is fresh.", em:"산 공기는 신선하다.", wx:["She can air very quickly now.", "He will air the tall wooden tower."]},
+        {w:"island", m:"n. 섬", ex:"They live on an island.", em:"그들은 섬에 산다.", wx:["She can island very quickly today.", "He will island the long stone bridge."]},
+        {w:"giant", m:"adj. 거대한", ex:"Look at that giant tree.", em:"저 거대한 나무를 보세요.", wx:["She can giant very quickly now.", "He will giant the long dusty road."]},
+        {w:"world", m:"n. 세계", ex:"The world is very big.", em:"세계는 매우 크다.", wx:["She can world very quickly today.", "He will world the tall glass building."]},
+        {w:"chase", m:"v. 쫓다", ex:"Dogs like to chase cats.", em:"개들은 고양이 쫓는 것을 좋아한다.", wx:["The chase fell quietly behind the old barn.", "He will chase the heavy metal door."]},
+        {w:"mad", m:"adj. 화난", ex:"Please do not be mad.", em:"화내지 마세요.", wx:["She can mad very quickly today.", "He will mad the long narrow hallway."]},
+        {w:"welcome", m:"v. 환영하다", ex:"They welcome us with smiles.", em:"그들은 미소로 우리를 환영한다.", wx:["The welcome flew away over the green hill.", "He will welcome the heavy silver ring."]},
+        {w:"worry", m:"v. 걱정하다", ex:"Do not worry about me.", em:"내 걱정은 하지 마세요.", wx:["The worry sat quietly on the hard ground.", "He will worry the long stone path."]},
+        {w:"beautiful", m:"adj. 아름다운", ex:"The flower is very beautiful.", em:"그 꽃은 매우 아름답다.", wx:["She can beautiful very quickly today.", "He will beautiful the tall wooden post."]},
+        {w:"ask", m:"v. 묻다, 질문하다, 부탁하다, 요청하다", ex:"I want to ask you.", em:"당신에게 묻고 싶어요.", wx:["The ask sat quietly beside the cold window.", "He will ask the heavy gray pebble."]},
+        {w:"blood", m:"n. 피, 혈액", ex:"Mosquitoes like to drink blood.", em:"모기들은 피를 마시는 것을 좋아한다.", wx:["She can blood very quickly now.", "He will blood the long dark corridor."]},
+        {w:"curve", m:"v. 굽다, 곡선을 이루다", ex:"The road has a curve.", em:"그 길은 곡선을 이룬다.", wx:["The curve sat quietly under the tall pine.", "He will curve the heavy blue bucket."]},
+        {w:"insect", m:"n. 곤충", ex:"An ant is an insect.", em:"개미는 곤충이다.", wx:["She can insect very quickly today.", "He will insect the long orange bridge."]},
+        {w:"mole", m:"n. 두더지", ex:"The mole lives under ground.", em:"두더지는 땅 밑에 산다.", wx:["She can mole very quickly now.", "He will mole the tall red chimney."]},
+        {w:"dentist", m:"n. 치과 의사", ex:"I must see a dentist.", em:"나는 치과 의사를 만나야 한다.", wx:["She can dentist very quickly today.", "He will dentist the long marble hallway."]},
+        {w:"fur", m:"n. (동물의) 털", ex:"The cat has soft fur.", em:"그 고양이는 부드러운 털을 가졌다.", wx:["She can fur very quickly now.", "He will fur the tall black gate."]},
+        {w:"strange", m:"adj. 이상한, 낯선", ex:"I heard a strange sound.", em:"나는 이상한 소리를 들었다.", wx:["She can strange very quickly today.", "He will strange the long wet grass."]},
+        {w:"village", m:"n. 마을", ex:"It is a small village.", em:"그곳은 작은 마을이다.", wx:["She can village very quickly now.", "He will village the tall silver tower."]},
+        {w:"note", m:"n. 메모", ex:"She left a short note.", em:"그녀는 짧은 메모를 남겼다.", wx:["She can note very quickly today.", "He will note the tall wooden pole."]},
+        {w:"hour", m:"n. 시간", ex:"We waited for an hour.", em:"우리는 한 시간 동안 기다렸다.", wx:["She can hour very quickly now.", "He will hour the long sandy road."]},
+        {w:"until", m:"prep. ~까지, conj. ~할 때까지", ex:"Wait here until I come.", em:"내가 올 때까지 여기서 기다려라.", wx:["She can until very quickly today.", "He will until the tall gray wall."]},
+        {w:"hold", m:"v. 들다, 잡다", ex:"Hold my hand very tight.", em:"내 손을 꽉 잡으세요.", wx:["The hold sat quietly under the yellow lamp.", "He will hold the tall dark shadow."]},
+        {w:"muddy", m:"adj. 진흙투성이인", ex:"My shoes are very muddy.", em:"내 신발은 진흙투성이이다.", wx:["She can muddy very quickly now.", "He will muddy the tall stone tower."]},
+        {w:"early", m:"adv. 일찍, 빨리, adj. 이른, 빠른", ex:"I woke up very early.", em:"나는 매우 일찍 일어났다.", wx:["She can early very quickly today.", "He will early the tall brown pillar."]},
+        {w:"stick", m:"n. 막대기, 나뭇가지, v. 붙이다", ex:"Use a long wooden stick.", em:"긴 나무 막대기를 사용하세요.", wx:["She can stick very quickly now.", "He will stick the long dark cave."]},
+        {w:"stage", m:"n. 무대", ex:"They are on the stage.", em:"그들은 무대 위에 있다.", wx:["She can stage very quickly today.", "He will stage the long white corridor."]},
+        {w:"captain", m:"n. 선장, 기장", ex:"The captain leads the ship.", em:"선장이 배를 이끈다.", wx:["She can captain very quickly now.", "He will captain the long silver bridge."]},
+        {w:"terrible", m:"adj. 끔찍한, 무서운", ex:"That was a terrible dream.", em:"그것은 끔찍한 꿈이었다.", wx:["She can terrible very quickly today.", "He will terrible the tall brick chimney."]},
+        {w:"each", m:"adj. 각자의, 각각의, pron. 각자, 각각", ex:"Each student has a book.", em:"각각의 학생은 책을 가지고 있다.", wx:["She can each very quickly now.", "He will each the long marble staircase."]},
+        {w:"hiccup", m:"n. 딸꾹질", ex:"I have a loud hiccup.", em:"나는 큰 딸꾹질을 한다.", wx:["She can hiccup very quickly today.", "He will hiccup the tall wooden ladder."]},
+        {w:"chore", m:"n. 허드렛일", ex:"Cleaning is a daily chore.", em:"청소는 매일 하는 허드렛일이다.", wx:["She can chore very quickly now.", "He will chore the long dusty hallway."]},
+        {w:"kill", m:"v. 죽이다", ex:"Do not kill the bugs.", em:"벌레를 죽이지 마세요.", wx:["The kill sat quietly on the green grass.", "He will kill the long empty shelf."]},
+        {w:"bathtub", m:"n. 욕조", ex:"Fill the bathtub with water.", em:"욕조를 물로 채우세요.", wx:["She can bathtub very quickly now.", "He will bathtub the long gravel path."]},
+        {w:"pair", m:"n. 한 쌍, 켤레", ex:"I bought a pair of shoes.", em:"나는 신발 한 켤레를 샀다.", wx:["She can pair very quickly today.", "He will pair the tall stone arch."]},
+        {w:"spray", m:"v. 뿌리다, n. 분무기, 스프레이", ex:"Spray some water on flowers.", em:"꽃에 물을 좀 뿌려라.", wx:["The spray sat quietly on the cold rock.", "He will spray the tall dark lighthouse."]},
+        {w:"peanut", m:"n. 땅콩", ex:"I like to eat peanut.", em:"나는 땅콩 먹는 것을 좋아한다.", wx:["She can peanut very quickly now.", "He will peanut the long winding trail."]},
+        {w:"action", m:"n. 행위, 동작", ex:"Action is better than words.", em:"행동이 말보다 더 낫다.", wx:["She can action very quickly today.", "He will action the tall green pillar."]},
+        {w:"everywhere", m:"adv. 모든 곳에, 어디든지", ex:"There is snow everywhere today.", em:"오늘 모든 곳에 눈이 있다.", wx:["She can everywhere very quickly now.", "He will everywhere the tall iron fence."]},
+        {w:"pillow", m:"n. 베개", ex:"This pillow is very soft.", em:"이 베개는 매우 폭신하다.", wx:["She can pillow very quickly today.", "He will pillow the long cement road."]},
+        {w:"more", m:"adj. 더, 더 많은, adv. 더, 더 많이", ex:"Give me some more water.", em:"물 좀 더 주세요.", wx:["She can more very quickly now.", "He will more the long narrow alley."]},
+        {w:"shy", m:"adj. 수줍어하는, 부끄럼타는", ex:"The little boy is shy.", em:"그 어린 소년은 수줍어한다.", wx:["She can shy very quickly today.", "He will shy the tall purple mountain."]},
+        {w:"nickname", m:"n. 별명", ex:"My nickname is very cute.", em:"내 별명은 매우 귀엽다.", wx:["She can nickname very quickly now.", "He will nickname the long brick pathway."]},
+        {w:"wrap", m:"v. 싸다, 포장하다", ex:"Please wrap this gift now.", em:"지금 이 선물을 포장해 주세요.", wx:["The wrap sat quietly on the cold stone.", "He will wrap the long sandy beach."]},
+        {w:"through", m:"prep. ~을 지나서, 통(과)하여", ex:"Walk through the front gate.", em:"정문을 통과해서 걸어가세요.", wx:["She can through very quickly today.", "He will through the tall cedar fence."]},
+        {w:"homework", m:"n. 숙제, 과제", ex:"I finished my math homework.", em:"나는 수학 숙제를 끝냈다.", wx:["She can homework very quickly now.", "He will homework the tall concrete pillar."]},
+        {w:"bounce", m:"v. 튀(기)다, 깡충깡충 뛰다", ex:"The balls bounce very high.", em:"공들이 매우 높이 튄다.", wx:["The bounce sat quietly on the soft carpet.", "He will bounce the long gravel walkway."]},
+        {w:"age", m:"n. 나이", ex:"What is your current age?", em:"당신의 현재 나이는 몇입니까?", wx:["She can age very quickly today.", "He will age the tall iron tower."]},
+        {w:"tomorrow", m:"adv. 내일", ex:"See you again tomorrow morning.", em:"내일 아침에 다시 만나요.", wx:["The tomorrow sat quietly beside the old clock.", "He will tomorrow the long pine trail."]},
+        {w:"bored", m:"adj. 지루해 하는", ex:"I feel bored at home.", em:"나는 집에서 지루함을 느낀다.", wx:["She can bored very quickly now.", "He will bored the tall rocky hill."]},
+        {w:"rise", m:"v. 오르다, 올라가다, (해·달이) 뜨다", ex:"The sun will rise soon.", em:"곧 해가 뜰 것이다.", wx:["The rise sat quietly on the cold bench.", "He will rise the long leafy path."]},
+        {w:"sketch", m:"v. 밑그림을 그리다", ex:"I like to sketch flowers.", em:"나는 꽃 그리는 것을 좋아한다.", wx:["The sketch sat quietly on the dry ground.", "He will sketch the heavy golden trophy."]},
+        {w:"everything", m:"pron. 모든 것", ex:"Everything will be okay soon.", em:"모든 것이 곧 괜찮아질 것이다.", wx:["She can everything very quickly today.", "He will everything the tall golden arch."]},
+        {w:"jeans", m:"n. (데님천으로 된) 바지", ex:"I wear blue jeans often.", em:"나는 파란 청바지를 자주 입는다.", wx:["She can jeans very quickly now.", "He will jeans the tall silver pole."]},
+        {w:"perfect", m:"adj. 완벽한", ex:"Your English is very perfect.", em:"당신의 영어는 매우 완벽하다.", wx:["She can perfect very quickly today.", "He will perfect the long curved road."]},
+        {w:"safe", m:"adj. 안전한", ex:"This place is very safe.", em:"이곳은 매우 안전하다.", wx:["She can safe very quickly now.", "He will safe the long bamboo fence."]},
+        {w:"plum", m:"n. 자두", ex:"The plum is very sweet.", em:"그 자두는 매우 달다.", wx:["She can plum very quickly today.", "He will plum the tall bamboo grove."]},
+        {w:"model", m:"n. 모형, 모델", ex:"He built a car model.", em:"그는 자동차 모형을 만들었다.", wx:["She can model very quickly now.", "He will model the long green valley."]},
+        {w:"curly", m:"adj. 곱슬곱슬한", ex:"She has long curly hair.", em:"그녀는 긴 곱슬머리를 가졌다.", wx:["She can curly very quickly today.", "He will curly the tall ivory tower."]},
+        {w:"son", m:"n. 아들", ex:"Her son is a doctor.", em:"그녀의 아들은 의사이다.", wx:["She can son very quickly now.", "He will son the long rocky canyon."]},
+        {w:"soda", m:"n. 탄산음료", ex:"Do not drink much soda.", em:"탄산음료를 많이 마시지 마세요.", wx:["She can soda very quickly today.", "He will soda the tall maple tree."]},
+        {w:"pay", m:"v. (돈을) 지불하다", ex:"I will pay for dinner.", em:"내가 저녁 값을 지불하겠다.", wx:["The pay sat quietly on the oak floor.", "He will pay the long desert path."]},
+        {w:"save", m:"v. (위험으로부터) 구하다, (돈을) 저축하다", ex:"Please save the poor animals.", em:"불쌍한 동물들을 구해주세요.", wx:["The save sat quietly on the cold tile.", "He will save the long jungle trail."]},
+        {w:"fill", m:"v. 채우다", ex:"Fill the glass with milk.", em:"컵을 우유로 채우세요.", wx:["The fill sat quietly on the cold marble.", "He will fill the long forest path."]},
+        {w:"press", m:"v. 누르다", ex:"Press the button right now.", em:"당장 버튼을 누르세요.", wx:["The press sat quietly on the hard desk.", "He will press the long birch walkway."]},
+        {w:"focus", m:"v. 집중하다", ex:"Please focus on your work.", em:"당신의 일에 집중하세요.", wx:["The focus sat quietly under the yellow light.", "He will focus the long mountain road."]},
+        {w:"finally", m:"adv. 마침내, 마지막으로", ex:"Finally, we reached the top.", em:"마침내 우리는 정상에 도착했다.", wx:["The finally sat quietly on the wet stone.", "He will finally the long dusty trail."]},
+        {w:"artist", m:"n. 예술가", ex:"She is a great artist.", em:"그녀는 위대한 예술가이다.", wx:["She can artist very quickly now.", "He will artist the long valley road."]},
+        {w:"tiny", m:"adj. 아주 작은", ex:"Look at the tiny bug.", em:"아주 작은 벌레를 보세요.", wx:["She can tiny very quickly today.", "He will tiny the tall birch tree."]},
+        {w:"cheap", m:"adj. 값싼", ex:"This bag is very cheap.", em:"이 가방은 매우 값싸다.", wx:["She can cheap very quickly now.", "He will cheap the long foggy bridge."]},
+        {w:"husband", m:"n. 남편", ex:"Her husband is very kind.", em:"그녀의 남편은 매우 친절하다.", wx:["She can husband very quickly today.", "He will husband the long sunny road."]},
+        {w:"tour", m:"n. 여행, 관광", ex:"We took a city tour.", em:"우리는 도시 관광을 했다.", wx:["She can tour very quickly now.", "He will tour the long cloudy valley."]},
+        {w:"role", m:"n. 역할, 임무, (배우의) 배역", ex:"He played a small role.", em:"그는 작은 역할을 맡았다.", wx:["She can role very quickly today.", "He will role the long sandy trail."]},
+        {w:"wrong", m:"adj. 틀린, 잘못된, 나쁜", ex:"That is the wrong answer.", em:"그것은 틀린 답이다.", wx:["She can wrong very quickly now.", "He will wrong the long icy road."]},
+        {w:"health", m:"n. 건강", ex:"Health is the most important.", em:"건강이 가장 중요하다.", wx:["She can health very quickly today.", "He will health the long muddy trail."]},
+        {w:"luck", m:"n. 행운, 운", ex:"Good luck with your test.", em:"시험에 행운이 있길 바래.", wx:["She can luck very quickly now.", "He will luck the long sunny valley."]},
+        {w:"ripe", m:"adj. (과일·곡물이) 익은", ex:"The apple is very ripe.", em:"그 사과는 아주 잘 익었다.", wx:["She can ripe very quickly today.", "He will ripe the long rocky trail."]},
+        {w:"bucket", m:"n. 양동이", ex:"The bucket is full now.", em:"양동이가 이제 가득 찼다.", wx:["She can bucket very quickly now.", "He will bucket the long windy road."]},
+        {w:"area", m:"n. 지역, 구역", ex:"This area is very quiet.", em:"이 지역은 매우 조용하다.", wx:["She can area very quickly today.", "He will area the long autumn path."]},
+        {w:"branch", m:"n. 나뭇가지", ex:"The bird is on a branch.", em:"새가 나뭇가지 위에 있다.", wx:["She can branch very quickly now.", "He will branch the long winter road."]},
+        {w:"flour", m:"n. 밀가루", ex:"We need some white flour.", em:"우리는 흰 밀가루가 좀 필요하다.", wx:["She can flour very quickly today.", "He will flour the long spring path."]},
+        {w:"some", m:"pron. 일부, 약간, adj. 약간의", ex:"I need some more time.", em:"나는 시간이 좀 더 필요하다.", wx:["She can some very quickly now.", "He will some the long summer road."]},
+        {w:"nervous", m:"adj. 긴장한, 불안한", ex:"I feel nervous before tests.", em:"나는 시험 전에 긴장된다.", wx:["She can nervous very quickly today.", "He will nervous the long rainy trail."]},
+        {w:"snore", m:"v. 코를 골다", ex:"Does your father snore often?", em:"당신의 아버지는 자주 코를 거나요?", wx:["The snore sat quietly on the cold bench.", "He will snore the long misty road."]},
+        {w:"practice", m:"v. 연습하다, n. 연습", ex:"We must practice every day.", em:"우리는 매일 연습해야 한다.", wx:["The practice sat quietly on the hard floor.", "He will practice the long snowy path."]},
+        {w:"rectangle", m:"n. 직사각형", ex:"Draw a small green rectangle.", em:"작은 초록색 직사각형을 그리세요.", wx:["She can rectangle very quickly today.", "He will rectangle the long grassy trail."]},
+        {w:"cloth", m:"n. 천, 옷감", ex:"Use a clean piece of cloth.", em:"깨끗한 천 조각을 사용하세요.", wx:["She can cloth very quickly now.", "He will cloth the long hilly road."]},
+        {w:"cucumber", m:"n. 오이", ex:"I like to eat cucumber.", em:"나는 오이 먹는 것을 좋아한다.", wx:["She can cucumber very quickly today.", "He will cucumber the long desert trail."]},
+        {w:"set", m:"v. 놓다, 두다", ex:"Set the table for dinner.", em:"저녁 식사를 위해 상을 차려라.", wx:["The set sat quietly on the cold glass.", "He will set the long underground road."]},
+        {w:"yard", m:"n. 뜰, 마당", ex:"The kids play in the yard.", em:"아이들이 마당에서 논다.", wx:["She can yard very quickly now.", "He will yard the long highland trail."]},
+        {w:"enter", m:"v. 들어가다", ex:"You can enter the room.", em:"당신은 방에 들어갈 수 있다.", wx:["The enter sat quietly on the warm stone.", "He will enter the long ocean road."]},
+        {w:"contest", m:"n. 대회", ex:"I won the singing contest.", em:"나는 노래 대회에서 우승했다.", wx:["She can contest very quickly today.", "He will contest the long forest trail."]},
+        {w:"vet", m:"n. 수의사 (=veterinarian)", ex:"Take the dog to a vet.", em:"개를 수의사에게 데려가세요.", wx:["She can vet very quickly now.", "He will vet the long meadow road."]},
+        {w:"ribbon", m:"n. (매듭·장식용) 끈", ex:"Put a ribbon on it.", em:"그것에 리본을 묶으세요.", wx:["She can ribbon very quickly today.", "He will ribbon the long swamp trail."]},
+        {w:"toothache", m:"n. 치통", ex:"I have a bad toothache.", em:"나는 치통이 심하다.", wx:["She wears a toothache book.", "I eat the toothache sky."]},
+        {w:"waist", m:"n. 허리", ex:"The belt is for my waist.", em:"벨트는 내 허리용이다.", wx:["I eat the waist sky.", "The waist is flying blue."]},
+        {w:"favorite", m:"adj. 가장 좋아하는", ex:"What is your favorite color?", em:"당신이 가장 좋아하는 색은 무엇인가요?", wx:["She wears a favorite book.", "I eat the favorite sky."]},
+        {w:"true", m:"adj. 진짜의, 진실된", ex:"That is a true story.", em:"그것은 진짜 이야기이다.", wx:["I eat the true sky.", "She wears a true book."]},
+        {w:"expensive", m:"adj. 비싼", ex:"This car is very expensive.", em:"이 차는 매우 비싸다.", wx:["The expensive is flying blue.", "I eat the expensive sky."]},
+        {w:"squirrel", m:"n. 다람쥐", ex:"The squirrel eats a nut.", em:"다람쥐가 견과류를 먹는다.", wx:["I eat the squirrel sky.", "She wears a squirrel book."]},
+        {w:"burp", m:"v. 트림하다", ex:"The baby had a burp.", em:"아기가 트림을 했다.", wx:["The burp is flying blue.", "She wears a burp book."]},
+        {w:"fever", m:"n. 열", ex:"The boy has a fever.", em:"그 소년은 열이 난다.", wx:["She wears a fever book.", "I eat the fever sky."]},
+        {w:"useful", m:"adj. 유용한, 쓸모 있는", ex:"This tool is very useful.", em:"이 도구는 매우 유용하다.", wx:["I eat the useful sky.", "She wears a useful book."]},
+        {w:"choose", m:"v. 선택하다, 고르다", ex:"Choose your favorite fruit today.", em:"오늘 당신이 가장 좋아하는 과일을 고르세요.", wx:["I eat the choose sky.", "She wears a choose book."]},
+        {w:"mean", m:"v. 의미하다", ex:"What does this word mean?", em:"이 단어는 무엇을 의미하나요?", wx:["The mean is flying blue.", "I eat the mean sky."]},
+        {w:"earth", m:"n. 지구", ex:"The Earth is very beautiful.", em:"지구는 매우 아름답다.", wx:["I eat the earth sky.", "She wears a earth book."]},
+        {w:"beef", m:"n. 쇠고기", ex:"I like to eat beef.", em:"나는 쇠고기 먹는 것을 좋아한다.", wx:["I eat the beef sky.", "The beef is flying blue."]},
+        {w:"chocolate", m:"n. 초콜릿", ex:"I like dark chocolate best.", em:"나는 다크 초콜릿을 제일 좋아한다.", wx:["I eat the chocolate sky.", "The chocolate is flying blue."]},
+        {w:"proud", m:"adj. 자랑스러운", ex:"My parents are proud of me.", em:"나의 부모님은 나를 자랑스러워하신다.", wx:["The proud is flying blue.", "I eat the proud sky."]},
+        {w:"actor", m:"n. 배우", ex:"He is a famous actor.", em:"그는 유명한 배우이다.", wx:["I eat the actor sky.", "She wears a actor book."]},
+        {w:"straw", m:"n. 빨대", ex:"Use a straw for milk.", em:"우유를 마실 때 빨대를 사용하세요.", wx:["The straw is flying blue.", "She wears a straw book."]},
+        {w:"simple", m:"adj. 간단한, 단순한", ex:"This game is very simple.", em:"이 게임은 매우 간단하다.", wx:["The simple is flying blue.", "She wears a simple book."]},
+        {w:"swimsuit", m:"n. 수영복", ex:"Put on your new swimsuit.", em:"당신의 새 수영복을 입으세요.", wx:["The swimsuit is flying blue.", "She wears a swimsuit book."]},
+        {w:"later", m:"adv. 나중에, 후에", ex:"I will call you later.", em:"나중에 당신에게 전화할게요.", wx:["I eat the later sky.", "The later is flying blue."]},
+        {w:"goal", m:"n. 목표, 목적", ex:"My goal is staying healthy.", em:"나의 목표는 건강을 유지하는 것이다.", wx:["She wears a goal book.", "The goal is flying blue."]},
+        {w:"mail", m:"n. 우편물, v. (우편으로) 보내다, 부치다", ex:"Check the mail every day.", em:"매일 우편물을 확인하세요.", wx:["I eat the mail sky.", "The mail is flying blue."]},
+        {w:"own", m:"adj. 자기 자신의, v. 가지다, 소유하다", ex:"I have my own room.", em:"나는 나만의 방이 있다.", wx:["She wears a own book.", "The own is flying blue."]},
+        {w:"part", m:"n. 부분, 일부", ex:"This is a large part.", em:"이것은 큰 부분이다.", wx:["She wears a part book.", "I eat the part sky."]},
+        {w:"slice", m:"n. (얇게 썬) 조각, v. 얇게 썰다", ex:"Give me a slice of ham.", em:"햄 한 조각을 주세요.", wx:["She wears a slice book.", "I eat the slice sky."]},
+        {w:"ginger", m:"n. 생강", ex:"Put some ginger in tea.", em:"차에 생강을 좀 넣으세요.", wx:["I eat the ginger sky.", "The ginger is flying blue."]},
+        {w:"prince", m:"n. 왕자", ex:"The prince lives in a castle.", em:"왕자는 성에 산다.", wx:["She wears a prince book.", "I eat the prince sky."]},
+        {w:"guess", m:"v. 추측하다", ex:"Can you guess the answer?", em:"답을 추측할 수 있나요?", wx:["The guess is flying blue.", "I eat the guess sky."]},
+        {w:"waste", m:"v. 낭비하다", ex:"Do not waste your time.", em:"당신의 시간을 낭비하지 마세요.", wx:["She wears a waste book.", "The waste is flying blue."]},
+        {w:"yawn", m:"v. 하품하다", ex:"Do not yawn in class.", em:"수업 시간에 하품하지 마세요.", wx:["She wears a yawn book.", "The yawn is flying blue."]},
+        {w:"usually", m:"adv. 보통, 대개", ex:"I usually drink some tea.", em:"나는 보통 차를 좀 마신다.", wx:["The usually is flying blue.", "She wears a usually book."]},
+        {w:"bump", m:"v. 부딪히다, 충돌하다", ex:"I had a small bump.", em:"나는 살짝 부딪혔다.", wx:["The bump is flying blue.", "She wears a bump book."]},
+        {w:"power", m:"n. 힘", ex:"Knowledge is a great power.", em:"지식은 큰 힘이다.", wx:["I eat the power sky.", "She wears a power book."]},
+        {w:"scare", m:"v. 무섭게 하다, 겁주다", ex:"Do not scare the cat.", em:"고양이를 무섭게 하지 마세요.", wx:["She wears a scare book.", "The scare is flying blue."]},
+        {w:"lie", m:"v. 눕다, 거짓말하다", ex:"I want to lie down.", em:"나는 눕고 싶다.", wx:["She wears a lie book.", "The lie is flying blue."]},
+        {w:"honk", m:"v. 빵빵거리다", ex:"Cars honk on the street.", em:"거리에서 차들이 빵빵거린다.", wx:["She wears a honk book.", "I eat the honk sky."]},
+        {w:"above", m:"prep. ~보다 위에", ex:"Look at the sky above.", em:"위에 있는 하늘을 보세요.", wx:["The above is flying blue.", "I eat the above sky."]},
+        {w:"spot", m:"n. 점, 얼룩", ex:"There is a red spot.", em:"빨간 점이 하나 있다.", wx:["She wears a spot book.", "The spot is flying blue."]},
+        {w:"lucky", m:"adj. 행운의, 운이 좋은", ex:"I am a lucky person.", em:"나는 운이 좋은 사람이다.", wx:["The lucky is flying blue.", "She wears a lucky book."]},
+        {w:"marble", m:"n. 구슬", ex:"I have a glass marble.", em:"나는 유리 구슬을 가지고 있다.", wx:["She wears a marble book.", "The marble is flying blue."]},
+        {w:"price", m:"n. 값, 가격", ex:"The price is too high.", em:"가격이 너무 높다.", wx:["She wears a price book.", "I eat the price sky."]},
+        {w:"stay", m:"v. 머무르다, 남다", ex:"Stay with me for a while.", em:"잠시 동안 나와 함께 머물러요.", wx:["She wears a stay book.", "The stay is flying blue."]},
+        {w:"score", m:"n. 득점, 점수", ex:"What is the game score?", em:"경기 점수가 어떻게 되나요?", wx:["I eat the score sky.", "The score is flying blue."]},
+        {w:"starfish", m:"n. 불가사리", ex:"The starfish is on sand.", em:"불가사리가 모래 위에 있다.", wx:["I eat the starfish sky.", "She wears a starfish book."]},
+        {w:"jellyfish", m:"n. 해파리", ex:"The jellyfish is in sea.", em:"해파리가 바다에 있다.", wx:["I eat the jellyfish sky.", "She wears a jellyfish book."]},
+        {w:"dear", m:"adj. 사랑하는, 친애하는", ex:"Hello, my dear old friend.", em:"안녕, 나의 사랑하는 오랜 친구야.", wx:["She wears a dear book.", "I eat the dear sky."]},
+        {w:"shoot", m:"v. (총 등을) 쏘다", ex:"Do not shoot the bird.", em:"새를 쏘지 마세요.", wx:["The shoot is flying blue.", "I eat the shoot sky."]},
+        {w:"hang", m:"v. 걸다, 매달다", ex:"Hang your coat right here.", em:"코트를 바로 여기에 거세요.", wx:["The hang is flying blue.", "She wears a hang book."]},
+        {w:"ocean", m:"n. 대양, 바다", ex:"The ocean is very deep.", em:"대양은 매우 깊다.", wx:["I eat the ocean sky.", "She wears a ocean book."]},
+        {w:"princess", m:"n. 공주", ex:"The princess wears a crown.", em:"공주는 왕관을 쓰고 있다.", wx:["The princess is flying blue.", "I eat the princess sky."]},
+        {w:"empty", m:"adj. 비어 있는", ex:"The box is totally empty.", em:"그 상자는 완전히 비어 있다.", wx:["She wears a empty book.", "The empty is flying blue."]},
+        {w:"colorfully", m:"adv. 알록달록하게", ex:"The room is painted colorfully.", em:"방이 알록달록하게 칠해져 있다.", wx:["She wears a colorfully book.", "I eat the colorfully sky."]},
+        {w:"yell", m:"v. 소리 지르다, 외치다", ex:"Do not yell at me.", em:"나에게 소리 지르지 마세요.", wx:["The yell is flying blue.", "I eat the yell sky."]},
+        {w:"mind", m:"n. 마음, 정신", ex:"Keep that in your mind.", em:"그것을 당신의 마음에 간직하세요.", wx:["She wears a mind book.", "The mind is flying blue."]},
+        {w:"grab", m:"v. 꽉 잡다, 움켜쥐다", ex:"Grab the rope very fast.", em:"밧줄을 매우 빨리 잡으세요.", wx:["She wears a grab book.", "The grab is flying blue."]},
+        {w:"garbage", m:"n. 쓰레기", ex:"Please throw away the garbage.", em:"쓰레기를 버려 주세요.", wx:["The garbage is flying blue.", "I eat the garbage sky."]},
+        {w:"pumpkin", m:"n. 호박", ex:"We made a pumpkin pie.", em:"우리는 호박 파이를 만들었다.", wx:["The pumpkin is flying blue.", "She wears a pumpkin book."]},
+        {w:"away", m:"adv. 떨어져, 멀리", ex:"Go away from the fire.", em:"불에서 멀리 떨어지세요.", wx:["She wears a away book.", "The away is flying blue."]},
+        {w:"heart", m:"n. 심장, 마음", ex:"My heart beats very fast.", em:"내 심장이 매우 빨리 뛴다.", wx:["The heart is flying blue.", "I eat the heart sky."]},
+        {w:"reply", m:"v. 대답하다", ex:"Please reply to my letter.", em:"제 편지에 답장해 주세요.", wx:["The reply is flying blue.", "I eat the reply sky."]},
+        {w:"visitor", m:"n. 방문객, 손님", ex:"We have a special visitor.", em:"우리는 특별한 방문객이 있다.", wx:["I eat the visitor sky.", "The visitor is flying blue."]},
+        {w:"moment", m:"n. (특정) 순간, 시점, 잠깐, 잠시", ex:"Wait for a short moment.", em:"잠깐만 기다려 주세요.", wx:["The moment is flying blue.", "I eat the moment sky."]},
+        {w:"voice", m:"n. 목소리", ex:"You have a beautiful voice.", em:"당신은 아름다운 목소리를 가졌군요.", wx:["I eat the voice sky.", "She wears a voice book."]},
+        {w:"straight", m:"adj. 곧은, 일직선의, adv. 일직선으로, 곧장", ex:"Draw a long straight line.", em:"긴 일직선을 그리세요.", wx:["She wears a straight book.", "I eat the straight sky."]},
+        {w:"pass", m:"v. 지나가다, 통과하다, 합격하다", ex:"Please pass me the salt.", em:"소금 좀 건네주세요.", wx:["I eat the pass sky.", "The pass is flying blue."]},
+        {w:"silk", m:"n. 비단, 실크", ex:"The dress is made of silk.", em:"그 드레스는 비단으로 만들어졌다.", wx:["The silk is flying blue.", "She wears a silk book."]},
+        {w:"tool", m:"n. 도구, 연장", ex:"I need a sharp tool.", em:"나는 날카로운 도구가 필요하다.", wx:["I eat the tool sky.", "She wears a tool book."]},
+        {w:"center", m:"n. 중심, 한가운데", ex:"Stand in the center here.", em:"여기 한가운데에 서세요.", wx:["The center is flying blue.", "I eat the center sky."]},
+        {w:"pattern", m:"n. 무늬, 모양", ex:"I like the star pattern.", em:"나는 별 무늬를 좋아한다.", wx:["The pattern is flying blue.", "She wears a pattern book."]},
+        {w:"remember", m:"v. 기억하다", ex:"I remember your face well.", em:"나는 당신의 얼굴을 잘 기억한다.", wx:["The remember is flying blue.", "She wears a remember book."]},
+        {w:"wig", m:"n. 가발", ex:"He wears a black wig.", em:"그는 검은 가발을 쓴다.", wx:["The wig is flying blue.", "I eat the wig sky."]},
+        {w:"rub", m:"v. 비비다, 문지르다", ex:"Rub your hands together now.", em:"지금 손을 함께 비비세요.", wx:["I eat the rub sky.", "The rub is flying blue."]},
+        {w:"middle", m:"n. 가운데, 중간", ex:"Sit in the middle seat.", em:"중간 좌석에 앉으세요.", wx:["The middle is flying blue.", "I eat the middle sky."]},
+        {w:"all", m:"adj. 모든, pron. 모두", ex:"All children like some candy.", em:"모든 아이들은 사탕을 좋아한다.", wx:["The all is flying blue.", "She wears a all book."]},
+        {w:"meeting", m:"n. 회의, 모임", ex:"We have a school meeting.", em:"우리는 학교 회의가 있다.", wx:["The meeting is flying blue.", "I eat the meeting sky."]},
+        {w:"skateboard", m:"n. 스케이트보드", ex:"He can ride a skateboard.", em:"그는 스케이트보드를 탈 수 있다.", wx:["She wears a skateboard book.", "I eat the skateboard sky."]},
+        {w:"mold", m:"n. 틀, v. 만들다", ex:"Use a heart shape mold.", em:"하트 모양 틀을 사용하세요.", wx:["She wears a mold book.", "I eat the mold sky."]},
+        {w:"bin", m:"n. (뚜껑이 있는) 용기, 통", ex:"Put it in the bin.", em:"그것을 통에 넣으세요.", wx:["She wears a bin book.", "The bin is flying blue."]},
+        {w:"date", m:"n. 날짜", ex:"What is the date today?", em:"오늘 날짜가 어떻게 되나요?", wx:["The date is flying blue.", "I eat the date sky."]},
+        {w:"machine", m:"n. 기계", ex:"This machine is very old.", em:"이 기계는 매우 낡았다.", wx:["The machine is flying blue.", "She wears a machine book."]},
+        {w:"castle", m:"n. (구조물) 성", ex:"The castle is very old.", em:"그 성은 매우 오래되었다.", wx:["I eat the castle sky.", "The castle is flying blue."]},
+        {w:"diary", m:"n. 일기", ex:"I write in my diary.", em:"나는 일기를 쓴다.", wx:["The diary is flying blue.", "She wears a diary book."]},
+        {w:"hammer", m:"n. 망치", ex:"Use a hammer and nails.", em:"망치와 못을 사용하세요.", wx:["The hammer is flying blue.", "She wears a hammer book."]},
+        {w:"wish", m:"v. 바라다, 원하다", ex:"I wish for world peace.", em:"나는 세계 평화를 바란다.", wx:["The wish is flying blue.", "I eat the wish sky."]},
+        {w:"gold", m:"n. 금, 금색", ex:"She wears a gold ring.", em:"그녀는 금반지를 끼고 있다.", wx:["I eat the gold sky.", "The gold is flying blue."]},
+        {w:"thumb", m:"n. 엄지손가락", ex:"My thumb is very short.", em:"내 엄지손가락은 매우 짧다.", wx:["She wears a thumb book.", "I eat the thumb sky."]},
+        {w:"throat", m:"n. 목구멍, 목", ex:"My throat is very sore.", em:"내 목구멍이 매우 따갑다.", wx:["I eat the throat sky.", "She wears a throat book."]},
+        {w:"chew", m:"v. 씹다", ex:"Chew your food very well.", em:"음식을 아주 잘 씹으세요.", wx:["I eat the chew sky.", "She wears a chew book."]},
+        {w:"present", m:"n. 선물, adj. 현재의", ex:"Open your birthday present now.", em:"지금 당신의 생일 선물을 여세요.", wx:["I eat the present sky.", "The present is flying blue."]},
+        {w:"cage", m:"n. 우리, 새장", ex:"The bird is in a cage.", em:"새가 새장 안에 있다.", wx:["She wears a cage book.", "I eat the cage sky."]},
+        {w:"alien", m:"n. 외계인", ex:"I saw a green alien.", em:"나는 초록색 외계인을 보았다.", wx:["She wears a alien book.", "The alien is flying blue."]},
+        {w:"between", m:"prep. ~의 사이에", ex:"Sit between your two friends.", em:"당신의 두 친구 사이에 앉으세요.", wx:["I eat the between sky.", "She wears a between book."]},
+        {w:"cereal", m:"n. 시리얼", ex:"I eat cereal for breakfast.", em:"나는 아침으로 시리얼을 먹는다.", wx:["The cereal is flying blue.", "I eat the cereal sky."]},
+        {w:"hobby", m:"n. 취미", ex:"My hobby is taking photos.", em:"내 취미는 사진 찍기이다.", wx:["I eat the hobby sky.", "The hobby is flying blue."]},
+        {w:"backyard", m:"n. 뒷마당, 뒤뜰", ex:"We play in the backyard.", em:"우리는 뒷마당에서 논다.", wx:["She wears a backyard book.", "The backyard is flying blue."]},
+        {w:"scream", m:"v. 비명을 지르다", ex:"Do not scream so loud.", em:"그렇게 크게 비명을 지르지 마세요.", wx:["She wears a scream book.", "I eat the scream sky."]},
+        {w:"cough", m:"v. 기침하다", ex:"I have a bad cough.", em:"나는 기침이 심하다.", wx:["She wears a cough book.", "I eat the cough sky."]},
+        {w:"daughter", m:"n. 딸", ex:"My daughter is very smart.", em:"내 딸은 매우 똑똑하다.", wx:["She wears a daughter book.", "The daughter is flying blue."]},
+        {w:"few", m:"adj. (수가) 거의 없는", ex:"I have a few friends.", em:"나는 친구가 몇 명 있다.", wx:["I eat the few sky.", "She wears a few book."]},
+        {w:"huge", m:"adj. 거대한, 매우 큰", ex:"I saw a huge elephant.", em:"나는 거대한 코끼리를 보았다.", wx:["She wears a huge book.", "The huge is flying blue."]},
+        {w:"amazing", m:"adj. 놀라운, 멋진", ex:"That is an amazing story.", em:"그것은 놀라운 이야기이다.", wx:["I eat the amazing sky.", "The amazing is flying blue."]},
+        {w:"need", m:"v. ~을 필요로 하다", ex:"I need a new pen.", em:"나는 새 펜이 필요하다.", wx:["The need is flying blue.", "She wears a need book."]},
+        {w:"pork", m:"n. 돼지고기", ex:"I do not eat pork.", em:"나는 돼지고기를 먹지 않는다.", wx:["The pork is flying blue.", "She wears a pork book."]},
+        {w:"past", m:"adj. 과거의, 지난, n. 과거", ex:"Do not live in past.", em:"과거에 살지 마세요.", wx:["She wears a past book.", "I eat the past sky."]},
+        {w:"field", m:"n. 들판, 밭", ex:"Cows are in the field.", em:"소들이 들판에 있다.", wx:["I eat the field sky.", "The field is flying blue."]},
+        {w:"bone", m:"n. 뼈", ex:"The dog has a bone.", em:"개가 뼈다귀를 가지고 있다.", wx:["She wears a bone book.", "The bone is flying blue."]},
+        {w:"awake", m:"adj. 깨어 있는", ex:"I am still wide awake.", em:"나는 여전히 완전히 깨어 있다.", wx:["The awake is flying blue.", "She wears a awake book."]},
+        {w:"chopstick", m:"n. 젓가락 한 짝", ex:"Use a pair of chopstick.", em:"젓가락 한 쌍을 사용하세요.", wx:["I eat the chopstick sky.", "She wears a chopstick book."]},
+        {w:"spend", m:"v. (돈을) 쓰다, 소비하다, (시간을) 보내다", ex:"Do not spend much money.", em:"돈을 많이 쓰지 마세요.", wx:["The spend is flying blue.", "I eat the spend sky."]},
+        {w:"final", m:"adj. 마지막의, 최후의", ex:"This is the final step.", em:"이것이 마지막 단계이다.", wx:["She wears a final book.", "The final is flying blue."]},
+        {w:"dust", m:"n. 먼지", ex:"There is dust on table.", em:"탁자 위에 먼지가 있다.", wx:["I eat the dust sky.", "The dust is flying blue."]},
+        {w:"pretty", m:"adj. 예쁜, adv. 꽤, 매우", ex:"The flower is very pretty.", em:"그 꽃은 매우 예쁘다.", wx:["I eat the pretty sky.", "The pretty is flying blue."]},
+        {w:"laugh", m:"v. (소리 내며) 웃다", ex:"They laugh at the joke.", em:"그들은 그 농담을 보고 웃는다.", wx:["The laugh is flying blue.", "She wears a laugh book."]},
+        {w:"space", m:"n. 우주, 공간", ex:"Rockets fly into outer space.", em:"로켓이 우주로 날아간다.", wx:["The space is flying blue.", "She wears a space book."]},
+        {w:"order", m:"v. 명령하다, 지시하다, 주문하다", ex:"Can I order some food?", em:"음식을 좀 주문할 수 있나요?", wx:["I eat the order sky.", "She wears a order book."]},
+        {w:"collect", m:"v. 모으다, 수집하다", ex:"I collect old gold coins.", em:"나는 오래된 금화를 모은다.", wx:["I eat the collect sky.", "The collect is flying blue."]},
+        {w:"return", m:"v. 돌아오다, 돌아가다", ex:"When will you return home?", em:"당신은 언제 집에 돌아오나요?", wx:["She wears a return book.", "I eat the return sky."]},
+        {w:"bush", m:"n. 덤불", ex:"A rabbit hid in bush.", em:"토끼가 덤불 속에 숨었다.", wx:["She wears a bush book.", "The bush is flying blue."]},
+        {w:"feather", m:"n. 깃털", ex:"The feather is very light.", em:"깃털은 매우 가볍다.", wx:["I eat the feather sky.", "She wears a feather book."]},
+        {w:"create", m:"v. 창조하다, 만들다", ex:"I want to create art.", em:"나는 예술을 창조하고 싶다.", wx:["I eat the create sky.", "The create is flying blue."]},
+        {w:"alive", m:"adj. 살아 있는", ex:"The plant is still alive.", em:"그 식물은 여전히 살아 있다.", wx:["The alive is flying blue.", "She wears a alive book."]},
+        {w:"shadow", m:"n. 그림자", ex:"Look at your long shadow.", em:"당신의 긴 그림자를 보세요.", wx:["She wears a shadow book.", "The shadow is flying blue."]},
+        {w:"lamb", m:"n. 어린 양, 양고기", ex:"The little lamb is cute.", em:"그 어린 양은 귀엽다.", wx:["She wears a lamb book.", "The lamb is flying blue."]},
+        {w:"famous", m:"adj. 유명한", ex:"He is a famous singer.", em:"그는 유명한 가수이다.", wx:["She wears a famous book.", "The famous is flying blue."]},
+        {w:"careful", m:"adj. 조심성 있는, 주의 깊은", ex:"Be careful with the glass.", em:"유리를 조심하세요.", wx:["The careful is flying blue.", "She wears a careful book."]},
+        {w:"ticket", m:"n. 표, 입장권", ex:"I bought a movie ticket.", em:"나는 영화 표를 샀다.", wx:["I eat the ticket sky.", "She wears a ticket book."]},
+        {w:"tickle", m:"v. 간지럽히다", ex:"Do not tickle my feet.", em:"내 발을 간지럽히지 마세요.", wx:["I eat the tickle sky.", "She wears a tickle book."]},
+        {w:"rich", m:"adj. 부유한, 부자인", ex:"He is a rich man.", em:"그는 부유한 사람이다.", wx:["I eat the rich sky.", "The rich is flying blue."]},
+        {w:"expression", m:"n. 표현", ex:"She has a happy expression.", em:"그녀는 행복한 표정을 짓고 있다.", wx:["She wears a expression book.", "The expression is flying blue."]},
+        {w:"forget", m:"v. 잊다", ex:"Do not forget your bag.", em:"가방을 잊지 마세요.", wx:["I eat the forget sky.", "The forget is flying blue."]},
+        {w:"way", m:"n. 길, 방법, 방식", ex:"This is the right way.", em:"이것이 맞는 길이다.", wx:["The way is flying blue.", "I eat the way sky."]},
+        {w:"knife", m:"n. 칼", ex:"Use a sharp bread knife.", em:"날카로운 빵 칼을 사용하세요.", wx:["I eat the knife sky.", "She wears a knife book."]},
+        {w:"marry", m:"v. ~와 결혼하다", ex:"I will marry him someday.", em:"나는 언젠가 그와 결혼할 것이다.", wx:["I eat the marry sky.", "She wears a marry book."]},
+        {w:"lay", m:"v. 놓다, 두다, (알을) 낳다", ex:"Birds lay eggs in nests.", em:"새들은 둥지에 알을 낳는다.", wx:["The lay is flying blue.", "I eat the lay sky."]},
+        {w:"delicious", m:"adj. 맛있는", ex:"This cake is very delicious.", em:"이 케이크는 매우 맛있다.", wx:["I eat the delicious sky.", "She wears a delicious book."]},
+        {w:"daytime", m:"n. 낮, 주간", ex:"It is bright during daytime.", em:"낮 동안에는 밝다.", wx:["The daytime is flying blue.", "She wears a daytime book."]},
+        {w:"speed", m:"n. 속도, 속력", ex:"Slow down your driving speed.", em:"운전 속도를 줄이세요.", wx:["The speed is flying blue.", "She wears a speed book."]},
+        {w:"wife", m:"n. 아내, 부인", ex:"My wife is a teacher.", em:"내 아내는 선생님이다.", wx:["I eat the wife sky.", "The wife is flying blue."]},
+        {w:"cartoon", m:"n. 만화 (영화)", ex:"I like to watch cartoon.", em:"나는 만화 보는 것을 좋아한다.", wx:["I eat the cartoon sky.", "She wears a cartoon book."]},
+        {w:"gorilla", m:"n. 고릴라", ex:"The gorilla is very strong.", em:"고릴라는 매우 힘이 세다.", wx:["The gorilla is flying blue.", "I eat the gorilla sky."]},
+        {w:"clear", m:"adj. 분명한, 명확한, 맑은, 투명한", ex:"The water is very clear.", em:"물이 매우 맑다.", wx:["She wears a clear book.", "I eat the clear sky."]},
+        {w:"picnic", m:"n. 소풍", ex:"Let's go on a picnic.", em:"소풍 가자.", wx:["I eat the picnic sky.", "The picnic is flying blue."]},
+        {w:"mitten", m:"n. (한 쪽의) 손모아 장갑 (= 벙어리 장갑)", ex:"I lost my red mitten.", em:"나는 내 빨간 손모아 장갑을 잃어버렸다.", wx:["I eat the mitten sky.", "She wears a mitten book."]},
+        {w:"couch", m:"n. 긴 의자, 소파", ex:"I sleep on the couch.", em:"나는 소파에서 잔다.", wx:["The couch is flying blue.", "I eat the couch sky."]},
+        {w:"fence", m:"n. 울타리, 담", ex:"The white fence is high.", em:"하얀 울타리가 높다.", wx:["The fence is flying blue.", "She wears a fence book."]},
+        {w:"page", m:"n. 페이지, 쪽", ex:"Turn to the next page.", em:"다음 페이지로 넘기세요.", wx:["The page is flying blue.", "She wears a page book."]},
+        {w:"tea", m:"n. 차", ex:"Drink some warm green tea.", em:"따뜻한 녹차를 좀 마셔라.", wx:["She wears a tea book.", "I eat the tea sky."]},
+        {w:"item", m:"n. 물건", ex:"This is a useful item.", em:"이것은 유용한 물건이다.", wx:["She wears a item book.", "I eat the item sky."]},
+        {w:"rock", m:"n. 바위, 돌", ex:"I found a shiny rock.", em:"나는 빛나는 돌을 발견했다.", wx:["She can rock very quickly now.", "He will rock the long cliff road."]},
+        {w:"nothing", m:"pron. 아무것도 ~ 아니다, 없다", ex:"There is nothing in box.", em:"상자 안에 아무것도 없다.", wx:["She can nothing very quickly today.", "He will nothing the long plateau trail."]},
+        {w:"moth", m:"n. 나방", ex:"The moth flies near light.", em:"나방이 빛 근처를 날아다닌다.", wx:["She can moth very quickly now.", "He will moth the long canyon road."]},
+        {w:"cost", m:"n. 값, 비용, v. (값·비용이) 들다, 이다", ex:"How much does it cost?", em:"그것은 비용이 얼마인가요?", wx:["She can cost very quickly today.", "He will cost the long gorge trail."]},
+        {w:"follow", m:"v. 따라가다, 따라오다, (규칙·충고를) 따르다", ex:"Please follow the school rules.", em:"학교 규칙을 따르세요.", wx:["The follow sat quietly on the cold stone.", "He will follow the long tundra road."]},
+        {w:"express", m:"v. 표현하다, 나타내다", ex:"Express your feelings with words.", em:"당신의 감정을 말로 표현하세요.", wx:["The express sat quietly on the hard bench.", "He will express the long steppe trail."]},
+        {w:"healthy", m:"adj. 건강한", ex:"Eat some healthy food today.", em:"오늘 건강한 음식을 좀 드세요.", wx:["She can healthy very quickly today.", "He will healthy the long savanna road."]},
+        {w:"country", m:"n. 국가, 나라", ex:"I love my beautiful country.", em:"나는 나의 아름다운 나라를 사랑한다.", wx:["She can country very quickly now.", "He will country the long taiga trail."]},
+        {w:"medicine", m:"n. 약", ex:"Take your medicine on time.", em:"제시간에 약을 복용하세요.", wx:["She can medicine very quickly today.", "He will medicine the long fjord road."]},
+        {w:"bell", m:"n. 종, 벨", ex:"I heard the school bell.", em:"나는 학교 종소리를 들었다.", wx:["She can bell very quickly now.", "He will bell the long delta trail."]},
+        {w:"lift", m:"v. 들어 올리다", ex:"Can you lift this box?", em:"이 상자를 들어 올릴 수 있나요?", wx:["The lift sat quietly on the cold floor.", "He will lift the long lagoon road."]},
+        {w:"crosswalk", m:"n. 횡단보도", ex:"Use the crosswalk to cross.", em:"건너기 위해 횡단보도를 이용하세요.", wx:["She can crosswalk very quickly today.", "He will crosswalk the long bayou trail."]},
+        {w:"gentle", m:"adj. 온화한, 친절한", ex:"He is a gentle man.", em:"그는 온화한 사람이다.", wx:["She can gentle very quickly now.", "He will gentle the long moor road."]},
+        {w:"tube", m:"n. 관, 튜브", ex:"It is a long tube.", em:"그것은 긴 관이다.", wx:["She can tube very quickly today.", "He will tube the long heath trail."]},
+        {w:"slipper", m:"n. 슬리퍼, 실내화 한 쪽", ex:"Wear your warm indoor slipper.", em:"따뜻한 실내화 한 쪽을 신으세요.", wx:["She can slipper very quickly now.", "He will slipper the long fen road."]},
+        {w:"future", m:"n. 미래, 장래", ex:"Think about your bright future.", em:"당신의 밝은 미래에 대해 생각하세요.", wx:["She can future very quickly today.", "He will future the long bog trail."]},
+        {w:"lettuce", m:"n. 상추", ex:"I like fresh green lettuce.", em:"나는 신선한 초록 상추를 좋아한다.", wx:["She can lettuce very quickly now.", "He will lettuce the long marsh road."]},
+        {w:"happen", m:"v. 일어나다, 발생하다", ex:"What will happen to us?", em:"우리에게 무슨 일이 일어날까?", wx:["The happen sat quietly on the cold stone.", "He will happen the long swamp trail."]},
+        {w:"stretch", m:"v. 늘이다, 펴다, 뻗다", ex:"Stretch your arms out wide.", em:"팔을 넓게 뻗으세요.", wx:["The stretch sat quietly on the warm floor.", "He will stretch the long estuary road."]},
+        {w:"yogurt", m:"n. 요거트", ex:"I eat yogurt every morning.", em:"나는 매일 아침 요거트를 먹는다.", wx:["She can yogurt very quickly today.", "He will yogurt the long peninsula trail."]},
+        {w:"ceiling", m:"n. 천장", ex:"The ceiling is very high.", em:"천장이 매우 높다.", wx:["She can ceiling very quickly now.", "He will ceiling the long isthmus road."]},
+        {w:"hairdo", m:"n. 머리 모양", ex:"I like your new hairdo.", em:"나는 당신의 새로운 머리 모양이 마음에 든다.", wx:["She can hairdo very quickly today.", "He will hairdo the long archipelago trail."]},
+        {w:"nail", m:"n. 손톱, 발톱, 못", ex:"I need to cut nail.", em:"나는 손톱을 잘라야 한다.", wx:["She can nail very quickly now.", "He will nail the long atoll road."]},
+        {w:"arrive", m:"v. 도착하다", ex:"We will arrive there soon.", em:"우리는 곧 그곳에 도착할 것이다.", wx:["The arrive sat quietly on the cold stone.", "He will arrive the long cape trail."]},
+        {w:"fix", m:"v. 고치다, 수리하다, 고정시키다", ex:"He can fix the bike.", em:"그는 자전거를 고칠 수 있다.", wx:["The fix sat quietly on the hard floor.", "He will fix the long strait road."]},
+        {w:"cube", m:"n. 정육면체", ex:"The ice is a cube.", em:"얼음은 정육면체이다.", wx:["She can cube very quickly today.", "He will cube the long channel trail."]},
+        {w:"human", m:"n. 인간, 사람", ex:"We are all same human.", em:"우리는 모두 똑같은 인간이다.", wx:["She can human very quickly now.", "He will human the long reef road."]},
+        {w:"dead", m:"adj. 죽은", ex:"The old tree is dead.", em:"그 오래된 나무는 죽었다.", wx:["She can dead very quickly today.", "He will dead the long shoal trail."]},
+        {w:"mosquito", m:"n. 모기", ex:"A mosquito bit my arm.", em:"모기가 내 팔을 물었다.", wx:["She can mosquito very quickly now.", "He will mosquito the long inlet road."]},
+        {w:"front", m:"adj. 앞쪽의", ex:"Sit in the front row.", em:"앞줄에 앉으세요.", wx:["She can front very quickly today.", "He will front the long cove trail."]},
+        {w:"oval", m:"adj. 타원형의, 계란형의", ex:"The egg has oval shape.", em:"달걀은 타원형이다.", wx:["She can oval very quickly now.", "He will oval the long bay road."]},
+        {w:"excellent", m:"adj. 훌륭한, 뛰어난", ex:"That is an excellent idea.", em:"그것은 훌륭한 생각이다.", wx:["She can excellent very quickly today.", "He will excellent the long gulf trail."]},
+        {w:"decide", m:"v. 결정하다, 결심하다", ex:"I cannot decide what to eat.", em:"무엇을 먹을지 결정할 수 없다.", wx:["The decide sat quietly on the cold bench.", "He will decide the long harbor road."]},
+        {w:"alone", m:"adj. 혼자인, adv. 혼자, 홀로", ex:"I like to stay alone.", em:"나는 혼자 있는 것을 좋아한다.", wx:["She can alone very quickly today.", "He will alone the long port trail."]},
+        {w:"heat", m:"n. 열, 더위, v. 가열하다", ex:"The sun gives us heat.", em:"태양은 우리에게 열을 준다.", wx:["She can heat very quickly now.", "He will heat the long dock road."]},
+        {w:"minute", m:"n. [시간] 분", ex:"Wait for one more minute.", em:"1분만 더 기다려 주세요.", wx:["She can minute very quickly today.", "He will minute the long pier trail."]},
+        {w:"chance", m:"n. 기회", ex:"Give me one more chance.", em:"나에게 기회를 한 번 더 주세요.", wx:["She can chance very quickly now.", "He will chance the long wharf road."]},
+        {w:"serve", m:"v. (음식을) 제공하다, 차려 주다", ex:"They serve lunch at noon.", em:"그들은 정오에 점심을 제공한다.", wx:["The serve sat quietly on the cold floor.", "He will serve the long quay trail."]},
+        {w:"weekend", m:"n. 주말", ex:"Have a great happy weekend.", em:"행복한 주말 보내세요.", wx:["She can weekend very quickly today.", "He will weekend the long jetty road."]},
+        {w:"view", m:"n. 경치, 전망, 의견, 생각", ex:"The mountain view is great.", em:"산의 경치가 훌륭하다.", wx:["She can view very quickly now.", "He will view the long levee trail."]},
+        {w:"thick", m:"adj. 두꺼운, 굵은", ex:"The book is very thick.", em:"그 책은 매우 두껍다.", wx:["She can thick very quickly today.", "He will thick the long dike road."]},
+        {w:"burn", m:"v. (불에) 타다, 태우다", ex:"Do not burn the paper.", em:"종이를 태우지 마세요.", wx:["The burn sat quietly on the cold stone.", "He will burn the long dam trail."]},
+        {w:"envy", m:"v. 부러워하다", ex:"I envy your new car.", em:"나는 당신의 새 차가 부럽다.", wx:["The envy sat quietly on the cold bench.", "He will envy the long weir road."]},
+        {w:"necklace", m:"n. 목걸이", ex:"She wears a pearl necklace.", em:"그녀는 진주 목걸이를 하고 있다.", wx:["She can necklace very quickly today.", "He will necklace the long flume trail."]},
+        {w:"planet", m:"n. 행성", ex:"Mars is a red planet.", em:"화성은 빨간 행성이다.", wx:["She can planet very quickly now.", "He will planet the long canal road."]},
+        {w:"smelly", m:"adj. 악취가 나는", ex:"The old socks are smelly.", em:"오래된 양말에서 악취가 난다.", wx:["She can smelly very quickly today.", "He will smelly the long lock trail."]},
+        {w:"real", m:"adj. 진짜의, 실제의", ex:"Is this a real diamond?", em:"이것이 진짜 다이아몬드인가요?", wx:["She can real very quickly now.", "He will real the long aqueduct road."]},
+        {w:"chain", m:"n. 사슬, 쇠줄", ex:"The dog is on chain.", em:"개가 사슬에 묶여 있다.", wx:["She can chain very quickly today.", "He will chain the long reservoir trail."]},
+        {w:"city", m:"n. 도시", ex:"I live in big city.", em:"나는 큰 도시에 산다.", wx:["She can city very quickly now.", "He will city the long pipeline road."]},
+        {w:"carpet", m:"n. 카펫", ex:"The carpet is very soft.", em:"카펫이 매우 부드럽다.", wx:["She can carpet very quickly today.", "He will carpet the long tunnel trail."]},
+        {w:"season", m:"n. 계절", ex:"Spring is my favorite season.", em:"봄은 내가 가장 좋아하는 계절이다.", wx:["She can season very quickly now.", "He will season the long subway road."]},
+        {w:"drawer", m:"n. 서랍", ex:"Put it in the drawer.", em:"그것을 서랍에 넣으세요.", wx:["She can drawer very quickly today.", "He will drawer the long overpass trail."]},
+        {w:"badminton", m:"n. 배드민턴", ex:"Let's play badminton today together.", em:"오늘 함께 배드민턴을 치자.", wx:["She can badminton very quickly now.", "He will badminton the long underpass road."]},
+        {w:"borrow", m:"v. 빌리다", ex:"Can I borrow your pen?", em:"당신의 펜을 빌릴 수 있나요?", wx:["The borrow sat quietly on the cold stone.", "He will borrow the long viaduct trail."]},
+        {w:"group", m:"n. 무리, 집단", ex:"Join our small study group.", em:"우리 소규모 스터디 모임에 가입하세요.", wx:["She can group very quickly today.", "He will group the long causeway road."]},
+        {w:"trick", m:"n. 묘기, 장난", ex:"That is a cool trick.", em:"그것은 멋진 묘기이다.", wx:["She can trick very quickly now.", "He will trick the long footbridge trail."]},
+        {w:"ugly", m:"adj. 못생긴, 추한", ex:"The monster is very ugly.", em:"괴물은 매우 못생겼다.", wx:["She can ugly very quickly today.", "He will ugly the long drawbridge road."]},
+        {w:"floppy", m:"adj. 헐렁한, 늘어진", ex:"The dog has floppy ears.", em:"그 개는 늘어진 귀를 가졌다.", wx:["She can floppy very quickly now.", "He will floppy the long suspension trail."]},
+        {w:"cart", m:"n. 수레, 카트", ex:"Put food in the cart.", em:"수레에 음식을 담으세요.", wx:["She can cart very quickly today.", "He will cart the long arch road."]},
+        {w:"magician", m:"n. 마술사", ex:"The magician is very amazing.", em:"그 마술사는 매우 놀랍다.", wx:["She can magician very quickly now.", "He will magician the long beam trail."]},
+        {w:"beat", m:"v. (반복해서) 치다, 두드리다, 패배시키다, 이기다", ex:"He can beat the drum.", em:"그는 북을 칠 수 있다.", wx:["The beat sat quietly on the cold floor.", "He will beat the long truss road."]},
+        {w:"carefully", m:"adv. 조심스럽게, 주의하여", ex:"Please drive your car carefully.", em:"차를 조심스럽게 운전하세요.", wx:["The carefully sat quietly beside the old gate.", "He will carefully the long cable trail."]},
+        {w:"nap", m:"n. 낮잠", ex:"I take a short nap.", em:"나는 짧은 낮잠을 잔다.", wx:["She can nap very quickly today.", "He will nap the long span road."]},
+        {w:"chest", m:"n. 가슴, 흉부", ex:"My chest feels very tight.", em:"가슴이 매우 답답하다.", wx:["She can chest very quickly now.", "He will chest the long deck trail."]},
+        {w:"meal", m:"n. 식사", ex:"This is a healthy meal.", em:"이것은 건강한 식사이다.", wx:["She can meal very quickly today.", "He will meal the long girder road."]},
+        {w:"gate", m:"n. 문, 대문", ex:"Close the front gate now.", em:"지금 정문을 닫으세요.", wx:["She can gate very quickly now.", "He will gate the long rafter trail."]},
+        {w:"dot", m:"n. (동그란) 점", ex:"Connect every single red dot.", em:"모든 빨간 점을 연결하세요.", wx:["She can dot very quickly today.", "He will dot the long joist road."]},
+        {w:"problem", m:"n. 문제(점)", ex:"I solved the math problem.", em:"나는 그 수학 문제를 풀었다.", wx:["She can problem very quickly now.", "He will problem the long beam trail."]},
+        {w:"stamp", m:"n. 우표", ex:"Put a stamp on letter.", em:"편지에 우표를 붙이세요.", wx:["She can stamp very quickly today.", "He will stamp the long purlin road."]},
+        {w:"event", m:"n. 사건, 일, 행사", ex:"Today is a big event.", em:"오늘은 큰 행사 날이다.", wx:["She can event very quickly now.", "He will event the long lintel trail."]},
+        {w:"valley", m:"n. 계곡, 골짜기", ex:"The valley is very deep.", em:"계곡은 매우 깊다.", wx:["She can valley very quickly today.", "He will valley the long arch road."]},
+        {w:"growl", m:"v. 으르렁거리다", ex:"The hungry dogs will growl.", em:"배고픈 개들은 으르렁거릴 것이다.", wx:["The growl sat quietly on the cold grass.", "He will growl the long vault trail."]},
+        {w:"skinny", m:"adj. (몸이) 마른", ex:"The cat is very skinny.", em:"그 고양이는 매우 말랐다.", wx:["She can skinny very quickly now.", "He will skinny the long dome road."]},
+        {w:"list", m:"n. 목록, 명단", ex:"Make a daily shopping list.", em:"매일의 쇼핑 목록을 만드세요.", wx:["She can list very quickly today.", "He will list the long spire trail."]},
+        {w:"bottom", m:"n. 맨 아래, 바닥", ex:"Sign at the very bottom.", em:"맨 아래에 서명하세요.", wx:["She can bottom very quickly now.", "He will bottom the long turret road."]},
+        {w:"smart", m:"adj. 똑똑한, 영리한", ex:"You are a smart student.", em:"당신은 똑똑한 학생이다.", wx:["She can smart very quickly today.", "He will smart the long keep trail."]},
+        {w:"freeze", m:"v. 얼다, 얼리다", ex:"Water will freeze into ice.", em:"물은 얼어서 얼음이 될 것이다.", wx:["The freeze sat quietly on the hard bench.", "He will freeze the long moat road."]},
+        {w:"wipe", m:"v. (손·헝겊으로) 닦다", ex:"Wipe the table with cloth.", em:"천으로 탁자를 닦으세요.", wx:["The wipe sat quietly on the cold floor.", "He will wipe the long rampart trail."]},
+        {w:"munch", m:"v. 우적우적 먹다", ex:"Munch on some fresh carrots.", em:"신선한 당근을 우적우적 먹어라.", wx:["The munch sat quietly on the cold bench.", "He will munch the long battlement road."]},
+        {w:"less", m:"adj. 더 적은, 덜한, adv. 더 적게, 덜하게", ex:"Eat more and talk less.", em:"더 많이 먹고 말을 줄여라.", wx:["She can less very quickly today.", "He will less the long parapet trail."]},
+        {w:"every", m:"adj. 모든, 매~, ~마다", ex:"I exercise every single day.", em:"나는 매일매일 운동한다.", wx:["She can every very quickly now.", "He will every the long merlon road."]},
+        {w:"check", m:"v. 확인하다, 점검하다", ex:"Check your homework once more.", em:"숙제를 한 번 더 확인하세요.", wx:["The check sat quietly on the cold bench.", "He will check the long crenel trail."]},
+        {w:"spill", m:"v. 흘리다, 쏟다", ex:"Do not spill the milk.", em:"우유를 쏟지 마세요.", wx:["The spill sat quietly on the cold floor.", "He will spill the long embrasure road."]},
+        {w:"sail", m:"v. 항해하다, (배를 타고) 가다", ex:"We sail on the sea.", em:"우리는 바다를 항해한다.", wx:["The sail sat quietly on the cold dock.", "He will sail the long loophole trail."]},
+        {w:"finish", m:"v. 마치다, 끝나다", ex:"I will finish it soon.", em:"곧 끝낼게요.", wx:["The finish sat quietly on the cold track.", "He will finish the long arrow road."]},
+        {w:"square", m:"n. 정사각형", ex:"The paper is a square.", em:"종이는 정사각형이다.", wx:["She can square very quickly today.", "He will square the long shield trail."]},
+        {w:"comb", m:"v. 빗다, 빗질하다", ex:"Comb your hair every morning.", em:"매일 아침 머리를 빗으세요.", wx:["The comb sat quietly on the cold shelf.", "He will comb the long sword road."]},
+        {w:"sauce", m:"n. 소스, 양념", ex:"Put some sauce on meat.", em:"고기에 소스를 좀 바르세요.", wx:["She can sauce very quickly now.", "He will sauce the long lance trail."]},
+        {w:"sunlight", m:"n. 햇빛, 햇살", ex:"I like the bright sunlight.", em:"나는 밝은 햇빛을 좋아한다.", wx:["She can sunlight very quickly today.", "He will sunlight the long axe road."]},
+        {w:"die", m:"v. 죽다, 사망하다", ex:"Plants will die without water.", em:"식물은 물 없이 죽을 것이다.", wx:["The die sat quietly on the cold stone.", "He will die the long bow trail."]},
+        {w:"office", m:"n. 사무실", ex:"He works in an office.", em:"그는 사무실에서 일한다.", wx:["She can office very quickly now.", "He will office the long arrow road."]},
+        {w:"phone", m:"n. 전화(기)", ex:"Answer the phone right now.", em:"당장 전화를 받으세요.", wx:["She can phone very quickly today.", "He will phone the long quiver trail."]},
+        {w:"pajamas", m:"n. 잠옷, 파자마", ex:"Put on your blue pajamas.", em:"파란 잠옷을 입으세요.", wx:["She can pajamas very quickly now.", "He will pajamas the long mace road."]},
+        {w:"plastic", m:"n. 플라스틱", ex:"This cup is made of plastic.", em:"이 컵은 플라스틱으로 만들어졌다.", wx:["She can plastic very quickly today.", "He will plastic the long flail trail."]},
+        {w:"vacation", m:"n. 방학, 휴가", ex:"Summer vacation is coming soon.", em:"여름 방학이 곧 다가온다.", wx:["She can vacation very quickly now.", "He will vacation the long catapult road."]},
+        {w:"science", m:"n. 과학", ex:"I like the science class.", em:"나는 과학 수업을 좋아한다.", wx:["She can science very quickly today.", "He will science the long trebuchet trail."]},
+        {w:"cozy", m:"adj. 편한, 아늑한", ex:"My bed is very cozy.", em:"내 침대는 매우 아늑하다.", wx:["She can cozy very quickly now.", "He will cozy the long ballista road."]},
+        {w:"mailbox", m:"n. 편지함", ex:"Check the mailbox every day.", em:"매일 편지함을 확인하세요.", wx:["She can mailbox very quickly today.", "He will mailbox the long cannon trail."]},
+        {w:"cliff", m:"n. 절벽", ex:"Do not stand near cliff.", em:"절벽 근처에 서지 마세요.", wx:["She can cliff very quickly now.", "He will cliff the long mortar road."]},
+        {w:"better", m:"adj. 더 좋은, 더 나은, adv. 더 좋게, 더 잘", ex:"I feel much better now.", em:"나는 이제 훨씬 기분이 좋다.", wx:["She can better very quickly today.", "He will better the long musket trail."]},
+        {w:"leave", m:"v. 떠나다, 남기다, 놓고 가다", ex:"It is time to leave.", em:"떠날 시간이다.", wx:["The leave sat quietly on the cold bench.", "He will leave the long rifle road."]},
+        {w:"desert", m:"n. 사막", ex:"The desert is very hot.", em:"사막은 매우 뜨겁다.", wx:["She can desert very quickly now.", "He will desert the long pistol trail."]},
+        {w:"click", m:"v. 버튼을 누르다, 찰칵 소리가 나다", ex:"Click the mouse button now.", em:"지금 마우스 버튼을 누르세요.", wx:["The click sat quietly on the cold keyboard.", "He will click the long dagger road."]},
+        {w:"fight", m:"v. 싸우다", ex:"Do not fight with friends.", em:"친구들과 싸우지 마세요.", wx:["The fight sat quietly on the cold floor.", "He will fight the long spear trail."]},
+        {w:"washroom", m:"n. (호텔·식당의) 화장실", ex:"Where is the nearest washroom?", em:"가장 가까운 화장실이 어디인가요?", wx:["She can washroom very quickly now.", "He will washroom the long trident road."]},
+        {w:"tip", m:"n. (뾰족한) 끝, 정보, 조언", ex:"This is a useful tip.", em:"이것은 유용한 조언이다.", wx:["She can tip very quickly today.", "He will tip the long pitchfork trail."]},
+        {w:"seashell", m:"n. 조개 껍데기", ex:"I found a white seashell.", em:"나는 하얀 조개 껍데기를 발견했다.", wx:["She can seashell very quickly now.", "He will seashell the long scythe road."]},
+        {w:"mission", m:"n. 임무", ex:"Your mission starts right now.", em:"당신의 임무는 지금 시작된다.", wx:["She can mission very quickly today.", "He will mission the long sickle trail."]},
+        {w:"bumpy", m:"adj. 울퉁불퉁한", ex:"The road is very bumpy.", em:"길이 매우 울퉁불퉁하다.", wx:["She can bumpy very quickly now.", "He will bumpy the long hammer road."]},
+        {w:"meaning", m:"n. 뜻, 의미", ex:"What is the word's meaning?", em:"그 단어의 뜻은 무엇인가요?", wx:["She can meaning very quickly today.", "He will meaning the long chisel trail."]},
+        {w:"net", m:"n. 그물, 망, (테니스 등의) 네트", ex:"Fish are in the net.", em:"물고기들이 그물 안에 있다.", wx:["She can net very quickly now.", "He will net the long saw road."]},
+        {w:"knock", m:"v. 두드리다, 노크하다", ex:"Knock on the door first.", em:"먼저 문을 두드리세요.", wx:["The knock sat quietly on the cold door.", "He will knock the long drill trail."]},
+        {w:"hope", m:"v. 바라다, 희망하다", ex:"I hope to see you.", em:"나는 당신을 보길 바란다.", wx:["The hope sat quietly on the cold bench.", "He will hope the long lathe road."]},
+        {w:"dangerous", m:"adj. 위험한", ex:"This road is very dangerous.", em:"이 길은 매우 위험하다.", wx:["She can dangerous very quickly now.", "He will dangerous the long anvil trail."]},
+        {w:"main", m:"adj. 주요한, 주된", ex:"This is the main gate.", em:"이것이 정문이다.", wx:["She can main very quickly today.", "He will main the long bellows road."]},
+        {w:"horn", m:"n. (소·양 등의) 뿔", ex:"The goat has long horn.", em:"염소는 긴 뿔을 가졌다.", wx:["She can horn very quickly now.", "He will horn the long forge trail."]},
+        {w:"example", m:"n. 예시, 보기", ex:"Give me a good example.", em:"좋은 예시를 들어 주세요.", wx:["She can example very quickly today.", "He will example the long furnace road."]},
+        {w:"flat", m:"adj. 평평한, 납작한", ex:"The table is very flat.", em:"탁자는 매우 평평하다.", wx:["She can flat very quickly now.", "He will flat the long kiln trail."]},
+        {w:"astronaut", m:"n. 우주 비행사", ex:"He wants to be astronaut.", em:"그는 우주 비행사가 되고 싶어 한다.", wx:["She can astronaut very quickly today.", "He will astronaut the long crucible road."]},
+        {w:"triangle", m:"n. 삼각형", ex:"A pizza slice is triangle.", em:"피자 조각은 삼각형이다.", wx:["She can triangle very quickly now.", "He will triangle the long cauldron trail."]},
+        {w:"near", m:"prep. ~가까이에, ~근처로", ex:"My house is very near.", em:"우리 집은 매우 가깝다.", wx:["She can near very quickly today.", "He will near the long boiler road."]},
+        {w:"question", m:"n. 질문", ex:"Ask me a simple question.", em:"나에게 간단한 질문을 하세요.", wx:["She can question very quickly now.", "He will question the long furnace trail."]},
+        {w:"hike", m:"v. 하이킹하다, 걸어서 여행하다", ex:"Let's hike up the mountain.", em:"산을 걸어서 여행하자.", wx:["The hike sat quietly on the cold bench.", "He will hike the long kiln road."]},
+        {w:"muscle", m:"n. 근육", ex:"Exercise makes strong arm muscle.", em:"운동은 강한 팔 근육을 만든다.", wx:["She can muscle very quickly today.", "He will muscle the long mold trail."]},
+        {w:"history", m:"n. 역사", ex:"I like to learn history.", em:"나는 역사를 배우는 것을 좋아한다.", wx:["She can history very quickly now.", "He will history the long cast road."]},
+        {w:"invent", m:"v. 발명하다", ex:"He wants to invent something.", em:"그는 무언가를 발명하고 싶어 한다.", wx:["The invent sat quietly on the cold floor.", "He will invent the long forge trail."]},
+        {w:"guide", m:"n. 안내자, 안내서, v. 안내하다", ex:"The guide leads the way.", em:"안내자가 길을 이끈다.", wx:["She can guide very quickly today.", "He will guide the long cast road."]},
+        {w:"fold", m:"v. 접다", ex:"Fold your clothes very neatly.", em:"당신의 옷을 아주 깔끔하게 접으세요.", wx:["The fold sat quietly on the cold bench.", "He will fold the long mold trail."]},
+        {w:"writer", m:"n. 작가", ex:"She is a famous writer.", em:"그녀는 유명한 작가이다.", wx:["She can writer very quickly now.", "He will writer the long press road."]},
+        {w:"headache", m:"n. 두통, 머리 아픔", ex:"I have a bad headache.", em:"나는 두통이 심하다.", wx:["She can headache very quickly today.", "He will headache the long stamp trail."]},
+        {w:"bandage", m:"n. 붕대, 밴드", ex:"Put a bandage on cut.", em:"베인 곳에 붕대를 감으세요.", wx:["She can bandage very quickly now.", "He will bandage the long punch road."]},
+        {w:"curious", m:"adj. 호기심이 많은, 궁금한", ex:"Children are very curious people.", em:"아이들은 매우 호기심이 많은 사람들이다.", wx:["She can curious very quickly today.", "He will curious the long drill trail."]},
+        {w:"musical", m:"adj. 음악의, 음악적인, n. 뮤지컬", ex:"I want to watch musical.", em:"나는 뮤지컬을 보고 싶다.", wx:["She can musical very quickly now.", "He will musical the long mill road."]},
+        {w:"sailor", m:"n. 선원, 배에서 일하거나 조종하는 사람", ex:"The sailor works on ship.", em:"선원은 배에서 일한다.", wx:["She can sailor very quickly today.", "He will sailor the long loom trail."]},
+        {w:"pepper", m:"n. 후추", ex:"Add some salt and pepper.", em:"소금과 후추를 좀 넣으세요.", wx:["She can pepper very quickly now.", "He will pepper the long spindle road."]},
+        {w:"along", m:"prep. ~을 따라(서)", ex:"Walk along the quiet river.", em:"조용한 강을 따라 걸으세요.", wx:["She can along very quickly today.", "He will along the long shuttle trail."]},
+        {w:"lonely", m:"adj. 외로운, 쓸쓸한", ex:"I feel a bit lonely.", em:"나는 약간 외로움을 느낀다.", wx:["She can lonely very quickly now.", "He will lonely the long bobbin road."]},
+        {w:"thirsty", m:"adj. 목마른", ex:"I am very thirsty now.", em:"나는 지금 매우 목마르다.", wx:["She can thirsty very quickly today.", "He will thirsty the long spool trail."]},
+        {w:"letter", m:"n. 편지, 글자, 문자", ex:"I received a long letter.", em:"나는 긴 편지를 받았다.", wx:["She can letter very quickly now.", "He will letter the long reel road."]},
+        {w:"greet", m:"v. 환영하다, 맞이하다", ex:"Greet your teacher with smile.", em:"미소로 선생님을 맞이하세요.", wx:["The greet sat quietly on the cold bench.", "He will greet the long bobbin trail."]},
+        {w:"mane", m:"n. (말·사자의) 갈기", ex:"The lion has thick mane.", em:"사자는 굵은 갈기를 가졌다.", wx:["She can mane very quickly today.", "He will mane the long spool road."]},
+        {w:"dessert", m:"n. 디저트, 후식", ex:"Let's eat some sweet dessert.", em:"달콤한 디저트를 먹자.", wx:["She can dessert very quickly now.", "He will dessert the long reel trail."]},
+        {w:"enough", m:"adj. 충분한, adv. 충분히", ex:"I have enough money now.", em:"나는 이제 충분한 돈이 있다.", wx:["She can enough very quickly today.", "He will enough the long skein road."]},
+        {w:"fancy", m:"adj. 화려한, 장식이 많은", ex:"She wears a fancy dress.", em:"그녀는 화려한 드레스를 입고 있다.", wx:["She can fancy very quickly now.", "He will fancy the long hank trail."]},
+        {w:"clap", m:"v. 박수치다", ex:"Let's clap our hands together.", em:"함께 박수를 칩시다.", wx:["The clap sat quietly on the cold bench.", "He will clap the long skein road."]},
+        {w:"elevator", m:"n. 엘리베이터", ex:"Take the elevator to top.", em:"정상까지 엘리베이터를 타세요.", wx:["She can elevator very quickly today.", "He will elevator the long hank trail."]},
+        {w:"difficult", m:"adj. 어려운", ex:"This math is very difficult.", em:"이 수학은 매우 어렵다.", wx:["She can difficult very quickly now.", "He will difficult the long bale road."]},
+        {w:"reach", m:"v. 도착하다, 도달하다", ex:"We will reach there soon.", em:"우리는 곧 그곳에 도달할 것이다.", wx:["The reach sat quietly on the cold bench.", "He will reach the long bale trail."]},
+        {w:"silver", m:"n. 은, 은색", ex:"She wears a silver ring.", em:"그녀는 은반지를 끼고 있다.", wx:["She can silver very quickly today.", "He will silver the long bundle road."]},
+        {w:"south", m:"n. 남쪽", ex:"Birds fly to the south.", em:"새들이 남쪽으로 날아간다.", wx:["She can south very quickly now.", "He will south the long pack trail."]},
+        {w:"uniform", m:"n. 교복, 유니폼", ex:"We wear a school uniform.", em:"우리는 교복을 입는다.", wx:["She can uniform very quickly today.", "He will uniform the long bundle road."]},
+        {w:"rope", m:"n. 밧줄", ex:"Pull the heavy rope hard.", em:"무거운 밧줄을 세게 당기세요.", wx:["She can rope very quickly now.", "He will rope the long packet trail."]},
+        {w:"believe", m:"v. 믿다, 신뢰하다", ex:"I believe in your dream.", em:"나는 당신의 꿈을 믿는다.", wx:["The believe sat quietly on the cold bench.", "He will believe the long parcel road."]},
+        {w:"best", m:"adj. 최고의, 가장 좋은, adv. 가장, 가장 잘", ex:"You are my best friend.", em:"당신은 나의 최고의 친구이다.", wx:["She can best very quickly today.", "He will best the long bale trail."]},
+        {w:"itchy", m:"adj. 가려운", ex:"My arm is very itchy.", em:"내 팔이 매우 가렵다.", wx:["She can itchy very quickly now.", "He will itchy the long cargo road."]},
+        {w:"behind", m:"prep. ~의 뒤에", ex:"The cat is behind chair.", em:"고양이가 의자 뒤에 있다.", wx:["She can behind very quickly today.", "He will behind the long freight trail."]},
+        {w:"root", m:"n. 뿌리", ex:"The tree has deep root.", em:"그 나무는 깊은 뿌리를 가졌다.", wx:["She can root very quickly now.", "He will root the long shipment road."]},
+        {w:"fog", m:"n. 안개", ex:"It is hard to see fog.", em:"안개 때문에 보기 힘들다.", wx:["She can fog very quickly today.", "He will fog the long load trail."]},
+        {w:"pocket", m:"n. 주머니", ex:"Put money in your pocket.", em:"주머니에 돈을 넣으세요.", wx:["She can pocket very quickly now.", "He will pocket the long consignment road."]},
+        {w:"sweat", m:"n. 땀, v. 땀을 흘리다", ex:"I sweat after my run.", em:"나는 달린 후에 땀을 흘린다.", wx:["She can sweat very quickly today.", "He will sweat the long batch trail."]},
+        {w:"station", m:"n. (기차) 역, 정거장", ex:"Go to the train station.", em:"기차역으로 가세요.", wx:["She can station very quickly now.", "He will station the long lot road."]},
+        {w:"point", m:"v. 가리키다", ex:"Point to the right answer.", em:"정답을 가리키세요.", wx:["The point sat quietly on the cold bench.", "He will point the long set trail."]},
+        {w:"concert", m:"n. 연주회, 콘서트", ex:"The music concert was great.", em:"음악 연주회는 훌륭했다.", wx:["She can concert very quickly today.", "He will concert the long group road."]},
+        {w:"buzz", m:"v. (벌 등이) 윙윙거리다", ex:"Bees buzz in the garden.", em:"벌들이 정원에서 윙윙거린다.", wx:["The buzz sat quietly on the cold floor.", "He will buzz the long cluster trail."]},
+        {w:"steal", m:"v. 훔치다", ex:"Do not steal from others.", em:"다른 사람의 것을 훔치지 마세요.", wx:["The steal sat quietly on the cold bench.", "He will steal the long bundle road."]},
+        {w:"surprised", m:"adj. 놀란", ex:"I was very surprised today.", em:"나는 오늘 매우 놀랐다.", wx:["She can surprised very quickly today.", "He will surprised the long heap trail."]},
+        {w:"exit", m:"n. 출구", ex:"Where is the emergency exit?", em:"비상구는 어디인가요?", wx:["She can exit very quickly now.", "He will exit the long pile road."]},
+        {w:"care", m:"n. 돌봄, 보살핌, v. 신경 쓰다, 상관하다", ex:"Take good care of yourself.", em:"자신을 잘 보살피세요.", wx:["She can care very quickly today.", "He will care the long stack trail."]},
+        {w:"rest", m:"n. 휴식, 안정", ex:"You need some good rest.", em:"당신은 좋은 휴식이 필요하다.", wx:["She can rest very quickly now.", "He will rest the long mass road."]},
+        {w:"mermaid", m:"n. 인어", ex:"I saw a pretty mermaid.", em:"나는 예쁜 인어를 보았다.", wx:["She can mermaid very quickly today.", "He will mermaid the long bulk trail."]},
+        {w:"spell", m:"v. 철자를 말하다, 쓰다", ex:"Can you spell your name?", em:"당신의 이름 철자를 말할 수 있나요?", wx:["The spell sat quietly on the cold bench.", "He will spell the long volume road."]},
+        {w:"pile", m:"n. 쌓아 놓은 것, 더미, v. 쌓다", ex:"There is a pile of books.", em:"책 더미가 하나 있다.", wx:["She can pile very quickly now.", "He will pile the long bulk trail."]},
+        {w:"curtain", m:"n. 커튼", ex:"Close the bedroom curtain now.", em:"지금 침실 커튼을 닫으세요.", wx:["She can curtain very quickly today.", "He will curtain the long mass road."]},
+        {w:"blink", m:"v. 눈을 깜빡이다", ex:"Blink your eyes very fast.", em:"눈을 아주 빨리 깜빡이세요.", wx:["The blink sat quietly on the cold bench.", "He will blink the long stack trail."]},
+        {w:"rooftop", m:"n. 옥상", ex:"We went to the rooftop.", em:"우리는 옥상에 갔다.", wx:["She can rooftop very quickly now.", "He will rooftop the long heap road."]},
+        {w:"spoonful", m:"n. 한 숟가락", ex:"Add a spoonful of sugar.", em:"설탕 한 숟가락을 넣으세요.", wx:["She can spoonful very quickly today.", "He will spoonful the long pile trail."]},
+        {w:"shower", m:"n. 샤워", ex:"I take a warm shower.", em:"나는 따뜻한 샤워를 한다.", wx:["She can shower very quickly now.", "He will shower the long mound road."]},
+        {w:"ahead", m:"adv. 앞으로, 앞에", ex:"Look at the road ahead.", em:"앞에 있는 길을 보세요.", wx:["She can ahead very quickly today.", "He will ahead the long ridge trail."]},
+        {w:"toilet", m:"n. 변기", ex:"Clean the toilet every week.", em:"매주 변기를 청소하세요.", wx:["She can toilet very quickly now.", "He will toilet the long peak road."]},
+        {w:"airport", m:"n. 공항", ex:"We are at the airport.", em:"우리는 공항에 있다.", wx:["She can airport very quickly today.", "He will airport the long summit trail."]},
+        {w:"creamy", m:"adj. 크림 같은", ex:"This soup is very creamy.", em:"이 스프는 매우 크림 같다.", wx:["She can creamy very quickly now.", "He will creamy the long crest road."]},
+        {w:"during", m:"prep. ~동안", ex:"I slept during the movie.", em:"나는 영화 동안 잤다.", wx:["She can during very quickly today.", "He will during the long spine trail."]},
+        {w:"firewood", m:"n. 장작", ex:"We need some more firewood.", em:"우리는 장작이 좀 더 필요하다.", wx:["She can firewood very quickly now.", "He will firewood the long ridge road."]},
+        {w:"diamond", m:"n. 다이아몬드", ex:"The diamond is very bright.", em:"다이아몬드는 매우 밝다.", wx:["She can diamond very quickly today.", "He will diamond the long peak trail."]},
+        {w:"level", m:"n. 수준, 단계", ex:"This game level is hard.", em:"이 게임 단계는 어렵다.", wx:["She can level very quickly now.", "He will level the long summit road."]},
+        {w:"crop", m:"n. 농작물", ex:"The rice crop is good.", em:"쌀 농작물이 좋다.", wx:["She can crop very quickly today.", "He will crop the long crest trail."]},
+        {w:"handsome", m:"adj. 잘생긴", ex:"He is a handsome boy.", em:"그는 잘생긴 소년이다.", wx:["She can handsome very quickly now.", "He will handsome the long spine road."]},
+        {w:"hint", m:"n. 실마리, 힌트", ex:"Give me a small hint.", em:"나에게 작은 힌트를 주세요.", wx:["She can hint very quickly today.", "He will hint the long knoll trail."]},
+        {w:"sponge", m:"n. 스펀지", ex:"Use a soft wet sponge.", em:"부드러운 젖은 스펀지를 사용하세요.", wx:["She can sponge very quickly now.", "He will sponge the long mound road."]},
+        {w:"second", m:"adj. 두 번째의, n. [시간] 초", ex:"Wait for one more second.", em:"1초만 더 기다려 주세요.", wx:["She can second very quickly today.", "He will second the long hillock trail."]},
+        {w:"hero", m:"n. 영웅", ex:"My father is my hero.", em:"나의 아버지는 나의 영웅이다.", wx:["She can hero very quickly now.", "He will hero the long butte road."]},
+        {w:"subject", m:"n. 과목", ex:"Math is my favorite subject.", em:"수학은 내가 가장 좋아하는 과목이다.", wx:["She can subject very quickly today.", "He will subject the long mesa trail."]},
+        {w:"stinky", m:"adj. 냄새가 지독한, 악취가 나는", ex:"The old trash is stinky.", em:"오래된 쓰레기에서 지독한 냄새가 난다.", wx:["She can stinky very quickly now.", "He will stinky the long plateau road."]},
+        {w:"newspaper", m:"n. 신문", ex:"My father reads the newspaper.", em:"나의 아버지는 신문을 읽으신다.", wx:["She can newspaper very quickly today.", "He will newspaper the long tableland trail."]},
+        {w:"rule", m:"n. 규칙, 규정", ex:"Please follow the safety rule.", em:"안전 규칙을 따르세요.", wx:["She can rule very quickly now.", "He will rule the long upland road."]},
+        {w:"want", m:"v. 바라다, 원하다", ex:"I want to go home.", em:"나는 집에 가고 싶다.", wx:["The want sat quietly on the cold bench.", "He will want the long highland trail."]},
+        {w:"hurt", m:"v. 다치게 하다, 아프다", ex:"My legs hurt very much.", em:"내 다리가 매우 아프다.", wx:["The hurt sat quietly on the cold floor.", "He will hurt the long lowland road."]},
+        {w:"fairy", m:"n. 요정", ex:"Do you believe in fairy?", em:"당신은 요정을 믿나요?", wx:["She can fairy very quickly today.", "He will fairy the long flatland trail."]},
+        {w:"north", m:"n. 북쪽", ex:"The wind blows from north.", em:"북쪽에서 바람이 분다.", wx:["She can north very quickly now.", "He will north the long wetland road."]},
+        {w:"soil", m:"n. 흙, 토양", ex:"Plants grow in rich soil.", em:"식물은 비옥한 흙에서 자란다.", wx:["The soil is flying blue.", "I eat the soil sky."]},
+        {w:"crawl", m:"v. (엎드려) 기다, 기어가다", ex:"Babies crawl on the floor.", em:"아기들이 바닥에서 기어간다.", wx:["The crawl is flying blue.", "She wears a crawl book."]},
+        {w:"giggle", m:"v. 피식 웃다, 킥킥거리다", ex:"The children giggle at joke.", em:"아이들이 농담에 킥킥거린다.", wx:["I eat the giggle sky.", "She wears a giggle book."]},
+        {w:"float", m:"v. (물 위에) 뜨다, (공중에) 떠다니다", ex:"Boats float on the water.", em:"배들이 물 위에 떠 있다.", wx:["She wears a float book.", "The float is flying blue."]},
+        {w:"connect", m:"v. 연결하다, 접속하다", ex:"Connect the computer to internet.", em:"컴퓨터를 인터넷에 연결하세요.", wx:["I eat the connect sky.", "The connect is flying blue."]},
+        {w:"clerk", m:"n. 점원, 직원", ex:"Ask the store clerk now.", em:"지금 점원에게 물어보세요.", wx:["She wears a clerk book.", "I eat the clerk sky."]},
+        {w:"sword", m:"n. 칼, 검", ex:"The knight has a sword.", em:"기사는 칼을 가지고 있다.", wx:["She wears a sword book.", "The sword is flying blue."]},
+        {w:"plan", m:"n. 계획, v. 계획하다", ex:"I have a great plan.", em:"나는 훌륭한 계획이 있다.", wx:["The plan is flying blue.", "I eat the plan sky."]},
+        {w:"fart", m:"v. 방귀를 뀌다", ex:"Do not fart in public.", em:"공공장소에서 방귀를 뀌지 마세요.", wx:["I eat the fart sky.", "The fart is flying blue."]},
+        {w:"whisper", m:"v. 속삭이다, 귓속말을 하다", ex:"Whisper the secret to me.", em:"나에게 비밀을 속삭여 주세요.", wx:["The whisper is flying blue.", "She wears a whisper book."]},
+        {w:"lock", m:"v. (자물쇠로) 잠그다", ex:"Lock the door before sleeping.", em:"자기 전에 문을 잠그세요.", wx:["The lock is flying blue.", "She wears a lock book."]},
+        {w:"ground", m:"n. 지면, 땅", ex:"Sit down on the ground.", em:"땅에 앉으세요.", wx:["I eat the ground sky.", "The ground is flying blue."]},
+        {w:"message", m:"n. 메시지", ex:"I sent a text message.", em:"나는 문자 메시지를 보냈다.", wx:["The message is flying blue.", "I eat the message sky."]},
+        {w:"toothbrush", m:"n. 칫솔", ex:"I need a new toothbrush.", em:"나는 새 칫솔이 필요하다.", wx:["The toothbrush is flying blue.", "She wears a toothbrush book."]},
+        {w:"crispy", m:"adj. 바삭한", ex:"The fried chicken is crispy.", em:"그 프라이드 치킨은 바삭하다.", wx:["The crispy is flying blue.", "I eat the crispy sky."]},
+        {w:"shovel", m:"n. 삽", ex:"Use a shovel for snow.", em:"눈을 치우기 위해 삽을 사용하세요.", wx:["The shovel is flying blue.", "She wears a shovel book."]},
+        {w:"stripe", m:"n. 줄무늬", ex:"The tiger has black stripe.", em:"호랑이는 검은 줄무늬가 있다.", wx:["I eat the stripe sky.", "The stripe is flying blue."]},
+        {w:"quiet", m:"adj. 조용한", ex:"Please be quiet in library.", em:"도서관에서는 조용히 해주세요.", wx:["She wears a quiet book.", "The quiet is flying blue."]},
+        {w:"crown", m:"n. 왕관", ex:"The king wears a crown.", em:"왕은 왕관을 쓰고 있다.", wx:["The crown is flying blue.", "I eat the crown sky."]},
+        {w:"flip", m:"v. 뒤집(히)다", ex:"Flip the pancake over now.", em:"지금 팬케이크를 뒤집으세요.", wx:["She wears a flip book.", "I eat the flip sky."]},
+        {w:"fantastic", m:"adj. 환상적인, 기막히게 좋은", ex:"The food tastes very fantastic.", em:"음식 맛이 기가 막히게 좋다.", wx:["She wears a fantastic book.", "I eat the fantastic sky."]},
+        {w:"fan", m:"n. 팬, 지지자, 선풍기, 부채", ex:"I am a sports fan.", em:"나는 스포츠 팬이다.", wx:["The fan is flying blue.", "I eat the fan sky."]},
+        {w:"stir", m:"v. 젓다, (저어 가며) 섞다", ex:"Stir the soup very slowly.", em:"스프를 매우 천천히 저으세요.", wx:["I eat the stir sky.", "She wears a stir book."]},
+        {w:"rectangular", m:"adj. 직사각형의", ex:"The table has rectangular shape.", em:"그 탁자는 직사각형 형태이다.", wx:["I eat the rectangular sky.", "She wears a rectangular book."]},
+        {w:"often", m:"adv. 자주, 흔히", ex:"I often go to park.", em:"나는 자주 공원에 간다.", wx:["I eat the often sky.", "She wears a often book."]},
+        {w:"join", m:"v. 가입하다, 함께하다", ex:"Please join our soccer team.", em:"우리 축구 팀에 가입하세요.", wx:["She wears a join book.", "The join is flying blue."]},
+        {w:"fingernail", m:"n. 손톱", ex:"Your fingernail is very long.", em:"당신의 손톱이 매우 길군요.", wx:["She wears a fingernail book.", "The fingernail is flying blue."]},
+        {w:"answer", m:"n. 대답, 답, v. 대답하다", ex:"Answer my question right now.", em:"지금 내 질문에 대답하세요.", wx:["She wears a answer book.", "The answer is flying blue."]},
+        {w:"squid", m:"n. 오징어", ex:"I like to eat squid.", em:"나는 오징어 먹는 것을 좋아한다.", wx:["I eat the squid sky.", "The squid is flying blue."]},
+        {w:"spaceship", m:"n. 우주선", ex:"The spaceship flies to Moon.", em:"우주선이 달로 날아간다.", wx:["The spaceship is flying blue.", "She wears a spaceship book."]},
+        {w:"chop", m:"v. 잘게 썰다", ex:"Chop the onion very small.", em:"양파를 아주 잘게 써세요.", wx:["The chop is flying blue.", "I eat the chop sky."]},
+        {w:"tale", m:"n. 이야기, 소설", ex:"Tell me a fairy tale.", em:"나에게 요정 이야기를 해주세요.", wx:["She wears a tale book.", "I eat the tale sky."]},
+        {w:"joy", m:"n. 즐거움, 기쁨", ex:"The baby brings much joy.", em:"아기가 많은 즐거움을 가져다준다.", wx:["The joy is flying blue.", "She wears a joy book."]},
+        {w:"rooster", m:"n. 수탉", ex:"The rooster crows at dawn.", em:"수탉이 새벽에 운다.", wx:["I eat the rooster sky.", "The rooster is flying blue."]},
+        {w:"honest", m:"adj. 정직한", ex:"Always be an honest person.", em:"항상 정직한 사람이 되세요.", wx:["I eat the honest sky.", "She wears a honest book."]},
+        {w:"poster", m:"n. 벽보, 포스터", ex:"Put a poster on wall.", em:"벽에 포스터를 붙이세요.", wx:["She wears a poster book.", "The poster is flying blue."]},
+        {w:"tired", m:"adj. 피곤한, 지친", ex:"I am so tired today.", em:"나는 오늘 너무 피곤하다.", wx:["She wears a tired book.", "I eat the tired sky."]},
+        {w:"spicy", m:"adj. 매운", ex:"The red soup is spicy.", em:"그 빨간 스프는 맵다.", wx:["She wears a spicy book.", "I eat the spicy sky."]},
+        {w:"addition", m:"n. 추가, 첨가, 추가된 것, 더하기, 덧셈", ex:"Do you like math addition?", em:"당신은 수학 더하기를 좋아하나요?", wx:["She wears a addition book.", "The addition is flying blue."]},
+        {w:"tissue", m:"n. 휴지", ex:"I need a soft tissue.", em:"나는 부드러운 휴지가 필요하다.", wx:["I eat the tissue sky.", "She wears a tissue book."]},
+        {w:"understand", m:"v. 이해하다, 알다", ex:"I understand your situation well.", em:"나는 당신의 상황을 잘 이해한다.", wx:["I eat the understand sky.", "The understand is flying blue."]},
+        {w:"solve", m:"v. 해결하다, 풀다", ex:"Can you solve this puzzle?", em:"이 퍼즐을 풀 수 있나요?", wx:["She wears a solve book.", "I eat the solve sky."]},
+        {w:"change", m:"v. 변하다, 변화시키다", ex:"Things change all the time.", em:"모든 것은 항상 변한다.", wx:["I eat the change sky.", "The change is flying blue."]},
+        {w:"yesterday", m:"adv. 어제, n. 어제", ex:"I was very busy yesterday.", em:"나는 어제 매우 바빴다.", wx:["She wears a yesterday book.", "I eat the yesterday sky."]},
+        {w:"swing", m:"v. 흔들다, 흔들리다, 휘두르다", ex:"Children play on the swing.", em:"아이들이 그네를 탄다.", wx:["The swing is flying blue.", "She wears a swing book."]},
+        {w:"band", m:"n. [음악] 밴드", ex:"I play in a band.", em:"나는 밴드에서 연주한다.", wx:["The band is flying blue.", "She wears a band book."]},
+        {w:"drill", m:"n. 드릴, 송곳", ex:"Use a drill for hole.", em:"구멍을 내기 위해 드릴을 사용하세요.", wx:["I eat the drill sky.", "The drill is flying blue."]},
+        {w:"strike", m:"v. 치다, 때리다", ex:"Strike the ball very hard.", em:"공을 매우 세게 치세요.", wx:["The strike is flying blue.", "I eat the strike sky."]},
+        {w:"scientist", m:"n. 과학자", ex:"He is a famous scientist.", em:"그는 유명한 과학자이다.", wx:["She wears a scientist book.", "The scientist is flying blue."]},
+        {w:"west", m:"n. 서쪽", ex:"The sun sets in west.", em:"해는 서쪽으로 진다.", wx:["The west is flying blue.", "I eat the west sky."]},
+        {w:"rinse", m:"v. 헹구다, 씻다", ex:"Rinse your hair with water.", em:"물로 머리를 헹구세요.", wx:["I eat the rinse sky.", "She wears a rinse book."]},
+        {w:"earthworm", m:"n. 지렁이", ex:"I found a long earthworm.", em:"나는 긴 지렁이를 발견했다.", wx:["The earthworm is flying blue.", "She wears a earthworm book."]},
+        {w:"tongue", m:"n. 혀", ex:"Do not stick out tongue.", em:"혀를 내밀지 마세요.", wx:["She wears a tongue book.", "I eat the tongue sky."]},
+        {w:"blind", m:"adj. 눈이 먼, 시각 장애의", ex:"He is a blind man.", em:"그는 눈이 먼 사람이다.", wx:["She wears a blind book.", "The blind is flying blue."]},
+        {w:"pine", m:"n. 소나무", ex:"The pine tree is green.", em:"소나무는 초록색이다.", wx:["I eat the pine sky.", "She wears a pine book."]},
+        {w:"saw", m:"n. 톱", ex:"Use a saw for wood.", em:"나무를 자르기 위해 톱을 사용하세요.", wx:["She wears a saw book.", "The saw is flying blue."]},
+        {w:"safari", m:"n. 사파리 여행", ex:"We went on a safari.", em:"우리는 사파리 여행을 갔다.", wx:["The safari is flying blue.", "She wears a safari book."]},
+        {w:"tie", m:"v. 묶다, 매다", ex:"Tie your shoes very tight.", em:"신발 끈을 아주 꽉 묶으세요.", wx:["I eat the tie sky.", "The tie is flying blue."]},
+        {w:"surprise", m:"v. 놀라게 하다", ex:"I want to surprise him.", em:"나는 그를 놀라게 하고 싶다.", wx:["I eat the surprise sky.", "She wears a surprise book."]},
+        {w:"ghost", m:"n. 유령, 귀신", ex:"I am afraid of ghost.", em:"나는 유령이 무섭다.", wx:["I eat the ghost sky.", "She wears a ghost book."]},
+        {w:"brim", m:"n. (컵의) 위 끝부분", ex:"Fill it to the brim.", em:"그것을 위 끝부분까지 채우세요.", wx:["I eat the brim sky.", "She wears a brim book."]},
+        {w:"important", m:"adj. 중요한", ex:"Health is very important today.", em:"건강은 오늘날 매우 중요하다.", wx:["She wears a important book.", "I eat the important sky."]},
+        {w:"popular", m:"adj. 인기 있는", ex:"He is a popular boy.", em:"그는 인기 있는 소년이다.", wx:["The popular is flying blue.", "I eat the popular sky."]},
+        {w:"hockey", m:"n. 하키", ex:"They like to play hockey.", em:"그들은 하키 하는 것을 좋아한다.", wx:["I eat the hockey sky.", "She wears a hockey book."]},
+        {w:"hunter", m:"n. 사냥꾼", ex:"The hunter found the deer.", em:"사냥꾼이 사슴을 발견했다.", wx:["I eat the hunter sky.", "The hunter is flying blue."]},
+        {w:"subway", m:"n. 지하철", ex:"I go home by subway.", em:"나는 지하철로 집에 간다.", wx:["She wears a subway book.", "I eat the subway sky."]},
+        {w:"key", m:"n. 열쇠, adj. 중요한", ex:"Where is my house key?", em:"우리 집 열쇠가 어디 있지?", wx:["She wears a key book.", "The key is flying blue."]},
+        {w:"hen", m:"n. 암탉", ex:"The hen laid an egg.", em:"암탉이 알을 낳았다.", wx:["I eat the hen sky.", "She wears a hen book."]},
+        {w:"tape", m:"n. 테이프", ex:"Use some tape for paper.", em:"종이에 테이프를 좀 사용하세요.", wx:["The tape is flying blue.", "I eat the tape sky."]},
+        {w:"third", m:"adj. 세 번째의", ex:"He is in third grade.", em:"그는 3학년이다.", wx:["She wears a third book.", "The third is flying blue."]},
+        {w:"correct", m:"adj. 옳은, 맞는, v. 고치다, 수정하다", ex:"That is the correct answer.", em:"그것이 맞는 답이다.", wx:["The correct is flying blue.", "She wears a correct book."]},
+        {w:"below", m:"prep. ~아래에, ~이하로", ex:"It is below the table.", em:"그것은 탁자 아래에 있다.", wx:["She wears a below book.", "The below is flying blue."]},
+        {w:"energy", m:"n. 힘, 기운, 에너지", ex:"I have no more energy.", em:"나는 더 이상 기운이 없다.", wx:["I eat the energy sky.", "She wears a energy book."]},
+        {w:"story", m:"n. 이야기", ex:"Tell me a fun story.", em:"재미있는 이야기를 해주세요.", wx:["I eat the story sky.", "The story is flying blue."]},
+        {w:"cupboard", m:"n. 찬장", ex:"Look inside the kitchen cupboard.", em:"주방 찬장 안을 보세요.", wx:["She wears a cupboard book.", "I eat the cupboard sky."]},
+        {w:"crash", m:"v. 충돌하다, 추락하다", ex:"I heard a loud crash.", em:"나는 큰 충돌 소리를 들었다.", wx:["I eat the crash sky.", "The crash is flying blue."]},
+        {w:"size", m:"n. 크기", ex:"What is your shoe size?", em:"신발 크기가 어떻게 되나요?", wx:["I eat the size sky.", "The size is flying blue."]},
+        {w:"alarm", m:"n. 경보(기), 알람, 자명종", ex:"The alarm rang at six.", em:"알람이 6시에 울렸다.", wx:["She wears a alarm book.", "I eat the alarm sky."]},
+        {w:"flashlight", m:"n. 손전등", ex:"Turn on the bright flashlight.", em:"밝은 손전등을 켜세요.", wx:["I eat the flashlight sky.", "She wears a flashlight book."]},
+        {w:"zigzag", m:"n. 지그재그", ex:"Draw a long zigzag line.", em:"긴 지그재그 선을 그리세요.", wx:["The zigzag is flying blue.", "I eat the zigzag sky."]},
+        {w:"secret", m:"n. 비밀", ex:"Tell me your little secret.", em:"당신의 작은 비밀을 말해줘요.", wx:["I eat the secret sky.", "The secret is flying blue."]},
+        {w:"shape", m:"n. 형태, 모양", ex:"What is this object's shape?", em:"이 물체의 형태는 무엇인가요?", wx:["The shape is flying blue.", "I eat the shape sky."]},
+        {w:"experiment", m:"n. 실험", ex:"We did a science experiment.", em:"우리는 과학 실험을 했다.", wx:["I eat the experiment sky.", "The experiment is flying blue."]},
+        {w:"interest", m:"n. 관심, 흥미", ex:"I have an interest in music.", em:"나는 음악에 관심이 있다.", wx:["I eat the interest sky.", "The interest is flying blue."]},
+        {w:"grain", m:"n. 곡물", ex:"Birds eat some small grain.", em:"새들은 작은 곡물을 먹는다.", wx:["She wears a grain book.", "The grain is flying blue."]},
+        {w:"match", m:"v. 어울리다", ex:"The tie and shirt match.", em:"넥타이와 셔츠가 어울린다.", wx:["I eat the match sky.", "She wears a match book."]},
+        {w:"promise", m:"v. 약속하다", ex:"I promise to help you.", em:"당신을 돕겠다고 약속합니다.", wx:["The promise is flying blue.", "I eat the promise sky."]},
+        {w:"miss", m:"v. 그리워하다, 놓치다", ex:"I miss my old friends.", em:"나는 옛 친구들이 그립다.", wx:["The miss is flying blue.", "I eat the miss sky."]},
+        {w:"cause", m:"v. 일으키다, 야기시키다", ex:"Smoking can cause many problems.", em:"흡연은 많은 문제를 일으킬 수 있다.", wx:["I eat the cause sky.", "The cause is flying blue."]},
+        {w:"calm", m:"adj. 침착한, 차분한", ex:"Please stay calm and quiet.", em:"차분하고 조용히 있어 주세요.", wx:["I eat the calm sky.", "The calm is flying blue."]},
+        {w:"east", m:"n. 동쪽", ex:"The sun rises in east.", em:"해는 동쪽에서 뜬다.", wx:["The east is flying blue.", "I eat the east sky."]},
+        {w:"exam", m:"n. 시험", ex:"I have a math exam.", em:"나는 수학 시험이 있다.", wx:["I eat the exam sky.", "She wears a exam book."]},
+        {w:"spread", m:"v. 펴다, 펼치다, 퍼지다", ex:"Spread butter on the bread.", em:"빵에 버터를 바르세요.", wx:["The spread is flying blue.", "She wears a spread book."]},
+        {w:"wheel", m:"n. 바퀴", ex:"The car has four wheel.", em:"자동차는 바퀴가 네 개 있다.", wx:["I eat the wheel sky.", "The wheel is flying blue."]},
+        {w:"fingerprint", m:"n. 지문", ex:"Every person has different fingerprint.", em:"사람마다 지문이 다르다.", wx:["She wears a fingerprint book.", "I eat the fingerprint sky."]},
+        {w:"splash", m:"v. (물 등을) 튀기다", ex:"Do not splash the water.", em:"물을 튀기지 마세요.", wx:["She wears a splash book.", "I eat the splash sky."]},
+        {w:"zoom", m:"v. (빠르게) 가다, 질주하다", ex:"Cars zoom down the road.", em:"차들이 길을 질주한다.", wx:["The zoom is flying blue.", "She wears a zoom book."]},
+        {w:"mess", m:"n. 엉망진창, 혼란", ex:"Your room is a mess.", em:"당신의 방은 엉망진창이다.", wx:["She wears a mess book.", "The mess is flying blue."]},
+        {w:"stem", m:"n. (식물의) 줄기", ex:"The flower has green stem.", em:"그 꽃은 초록색 줄기를 가졌다.", wx:["She wears a stem book.", "The stem is flying blue."]},
+        {w:"silly", m:"adj. 어리석은, 바보 같은", ex:"Do not be so silly.", em:"그렇게 바보같이 굴지 마세요.", wx:["She wears a silly book.", "I eat the silly sky."]},
+        {w:"sale", m:"n. 판매, 할인 판매", ex:"This dress is on sale.", em:"이 드레스는 할인 판매 중이다.", wx:["The sale is flying blue.", "I eat the sale sky."]},
+        {w:"wave", m:"v. 흔들다, n. 파도, 물결", ex:"Wave your hand to him.", em:"그에게 손을 흔드세요.", wx:["She wears a wave book.", "I eat the wave sky."]},
+        {w:"toothpaste", m:"n. 치약", ex:"Use a little white toothpaste.", em:"하얀 치약을 조금 사용하세요.", wx:["The toothpaste is flying blue.", "I eat the toothpaste sky."]},
+        {w:"sigh", m:"v. 한숨을 내쉬다", ex:"He let out a sigh.", em:"그는 한숨을 내쉬었다.", wx:["The sigh is flying blue.", "She wears a sigh book."]},
+        {w:"raise", m:"v. 올리다, 들다, 키우다, 기르다", ex:"Please raise your right hand.", em:"오른손을 들어 주세요.", wx:["The raise is flying blue.", "I eat the raise sky."]},
+        {w:"alligator", m:"n. 악어", ex:"The alligator is in water.", em:"악어가 물속에 있다.", wx:["I eat the alligator sky.", "She wears a alligator book."]},
+        {w:"dip", m:"v. 살짝 담그다, 적시다", ex:"Dip the cookie in milk.", em:"쿠키를 우유에 살짝 담그세요.", wx:["She wears a dip book.", "The dip is flying blue."]},
+        {w:"torch", m:"n. 횃불", ex:"Carry a torch at night.", em:"밤에 횃불을 들고 가세요.", wx:["I eat the torch sky.", "The torch is flying blue."]},
+        {w:"noise", m:"n. 소음", ex:"Stop making that loud noise.", em:"그 큰 소음을 그만 내세요.", wx:["The noise is flying blue.", "I eat the noise sky."]},
+        {w:"musician", m:"n. 음악가", ex:"He is a talented musician.", em:"그는 재능 있는 음악가이다.", wx:["She wears a musician book.", "The musician is flying blue."]},
+        {w:"dairy", m:"adj. 유제품의", ex:"Milk is a dairy product.", em:"우유는 유제품이다.", wx:["I eat the dairy sky.", "She wears a dairy book."]},
+        {w:"award", m:"n. 상, v. (상 등을) 수여하다, 주다", ex:"She won a grand award.", em:"그녀는 대상을 받았다.", wx:["I eat the award sky.", "The award is flying blue."]},
+        {w:"narrow", m:"adj. (폭이) 좁은", ex:"The street is very narrow.", em:"그 거리는 매우 좁다.", wx:["I eat the narrow sky.", "She wears a narrow book."]},
+        {w:"discover", m:"v. 발견하다", ex:"We will discover new things.", em:"우리는 새로운 것들을 발견할 것이다.", wx:["The discover is flying blue.", "She wears a discover book."]},
+        {w:"shine", m:"v. 빛나다, 반짝이다", ex:"The stars shine so bright.", em:"별들이 아주 밝게 빛난다.", wx:["The shine is flying blue.", "She wears a shine book."]},
+        {w:"weight", m:"n. 무게", ex:"What is your body weight?", em:"당신의 몸무게는 얼마인가요?", wx:["I eat the weight sky.", "She wears a weight book."]},
+        {w:"chameleon", m:"n. 카멜레온", ex:"The chameleon changes its color.", em:"카멜레온은 색을 변화시킨다.", wx:["The chameleon is flying blue.", "I eat the chameleon sky."]},
+        {w:"tasty", m:"adj. 맛있는", ex:"The food is very tasty.", em:"음식이 매우 맛있다.", wx:["The tasty is flying blue.", "I eat the tasty sky."]},
+        {w:"trouble", m:"n. 문제, 골칫거리", ex:"I am in big trouble.", em:"나는 큰 골칫거리에 빠졌다.", wx:["The trouble is flying blue.", "She wears a trouble book."]},
+        {w:"step", m:"n. 걸음, 단계", ex:"Take one step at time.", em:"한 번에 한 걸음씩 가세요.", wx:["The step is flying blue.", "She wears a step book."]},
+        {w:"cover", m:"v. 씌우다, 덮다", ex:"Cover the food with lid.", em:"뚜껑으로 음식을 덮으세요.", wx:["The cover is flying blue.", "She wears a cover book."]},
+        {w:"angel", m:"n. 천사", ex:"You are like an angel.", em:"당신은 천사 같다.", wx:["She wears a angel book.", "The angel is flying blue."]},
+        {w:"prize", m:"n. 상", ex:"I won the first prize.", em:"나는 1등 상을 받았다.", wx:["She wears a prize book.", "The prize is flying blue."]},
+        {w:"surprisingly", m:"adv. 놀랍게도", ex:"Surprisingly, he won the game.", em:"놀랍게도, 그가 경기에서 이겼다.", wx:["The surprisingly is flying blue.", "I eat the surprisingly sky."]},
+        {w:"mushroom", m:"n. 버섯", ex:"Do not eat wild mushroom.", em:"야생 버섯을 먹지 마세요.", wx:["The mushroom is flying blue.", "She wears a mushroom book."]},
+        {w:"clip", m:"n. 핀, 클립", ex:"Use a paper clip now.", em:"지금 종이 클립을 사용하세요.", wx:["I eat the clip sky.", "The clip is flying blue."]},
+        {w:"result", m:"n. 결과", ex:"The test result was good.", em:"시험 결과가 좋았다.", wx:["The result is flying blue.", "She wears a result book."]},
+        {w:"joke", m:"n. 농담, 우스갯소리", ex:"That was a funny joke.", em:"그것은 재미있는 농담이었다.", wx:["She wears a joke book.", "The joke is flying blue."]},
+        {w:"ago", m:"adv. ~전에, 이전에", ex:"I met him long ago.", em:"나는 그를 오래전에 만났다.", wx:["She wears a ago book.", "The ago is flying blue."]},
+        {w:"peel", m:"v. 껍질을 벗기다", ex:"Peel the orange for me.", em:"나를 위해 오렌지 껍질을 벗겨줘.", wx:["The peel is flying blue.", "I eat the peel sky."]}
+    ];
+
+    // 영단어 800개를 활용한 대화형 문장 300개 생성
+const enSentData = [
+    {w:"The online program is helpful for students.", m:"그 온라인 프로그램은 학생들에게 도움이 된다."},
+    {w:"She cut an orange in half.", m:"그녀는 오렌지를 반으로 잘랐다."},
+    {w:"The kid is riding a giant tortoise.", m:"아이는 거대한 거북이를 타고 있다."},
+    {w:"We are talking about the book.", m:"우리는 그 책에 대해 이야기하고 있다."},
+    {w:"Many flowers bloom in spring.", m:"봄에는 많은 꽃이 핀다."},
+    {w:"We took a boat to the island.", m:"우리는 배를 타고 섬으로 갔다."},
+    {w:"Erin has a lovely smile.", m:"에린은 사랑스러운 미소를 가졌다."},
+    {w:"I followed the footprints on the path.", m:"나는 길에 있는 발자국들을 따라갔다."},
+    {w:"She is doing household chores.", m:"그녀는 집안일을 하고 있다."},
+    {w:"Jacob sleeps until 10 a.m. on weekends.", m:"제이콥은 주말에 아침 10시까지 잔다."},
+    {w:"We have a big bathtub in the bathroom.", m:"우리는 욕실에 큰 욕조를 가지고 있다."},
+    {w:"This soft pillow helps me sleep well.", m:"이 푹신한 베개는 잠을 잘 자게 도와준다."},
+    {w:"She has the hiccups.", m:"그녀는 딸꾹질을 한다."},
+    {w:"The balloon rose up into the sky.", m:"그 풍선이 하늘로 올라갔다."},
+    {w:"The dog goes everywhere with Jake.", m:"그 개는 어디든지 제이크와 함께 다닌다."},
+    {w:"I arrived early and had to wait.", m:"나는 일찍 도착해서 기다려야 했다."},
+    {w:"I want to be a great artist like Picasso.", m:"나는 피카소 같은 훌륭한 예술가가 되고 싶다."},
+    {w:"I wish you good luck this year!", m:"올해 네게 행운이 있기를 바라!"},
+    {w:"She filled the cup with water.", m:"그녀는 물로 컵을 채웠다."},
+    {w:"Mr. and Mrs. Jones have two sons.", m:"존스 부부에게는 두 아들이 있다."},
+    {w:"You played an important role on the team.", m:"당신은 팀에서 중요한 역할을 했습니다."},
+    {w:"Press this button to turn on the TV.", m:"텔레비전을 켜려면 이 버튼을 누르시오."},
+    {w:"I bit into the juicy plum.", m:"나는 즙이 많은 자두를 한 입 베어 물었다."},
+    {w:"They entered their new house.", m:"그들은 그들의 새 집에 들어갔다."},
+    {w:"Mail usually arrives in the morning.", m:"우편물들은 보통 아침에 도착한다."},
+    {w:"The horror movie scared us.", m:"그 공포 영화가 우리를 무섭게 했다."},
+    {w:"I will talk to you again later.", m:"내가 나중에 다시 이야기해 줄게."},
+    {w:"The baby bumped his head on the bed.", m:"아기가 침대에 머리를 부딪혔다."},
+    {w:"This coat is too expensive!", m:"이 코트는 너무 비싸다!"},
+    {w:"I spread jam on the slice of bread.", m:"나는 빵 한 조각에 잼을 펴 발랐다."},
+    {w:"The prince falls in love with Cinderella.", m:"왕자는 신데렐라와 사랑에 빠진다."},
+    {w:"He cheered for his favorite soccer team.", m:"그는 그가 가장 좋아하는 축구팀을 응원했다."},
+    {w:"This is the happiest moment of my life.", m:"지금이 내 인생에서 가장 행복한 순간이다."},
+    {w:"The boy is playing with marbles.", m:"그 소년은 구슬을 가지고 놀고 있다."},
+    {w:"A candle is in the center of the cupcake.", m:"초가 컵케이크의 한가운데에 꽂혀 있다."},
+    {w:"How have you been, my dear Lucy?", m:"사랑하는 루시, 어떻게 지냈니?"},
+    {w:"The final score was three to one.", m:"최종 점수는 3대 1이었다."},
+    {w:"It\'s lucky to find a four-leaf clover!", m:"네 잎 클로버를 찾다니 운이 좋다!"},
+    {w:"I pass the store on my way home.", m:"나는 집에 가는 길에 그 가게를 지나간다."},
+    {w:"The price of these sneakers is $49.", m:"이 스니커즈의 가격은 49달러이다."},
+    {w:"I broke a bone in my left leg.", m:"내 왼쪽 다리 뼈가 부러졌다."},
+    {w:"Mark is pretty good at baking.", m:"마크는 빵을 꽤 잘 만든다."},
+    {w:"We found space for the table.", m:"우리는 탁자를 놓을 공간을 찾았다."},
+    {w:"My final goal is to win a gold medal.", m:"내 최종 목표는 금메달을 따는 것이다."},
+    {w:"He spent all his money buying a car.", m:"그는 차를 사는데 모든 돈을 썼다."},
+    {w:"Look at the dust on your desk!", m:"네 책상 위에 먼지 좀 봐!"},
+    {w:"The Christmas festival was amazing!", m:"그 크리스마스 축제는 놀라웠어!"},
+    {w:"You should cover your mouth when you cough.", m:"기침할 때에는 입을 막아야 한다."},
+    {w:"Jeff fell asleep on the couch.", m:"제프는 소파에서 잠이 들었다."},
+    {w:"There is nothing in my pockets.", m:"내 주머니에는 아무것도 없다."},
+    {w:"I hope to be a famous actor when I grow up.", m:"나는 커서 유명한 배우가 되고 싶다."},
+    {w:"My family went on a picnic last weekend.", m:"나의 가족은 지난 주말에 소풍을 갔다."},
+    {w:"My aunt married a nice man.", m:"나의 이모는 멋진 남자와 결혼했다."},
+    {w:"He drove at the speed of 100km/h.", m:"그는 시속 100 킬로미터의 속도로 운전했다."},
+    {w:"The horse can\'t get out because of the fence.", m:"그 말은 울타리때문에 밖으로 나갈 수 없다."},
+    {w:"Moths fly towards light at night.", m:"나방은 밤에 불빛을 향해 날아든다."},
+    {w:"The accident happened suddenly.", m:"그 사고는 갑자기 일어났다."},
+    {w:"The train will arrive at 3 p.m.", m:"그 기차는 오후 3시에 도착할 것이다."},
+    {w:"The front part of the car was broken in the crash.", m:"사고로 인해 차 앞부분이 파손되었다."},
+    {w:"My gym shoes were smelly.", m:"내 운동화는 악취가 났다."},
+    {w:"I\'ll wear a thick jacket today.", m:"나는 오늘 두꺼운 외투를 입을 것이다."},
+    {w:"The heat of the fireplace warms the house.", m:"벽난로의 열기가 집을 따뜻하게 한다."},
+    {w:"I stretched to reach the book.", m:"나는 책을 집으려고 손을 뻗었다."},
+    {w:"He lifted the weights over his head.", m:"그는 역기를 머리 위로 들어 올렸다."},
+    {w:"The dog has floppy ears.", m:"그 개는 늘어진 귀를 가졌다."},
+    {w:"I have a problem with my computer.", m:"내 컴퓨터에 문제가 있다."},
+    {w:"A square has four equal sides.", m:"정사각형은 같은 길이의 4개의 변을 갖는다."},
+    {w:"Smart animals can help people.", m:"영리한 동물들은 사람을 도울 수 있다."},
+    {w:"My mother combed my hair.", m:"나의 엄마는 내 머리를 빗어주셨다."},
+    {w:"This skirt has many white dots.", m:"이 치마에는 많은 하얀 점들이 있다."},
+    {w:"The sunlight comes in through the window.", m:"창문으로 햇빛이 들어온다."},
+    {w:"They invited their neighbors to a meal.", m:"그들은 이웃을 식사에 초대했다."},
+    {w:"He exercises to build up muscles.", m:"그는 근육을 만들기 위해 운동을 한다."},
+    {w:"Check the mailbox to see if you have any letters.", m:"편지가 있는지 편지함을 확인해라."},
+    {w:"Your drawing is better than mine.", m:"네 그림이 내 것보다 더 낫다."},
+    {w:"There is little water in the desert.", m:"사막에는 물이 거의 없다."},
+    {w:"I went hiking last weekend.", m:"나는 지난 주말에 하이킹하러 갔다."},
+    {w:"My family will leave for London.", m:"나의 가족은 런던으로 떠날 것이다."},
+    {w:"I picked up many seashells on the beach.", m:"나는 해변에서 조개 껍데기를 많이 주웠다."},
+    {w:"The surface of an avocado is bumpy.", m:"아보카도의 겉면은 울퉁불퉁하다."},
+    {w:"Elle was surprised at the news.", m:"엘은 그 소식에 놀랐다."},
+    {w:"Everyone is looking at his fancy hat.", m:"모두가 그의 화려한 모자를 보고 있다."},
+    {w:"He is pointing at the graph.", m:"그는 그래프를 가리키고 있다."},
+    {w:"Some birds fly to the south for the winter.", m:"어떤 새들은 겨울에 남쪽으로 날아간다."},
+    {w:"We need to get off at the next station.", m:"우리는 다음 역에서 내려야 한다."},
+    {w:"The thief stole money from the shop.", m:"도둑이 그 가게에서 돈을 훔쳤다."},
+    {w:"The excited child clapped loudly.", m:"신이 난 아이는 박수를 크게 쳤다."},
+    {w:"The test was difficult for me.", m:"그 시험은 나에게 어려웠다."},
+    {w:"The footprints were a hint about where my dog went.", m:"그 발자국은 나의 개가 어디로 갔는지에 대한 힌트였다."},
+    {w:"The boy farted in the elevator.", m:"그 소년이 엘리베이터 안에서 방귀를 뀌었다."},
+    {w:"Tinker Bell is a tiny fairy with wings in Peter Pan.", m:"팅커벨은 피터팬에 나오는 날개 달린 작은 요정이다."},
+    {w:"The kid jumped into the pile of leaves.", m:"아이가 낙엽 더미로 뛰어들었다."},
+    {w:"Ellen whispered into my ear.", m:"엘렌이 내 귀에 속삭였다."},
+    {w:"A boat is floating in the sea.", m:"배 한 척이 바다에 떠 있다."},
+    {w:"I take a shower every night.", m:"나는 매일 밤 샤워를 한다."},
+    {w:"I washed the dishes with a sponge.", m:"나는 스펀지로 접시를 닦았다."},
+    {w:"Please lock the door when you go out.", m:"나갈 때 문을 잠그세요."},
+    {w:"He made a hole in the wall with a drill.", m:"그는 드릴을 가지고 벽에 구멍을 냈다."},
+    {w:"We changed our plans because of the rain.", m:"우리는 비 때문에 계획을 변경했다."},
+    {w:"Squid shoot black ink when they feel attacked.", m:"오징어는 공격받았다고 느끼면 먹물을 쏜다."},
+    {w:"I need tissue to blow my nose.", m:"나는 코를 풀 수 있는 휴지가 필요하다."},
+    {w:"Dry your toothbrush after using it.", m:"칫솔을 사용하고 나서 말려라."},
+    {w:"Put up this poster on the board.", m:"이 벽보를 게시판에 붙여라."},
+    {w:"They saw the earth from the spaceship.", m:"그들은 우주선에서 지구를 보았다."},
+    {w:"Take a flashlight when going into the cave.", m:"동굴에 들어갈 때 손전등을 가지고 가라."},
+    {w:"A chameleon catches its food with its long tongue.", m:"카멜레온은 긴 혀로 먹이를 잡는다."},
+    {w:"She is doing an experiment.", m:"그녀는 실험을 하고 있다."},
+    {w:"She opened the door with a key.", m:"그녀는 열쇠로 문을 열었다."},
+    {w:"Guide dogs help blind people.", m:"안내견들은 시각 장애인을 돕는다."},
+    {w:"She is missing her grandparents.", m:"그녀는 할아버지, 할머니를 그리워하고 있다."},
+    {w:"She tries to stay calm.", m:"그녀는 침착하려고 노력한다."},
+    {w:"He showed interest in my toy.", m:"그는 내 장난감에 많은 관심을 보였다."},
+    {w:"I dipped a strawberry in the chocolate.", m:"나는 딸기를 초콜릿에 살짝 담갔다."},
+    {w:"Chameleons can change their skin color.", m:"카멜레온은 피부 색깔을 바꿀 수 있다."},
+    {w:"A car is zooming down the highway.", m:"차 한 대가 고속도로를 질주하고 있다."},
+    {w:"We have different fingerprints.", m:"우리는 다른 지문을 가지고 있다."},
+    {w:"A square has the four equal sides.", m:"정사각형은 같은 길이의 4개의 변을 갖는다."},
+    {w:"The scientist discovered bones under the ground.", m:"그 과학자는 땅 속에서 뼈를 발견했다."},
+    {w:"Cindy got the highest score on the exam.", m:"신디는 시험에서 가장 높은 점수를 받았다."},
+    {w:"The musician plays the guitar and sings.", m:"그 음악가는 기타를 치며 노래를 부른다."}
+];
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        if(type === 'correct') {
+            osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        } else {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        }
+    }
+
+    function playTTS(text) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        msg.rate = 0.8;
+        window.speechSynthesis.speak(msg);
+    }
+
+    // ===================== 모드 전환 =====================
+    let currentMode = 'enWord';
+    function setMode(mode, btn) {
+        currentMode = mode;
+        document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('feedback').innerText = '';
+        if(mode === 'enWord') {
+            document.getElementById('word-mode-ui').style.display = 'block';
+            document.getElementById('sent-mode-ui').style.display = 'none';
+            wordResetUI();
+        } else {
+            document.getElementById('word-mode-ui').style.display = 'none';
+            document.getElementById('sent-mode-ui').style.display = 'block';
+            sentResetUI();
+        }
+    }
+
+    // ===================== 유닛 선택 시스템 =====================
+    const WORD_PER_UNIT = 20;
+    const SENT_PER_UNIT = 4;
+    const TOTAL_UNITS = 30;
+
+    let selectedWordUnit = 0; // 0 = 전체
+    let selectedSentUnit = 0;
+
+    function toggleUnitPanel(mode) {
+        const panel = document.getElementById(mode === 'word' ? 'word-unit-panel' : 'sent-unit-panel');
+        const labelEl = document.getElementById(mode === 'word' ? 'word-unit-label' : 'sent-unit-label');
+        const isOpen = panel.style.display !== 'none';
+        panel.style.display = isOpen ? 'none' : 'block';
+        const cur = mode === 'word' ? selectedWordUnit : selectedSentUnit;
+        const name = cur === 0 ? '전체' : 'Unit' + String(cur).padStart(2, '0');
+        labelEl.textContent = name + (isOpen ? ' ▼' : ' ▲');
+    }
+
+    function updateUnitLabel(mode) {
+        const cur = mode === 'word' ? selectedWordUnit : selectedSentUnit;
+        const name = cur === 0 ? '전체' : 'Unit' + String(cur).padStart(2, '0');
+        const labelEl = document.getElementById(mode === 'word' ? 'word-unit-label' : 'sent-unit-label');
+        if (labelEl) labelEl.textContent = name + ' ▼';
+    }
+
+
+    function buildUnitButtons(containerId, mode) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        const allBtn = document.createElement('button');
+        allBtn.className = 'btn-unit btn-unit-all' + (mode === 'word' ? (selectedWordUnit === 0 ? ' active' : '') : (selectedSentUnit === 0 ? ' active' : ''));
+        allBtn.textContent = '전체';
+        allBtn.onclick = () => selectUnit(0, mode);
+        container.appendChild(allBtn);
+
+        for (let i = 1; i <= TOTAL_UNITS; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'btn-unit' + (mode === 'word' ? (selectedWordUnit === i ? ' active' : '') : (selectedSentUnit === i ? ' active' : ''));
+            btn.textContent = 'U' + String(i).padStart(2, '0');
+            btn.id = (mode === 'word' ? 'wunit-' : 'sunit-') + i;
+            btn.onclick = () => selectUnit(i, mode);
+            container.appendChild(btn);
+        }
+    }
+
+    function selectUnit(unitNum, mode) {
+        if (mode === 'word') {
+            selectedWordUnit = unitNum;
+            buildUnitButtons('word-unit-buttons', 'word');
+            // 패널 닫기
+            document.getElementById('word-unit-panel').style.display = 'none';
+            updateUnitLabel('word');
+            wordResetUI();
+        } else {
+            selectedSentUnit = unitNum;
+            buildUnitButtons('sent-unit-buttons', 'sent');
+            document.getElementById('sent-unit-panel').style.display = 'none';
+            updateUnitLabel('sent');
+            sentResetUI();
+        }
+    }
+
+    function getActiveWordData() {
+        if (selectedWordUnit === 0) return enWordData;
+        const start = (selectedWordUnit - 1) * WORD_PER_UNIT;
+        return enWordData.slice(start, start + WORD_PER_UNIT);
+    }
+
+    function getActiveSentData() {
+        if (selectedSentUnit === 0) return enSentData;
+        const start = (selectedSentUnit - 1) * SENT_PER_UNIT;
+        return enSentData.slice(start, start + SENT_PER_UNIT);
+    }
+
+    // ===================== 영어단어 파트 =====================
+    let wordCurrentText = '';
+    let wordIsRevealed = false;
+    let wordQuizOptions = [];
+    let wordHasStarted = false; // 첫 문제 이후 true
+
+    function wordResetUI() {
+        document.getElementById('word-display').innerHTML = '지오야 준비됐니?';
+        document.getElementById('feedback').innerText = '';
+        wordCurrentText = '';
+        wordIsRevealed = false;
+        wordHasStarted = false;
+        document.getElementById('word-btn-area').innerHTML =
+            '<button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>';
+    }
+
+    function wordStartFirst() {
+        wordNextQuiz();
+    }
+
+    function wordNextQuiz() {
+        const data = getActiveWordData();
+        if (!data || data.length === 0) return;
+        const item = data[Math.floor(Math.random() * data.length)];
+        wordCurrentText = item.w;
+        document.getElementById('word-display').innerHTML = '<span style="font-size:60px;">🤔</span><div style="font-size:18px; color:#888; margin-top:8px;">따라해봐!</div>';
+        document.getElementById('feedback').innerText = '';
+        wordIsRevealed = false;
+        wordHasStarted = true;
+        // Show 다시듣기 + 정답확인 buttons
+        document.getElementById('word-btn-area').innerHTML =
+            '<div class="btn-main">' +
+            '<button class="action btn-start" onclick="playTTS(wordCurrentText)">다시 듣기 🔊</button>' +
+            '<button class="action btn-show" id="word-answer-btn" onclick="wordShowAnswerAndChange()">정답 확인 ✅</button>' +
+            '</div>';
+        playTTS(wordCurrentText);
+    }
+
+    function wordShowAnswerAndChange() {
+        if (!wordCurrentText) return;
+        wordIsRevealed = true;
+        document.getElementById('word-display').innerHTML = `
+            <div style="font-size:26px; color:#333; margin-bottom:10px;">${wordCurrentText}</div>
+            <button class="btn-meaning" onclick="wordRevealMeaningAndQuiz()">🤔 무슨 뜻? 🤔</button>
+            <div id="quizArea"></div>
+        `;
+        // Change 정답확인 button to 다음 문제, keep 다시듣기
+        document.getElementById('word-btn-area').innerHTML =
+            '<div class="btn-main">' +
+            '<button class="action btn-start" onclick="playTTS(wordCurrentText)">다시 듣기 🔊</button>' +
+            '<button class="action btn-show" style="background:#2ECC71;" onclick="wordNextQuiz()">다음 문제 ➡️</button>' +
+            '</div>';
+    }
+
+    function wordShowAnswer() {
+        wordShowAnswerAndChange();
+    }
+
+    function highlightWord(sentence, word) {
+        if (!sentence || !word) return sentence;
+        const regex = new RegExp(`(${word})`, 'gi');
+        return sentence.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    // enSentData에서 해당 단어가 포함된 문장 찾기 (대소문자 무시)
+    function findCorrectSentence(word, wordMeaning) {
+        // 1순위: enSentData에서 해당 단어가 직접 포함된 문장
+        const re = new RegExp('\\b' + word + '\\b', 'i');
+        const directMatches = enSentData.filter(d => re.test(d.w));
+        if (directMatches.length > 0) {
+            return directMatches[Math.floor(Math.random() * directMatches.length)].w;
+        }
+
+        // 2순위: enSentData 문장에서 같은 품사 자리 단어를 문제 단어로 교체
+        const posClass = getPosClass(wordMeaning);
+        const modals   = new Set(['will','can','should','would','could','must','may','might','did','does','do','shall']);
+        const articles = new Set(['the','a','an','my','his','her','its','our','their','your','this','that','these','those','no']);
+        const copulas  = new Set(['is','are','was','were','looks','seems','feel','feels','felt','become','becomes','became','am']);
+
+        const shuffled = [...enSentData].sort(() => Math.random() - 0.5);
+        for (const sentItem of shuffled) {
+            const sentence = sentItem.w;
+            if (re.test(sentence)) continue; // 이미 단어 있는 문장 제외
+            const tokens = sentence.replace(/[.,!?'"]/g, '').split(/\s+/);
+
+            let matchSlots = [];
+            for (let i = 1; i < tokens.length; i++) {
+                const prev = tokens[i - 1].toLowerCase().replace(/[.,!?'"]/g, '');
+                const cur  = tokens[i].replace(/[.,!?'"]/g, '');
+                if (!cur || cur.length < 2) continue;
+                if (/^[A-Z]/.test(cur)) continue; // 고유명사 제외
+                if (/^\d/.test(cur)) continue;
+
+                // 품사 일치 자리 찾기
+                if (posClass === 'verb'  && modals.has(prev))   matchSlots.push(cur);
+                if (posClass === 'noun'  && articles.has(prev)) matchSlots.push(cur);
+                if (posClass === 'adj'   && copulas.has(prev))  matchSlots.push(cur);
+                if (posClass === 'adv'   && copulas.has(prev))  matchSlots.push(cur);
+                // prep/other: 관사 뒤 명사 자리 시도
+                if ((posClass === 'prep' || posClass === 'other') && articles.has(prev)) matchSlots.push(cur);
+            }
+
+            matchSlots = [...new Set(matchSlots)].filter(w =>
+                w.toLowerCase() !== word.toLowerCase()
+            );
+            if (matchSlots.length === 0) continue;
+
+            const pick = matchSlots[Math.floor(Math.random() * matchSlots.length)];
+            const result = sentence.replace(new RegExp('\\b' + pick + '\\b', 'i'), word);
+            if (result !== sentence) return result;
+        }
+
+        // 3순위: 그래도 없으면 item.ex (최후 수단)
+        return null;
+    }
+
+    // enSentData에서 랜덤 문장을 골라 특정 단어 하나를 targetWord로 교체해 오답 생성
+    // 문제 단어의 품사 분류
+    function getPosClass(meaning) {
+        if (/^v\./.test(meaning)) return 'verb';
+        if (/^n\./.test(meaning)) return 'noun';
+        if (/^adj\./.test(meaning)) return 'adj';
+        if (/^adv\./.test(meaning)) return 'adv';
+        if (/^prep\./.test(meaning)) return 'prep';
+        return 'other';
+    }
+
+    function makeWrongFromSentData(targetWord, targetMeaning, usedSentences) {
+        const reTarget = new RegExp('\\b' + targetWord + '\\b', 'i');
+        const posClass = getPosClass(targetMeaning);
+
+        const pool = enSentData.filter(d =>
+            !reTarget.test(d.w) && !usedSentences.includes(d.w)
+        );
+        if (pool.length === 0) return null;
+
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+
+        const modals = new Set(['will','can','should','would','could','must','may','might','did','does','do','shall']);
+        const articles = new Set(['the','a','an','my','his','her','its','our','their','your','this','that','these','those','no']);
+        const copulas = new Set(['is','are','was','were','looks','seems','feel','feels','felt','become','becomes','became','am']);
+
+        for (const sentItem of shuffled) {
+            const sentence = sentItem.w;
+            const tokens = sentence.replace(/[.,!?'"]/g, '').split(/\s+/);
+
+            let verbSlots = [];
+            let nounSlots = [];
+            let adjSlots  = [];
+
+            for (let i = 1; i < tokens.length; i++) {
+                const prev = tokens[i - 1].toLowerCase().replace(/[.,!?'"]/g, '');
+                const cur  = tokens[i].replace(/[.,!?'"]/g, '');
+                if (!cur || cur.length < 3) continue;
+                if (/^[A-Z]/.test(cur)) continue;
+                if (/^\d/.test(cur)) continue;
+                if (modals.has(prev))   verbSlots.push(cur);
+                else if (articles.has(prev)) nounSlots.push(cur);
+                else if (copulas.has(prev))  adjSlots.push(cur);
+            }
+
+            // 품사 불일치 자리에서 교체 → 무조건 틀린 문장
+            let pickPool = [];
+            if (posClass === 'verb')       pickPool = [...nounSlots, ...adjSlots];
+            else if (posClass === 'noun')  pickPool = [...verbSlots, ...adjSlots];
+            else if (posClass === 'adj')   pickPool = [...verbSlots, ...nounSlots];
+            else                           pickPool = [...verbSlots, ...nounSlots, ...adjSlots];
+
+            pickPool = [...new Set(pickPool)].filter(w =>
+                w.toLowerCase() !== targetWord.toLowerCase()
+            );
+            if (pickPool.length === 0) continue;
+
+            const pick = pickPool[Math.floor(Math.random() * pickPool.length)];
+            const wrongSent = sentence.replace(
+                new RegExp('\\b' + pick + '\\b', 'i'),
+                targetWord
+            );
+            if (wrongSent !== sentence) return wrongSent;
+        }
+        return null;
+    }
+
+    function wordRevealMeaningAndQuiz() {
+        const quizArea = document.getElementById('quizArea');
+        const item = enWordData.find(d => d.w === wordCurrentText);
+        if (!item) return;
+
+        let rawM = item.m;
+        let posMatch = rawM.match(/^([a-z]+\.(?:\s*[a-z]+\.)?)/);
+        let posTag = posMatch ? `<span style="font-size:14px; color:#888; font-weight:normal; background:#f0f0f0; padding:2px 6px; border-radius:6px; margin-right:6px;">${posMatch[1]}</span>` : '';
+        let defText = posMatch ? rawM.slice(posMatch[0].length).trim() : rawM;
+        let html = `<div class="meaning-text">${posTag}${defText}</div>`;
+
+        // 정답: enSentData에서 해당 단어 포함 문장 찾기 → 없으면 같은 품사 자리 교체 → 최후 수단 item.ex
+        const correctSentence = item.ex;
+
+        // 오답 2개: enSentData 문장에서 품사 불일치 자리에 단어 교체 → 확실히 틀린 문장
+        const usedSentences = [correctSentence];
+        let wrong1 = makeWrongFromSentData(wordCurrentText, rawM, usedSentences);
+        if (wrong1) usedSentences.push(wrong1);
+        let wrong2 = makeWrongFromSentData(wordCurrentText, rawM, usedSentences);
+
+        // fallback: enSentData에서 문장을 구하지 못한 경우 item.wx 사용
+        if (!wrong1) wrong1 = item.wx ? item.wx[0] : item.ex;
+        if (!wrong2) wrong2 = item.wx ? item.wx[1] : item.ex;
+
+        wordQuizOptions = [];
+        wordQuizOptions.push({ text: correctSentence, correct: true });
+        wordQuizOptions.push({ text: wrong1, correct: false });
+        wordQuizOptions.push({ text: wrong2, correct: false });
+        wordQuizOptions.sort(() => Math.random() - 0.5);
+
+        html += `<div class="quiz-container">
+            <div class="quiz-title">단어의 쓰임이 올바른 것은?</div>`;
+        wordQuizOptions.forEach((opt, idx) => {
+            let displayText = highlightWord(opt.text, wordCurrentText);
+            html += `<button class="quiz-option" id="wopt-${idx}" onclick="wordCheckAnswer(${opt.correct}, ${idx})">${idx+1}. ${displayText}</button>`;
+        });
+        html += `</div>`;
+        quizArea.innerHTML = html;
+        document.querySelector('.btn-meaning').style.display = 'none';
+    }
+
+    function getExMeaning(sentence, word, fullMeaning) {
+        const s = sentence.trim();
+        // fullMeaning 에서 한글 뜻만 추출 (품사 태그 제거)
+        const pm = fullMeaning.match(/^([a-z]+\.(?:\s*[a-z]+\.)?\s*)/);
+        const def = pm ? fullMeaning.slice(pm[0].length).trim() : fullMeaning;
+        // 쉼표로 첫 번째 뜻만 사용
+        const def1 = def.split(/[,，]/)[0].trim();
+
+        const patterns = [
+            [/^I can \w+ it\.$/, `나는 그것을 ${def1} 수 있어.`],
+            [/^I see a \w+ here\.$/, `여기에 ${def1}이/가 있어.`],
+            [/^Look at the \w+!$/, `저 ${def1}을/를 봐!`],
+            [/^The \w+ is big\.$/, `그 ${def1}은/는 커.`],
+            [/^She looks \w+\.$/, `그녀는 ${def1}해 보여.`],
+            [/^It is very \w+\.$/, `그건 정말 ${def1}해.`],
+            [/^How \w+ it is!$/, `정말 ${def1}하구나!`],
+            [/^She will \w+ now\.$/, `그녀는 지금 ${def1}할 거야.`],
+            [/^She has a \w+\.$/, `그녀는 ${def1}을/를 가지고 있어.`],
+            [/^We need a \w+\.$/, `우리는 ${def1}이/가 필요해.`],
+            [/^He likes to \w+\.$/, `그는 ${def1}하는 걸 좋아해.`],
+            [/^Let's \w+ together\.$/, `같이 ${def1}하자!`],
+            [/^We \w+ every day\.$/, `우리는 매일 ${def1}해.`],
+            [/^I can \w+ it\.$/, `나는 그것을 ${def1} 수 있어.`],
+            [/^The \w+ cat is here\.$/, `${def1} 고양이가 여기 있어.`],
+            [/^This is a \w+ day\.$/, `오늘은 ${def1} 날이야.`],
+            [/^He sits \w+ the tree\.$/, `그는 나무 ${def1}에 앉아 있어.`],
+            [/^She stands \w+ the door\.$/, `그녀는 문 ${def1}에 서 있어.`],
+            [/^Look \w+ the wall\.$/, `벽 ${def1}을 봐.`],
+            [/^The cat is \w+ the box\.$/, `고양이가 상자 ${def1}에 있어.`],
+        ];
+        for (const [re, result] of patterns) {
+            if (re.test(s)) return result;
+        }
+        return `(${def1})`;
+    }
+
+    function wordCheckAnswer(isCorrect, idx) {
+        const feedback = document.getElementById('feedback');
+        const alreadyAnswered = !!document.querySelector('.quiz-option[data-answered]');
+
+        if(isCorrect) {
+            playTTS(wordQuizOptions[idx].text);
+            feedback.innerText = '잘했어 지오야! 👍';
+            feedback.style.color = '#007AFF';
+
+            if (!alreadyAnswered) {
+                playSound('correct');
+                const targetBtn = document.getElementById(`wopt-${idx}`);
+                if (targetBtn) {
+                    targetBtn.dataset.answered = 'true';
+                    targetBtn.style.background = '#e8f8f5';
+                    targetBtn.style.borderColor = '#27ae60';
+                    // 오답 버튼만 비활성화
+                    document.querySelectorAll('.quiz-option').forEach(b => {
+                        if (!b.dataset.answered) {
+                            b.disabled = true;
+                            b.onclick = null;
+                        }
+                    });
+                    // 한글 해석 한 번만 추가
+                    const item = enWordData.find(d => d.w === wordCurrentText);
+                    if (item) {
+                        const sentMeaning = item.em && item.em.trim()
+                            ? item.em
+                            : getExMeaning(item.ex, wordCurrentText, item.m);
+                        targetBtn.innerHTML = targetBtn.innerHTML + ` <span class="option-meaning">(${sentMeaning})</span>`;
+                    }
+                }
+            }
+        } else {
+            if (alreadyAnswered) return;
+            playSound('wrong');
+            feedback.innerText = '다시 생각해보세요! ❌';
+            feedback.style.color = '#e74c3c';
+            const btn = document.getElementById(`wopt-${idx}`);
+            if(btn) btn.style.background = '#fdedec';
+        }
+    }
+
+    // ===================== 영어문장 파트 =====================
+    let sentCurrentItem = null;
+    let userScrambleAnswer = [];
+    let correctWordsSequence = [];
+    let sentHasStarted = false;
+
+    function sentResetUI() {
+        document.getElementById('sent-display').innerText = '지오야 준비됐니?';
+        document.getElementById('sent-meaning-display').innerText = '';
+        document.getElementById('next-btn-wrapper').innerHTML = '';
+        document.getElementById('scramble-area').innerHTML = '';
+        document.getElementById('scramble-wrapper').style.display = 'block';
+        document.getElementById('feedback').innerText = '';
+        userScrambleAnswer = [];
+        sentHasStarted = false;
+        // 문제보기 버튼 텍스트 초기화
+        const scrBtn = document.querySelector('#scramble-wrapper .btn-scramble');
+        if (scrBtn) scrBtn.textContent = '문제시작 🧩';
+    }
+
+    function startScramble() {
+        const data = getActiveSentData();
+        sentCurrentItem = data[Math.floor(Math.random() * data.length)];
+        document.getElementById('sent-display').innerHTML = '<span style="font-size:60px;">🤔</span><div style="font-size:18px; color:#888; margin-top:8px;">순서대로 맞춰봐!</div>';
+        document.getElementById('sent-meaning-display').innerText = '';
+        document.getElementById('next-btn-wrapper').innerHTML = '';
+        document.getElementById('scramble-area').innerHTML = '';
+        document.getElementById('scramble-wrapper').style.display = 'none';
+        document.getElementById('feedback').innerText = '';
+        userScrambleAnswer = [];
+        sentHasStarted = true;
+
+        let sentence = sentCurrentItem.w;
+        const hasQuestion = sentence.trimEnd().endsWith('?');
+        const endPunct = hasQuestion ? '?' : '.';
+        let rawWords = sentence.trim().replace(/[?.!,;:]/g, '').split(/\s+/).filter(w => w.length > 0);
+
+        correctWordsSequence = rawWords.map(w => w.toLowerCase());
+        correctWordsSequence.push(endPunct);
+
+        let displayWords = rawWords.map((w, i) => {
+            if (w === 'I') return 'I';
+            if (i > 0 && w[0] === w[0].toUpperCase() && w[0] !== w[0].toLowerCase()) return w;
+            return w.toLowerCase();
+        });
+        displayWords.push(endPunct);
+
+        const shuffledWords = [...displayWords].sort(() => Math.random() - 0.5);
+        const area = document.getElementById('scramble-area');
+        shuffledWords.forEach(word => {
+            const chip = document.createElement('div');
+            chip.className = 'word-chip';
+            chip.innerText = word;
+            chip.onclick = () => selectWord(chip);
+            area.appendChild(chip);
+        });
+    }
+
+    function selectWord(chip) {
+        if (chip.classList.contains('selected')) return;
+        const clickedWord = chip.innerText.toLowerCase();
+        const targetWord = correctWordsSequence[userScrambleAnswer.length].toLowerCase();
+
+        if (clickedWord === targetWord) {
+            chip.classList.add('selected');
+            userScrambleAnswer.push(chip.innerText);
+            if (userScrambleAnswer.length === correctWordsSequence.length) {
+                playTTS(sentCurrentItem.w);
+                const feedbackEl = document.getElementById('feedback');
+                feedbackEl.innerText = '잘했어 지오야! 👍';
+                feedbackEl.style.color = '#007AFF';
+                document.getElementById('sent-display').innerText = sentCurrentItem.w;
+                document.getElementById('scramble-area').innerHTML = '';
+                document.getElementById('next-btn-wrapper').innerHTML =
+                    `<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">` +
+                    `<button class="btn-next-inline" style="background:#4CB9E7;box-shadow:0 3px 0 #2a9abf;" onclick="playTTS(sentCurrentItem.w)">다시 듣기 🔊</button>` +
+                    `<button class="btn-next-inline" style="background:#F1C40F;color:#333;box-shadow:0 3px 0 #d4a017;" onclick="showSentMeaning()">무슨 뜻? 🤔</button>` +
+                    `</div>`;
+            }
+        } else {
+            playSound('wrong');
+            document.getElementById('feedback').innerText = '어라? 다시 해보자!';
+        }
+    }
+
+    function showSentMeaning() {
+        document.getElementById('sent-meaning-display').innerText = '(' + sentCurrentItem.m + ')';
+        document.getElementById('next-btn-wrapper').innerHTML =
+            `<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">` +
+            `<button class="btn-next-inline" style="background:#4CB9E7;box-shadow:0 3px 0 #2a9abf;" onclick="playTTS(sentCurrentItem.w)">다시 듣기 🔊</button>` +
+            `<button class="btn-next-inline" onclick="startScramble()">다음 문제 ➡️</button>` +
+            `</div>`;
+    }
+
+    // ===================== 초기화 =====================
+    buildUnitButtons('word-unit-buttons', 'word');
+    buildUnitButtons('sent-unit-buttons', 'sent');
+
+</script>
+</body>
+</html>
