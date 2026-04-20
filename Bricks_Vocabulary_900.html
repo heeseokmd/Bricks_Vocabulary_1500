@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BricksVocabulary 900</title>
+    <style>
+        :root { --p: #333333; --s: #FFD384; --bg: #F0F4F8; --txt: #2D3436; }
+        body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: var(--bg); color: var(--txt); text-align: center; padding: 20px; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .container { width: 95%; max-width: 650px; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        h1 { color: #000000; font-size: 20px; margin-bottom: 25px; font-weight: bold; }
+
+        /* 모드 버튼 */
+        .mode-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px; }
+        .btn-mode { padding: 10px 8px; border: 2px solid var(--s); background: white; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 13px; flex: 1 1 45%; min-width: 80px; color: #333; }
+        .btn-mode.active { background: var(--s); color: #855b1b; }
+
+        /* 디스플레이 영역 (영어단어 모드) */
+        #word-display { font-size: 22px; font-weight: bold; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #000000; margin: 20px 0; border: 2px solid #EEEEEE; border-radius: 20px; background: #F9F9F9; padding: 20px; word-break: keep-all; line-height: 1.5; }
+
+        /* 공통 버튼 */
+        .btn-main { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button.action { padding: 20px 10px; font-size: 18px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
+        .btn-start { background: #4CB9E7; }
+        .btn-show { background: #FF5F5F; }
+
+        /* 영어단어 퀴즈 스타일 (tset_초등 방식) */
+        .btn-meaning { margin-top: 15px; padding: 10px 15px; font-size: 16px; font-weight: bold; background: #f0f0f0; border: 2px dashed #bbb; border-radius: 12px; cursor: pointer; color: #555; }
+        .meaning-text { color: #E74C3C; font-size: 22px; font-weight: bold; margin: 15px 0; }
+        .quiz-container { margin-top: 10px; text-align: left; width: 100%; border-top: 1px dashed #ccc; padding-top: 15px; }
+        .quiz-title { font-size: 16px; color: #555; margin-bottom: 12px; font-weight: bold; text-align: center; }
+        .quiz-option { display: block; width: 100%; padding: 12px; margin-bottom: 8px; background: white; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; font-size: 16px; transition: 0.2s; color: #333; text-align: left; line-height: 1.4; box-sizing: border-box; }
+        .quiz-option:hover { border-color: #4CB9E7; background: #f0faff; }
+        .highlight { color: #007AFF; font-weight: bold; }
+        .option-meaning { font-size: 14px; color: #666; font-weight: normal; margin-left: 5px; }
+
+        /* 영어문장 스크램블 스타일 (개정판 방식) */
+        #sent-display-container { min-height: 160px; margin: 10px 0 5px; border: 2px solid #EEEEEE; border-radius: 20px; background: #F9F9F9; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+        #sent-display { font-size: 20px; font-weight: bold; color: #000000; word-break: keep-all; line-height: 1.5; }
+        #sent-meaning-display { font-size: 17px; color: #666; font-weight: normal; min-height: 22px; }
+        #next-btn-wrapper { margin-top: 5px; }
+        .btn-scramble { background: #6C5CE7; color: white; border-radius: 12px; padding: 15px 25px; font-weight: bold; font-size: 18px; border: none; cursor: pointer; margin-bottom: 10px; width: 100%; box-shadow: 0 4px 0 #4834d4; }
+        #scramble-area { margin-top: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 50px; }
+        .word-chip { padding: 10px 18px; background: white; border-radius: 15px; cursor: pointer; font-weight: bold; border: 2px solid #ddd; font-size: 18px; transition: 0.2s; }
+        .word-chip.selected { background: #a29bfe; color: white; border-color: #6C5CE7; }
+        .btn-next-inline { background: #2ECC71; color: white; border-radius: 15px; padding: 10px 20px; font-weight: bold; font-size: 16px; border: none; cursor: pointer; box-shadow: 0 3px 0 #27ae60; }
+        .btn-what-meaning { background: #F1C40F !important; color: #333 !important; }
+
+        #feedback { margin-top: 5px; font-weight: bold; font-size: 20px; text-align: center; min-height: 30px; }
+        .btn-unit { padding: 5px 8px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; color: #555; transition: 0.15s; min-width: 48px; }
+        .btn-unit.active { background: #4CB9E7; color: white; border-color: #4CB9E7; }
+        .btn-unit-all { background: #FFD384; border-color: #e6b800; color: #855b1b; }
+        .btn-unit-all.active { background: #e6b800; color: #5a3e00; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>✨ 사랑스럽고 멋진 지오의 영어공부 ✨<br><span style="font-size:14px; font-weight:normal; color:#888;">(Bricks Vocabulary 900)</span></h1>
+    <div class="mode-group">
+        <button class="btn-mode active" onclick="setMode('enWord', this)">영어단어</button>
+        <button class="btn-mode" onclick="setMode('enSent', this)">영어문장</button>
+    </div>
+
+    <!-- 영어단어 모드 UI -->
+    <div id="word-mode-ui">
+        <div id="word-unit-selector" style="margin-bottom:15px;">
+            <button onclick="toggleUnitPanel('word')" id="word-unit-toggle" style="width:100%;padding:10px 16px;background:#f8f8f8;border:2px solid #ddd;border-radius:14px;cursor:pointer;font-size:14px;font-weight:bold;color:#555;display:flex;align-items:center;justify-content:space-between;">
+                <span>📚 유닛 선택</span>
+                <span id="word-unit-label" style="color:#4CB9E7;font-size:13px;">전체 ▼</span>
+            </button>
+            <div id="word-unit-panel" style="display:none;margin-top:8px;padding:12px;background:#f8f8f8;border-radius:14px;border:2px solid #eee;">
+                <div id="word-unit-buttons" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div id="word-display">지오야 준비됐니?</div>
+        <div id="word-btn-area">
+            <button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>
+        </div>
+    </div>
+
+    <!-- 영어문장 모드 UI -->
+    <div id="sent-mode-ui" style="display:none;">
+        <div id="sent-unit-selector" style="margin-bottom:15px;">
+            <button onclick="toggleUnitPanel('sent')" id="sent-unit-toggle" style="width:100%;padding:10px 16px;background:#f8f8f8;border:2px solid #ddd;border-radius:14px;cursor:pointer;font-size:14px;font-weight:bold;color:#555;display:flex;align-items:center;justify-content:space-between;">
+                <span>📚 유닛 선택</span>
+                <span id="sent-unit-label" style="color:#6C5CE7;font-size:13px;">전체 ▼</span>
+            </button>
+            <div id="sent-unit-panel" style="display:none;margin-top:8px;padding:12px;background:#f8f8f8;border-radius:14px;border:2px solid #eee;">
+                <div id="sent-unit-buttons" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div id="sent-display-container">
+            <div id="sent-display">지오야 준비됐니?</div>
+            <div id="sent-meaning-display"></div>
+            <div id="next-btn-wrapper"></div>
+        </div>
+        <div id="scramble-wrapper">
+            <button class="btn-scramble" onclick="startScramble()">문제시작 🧩</button>
+        </div>
+        <div id="scramble-area"></div>
+    </div>
+
+    <div id="feedback"></div>
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="index.html" style="display: inline-block; padding: 14px 30px; background: #AAAAAA; color: white; border-radius: 20px; font-size: 16px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 0 rgba(0,0,0,0.15);">메인화면으로 🏠</a>
+    </div>
+</div>
+
+<script>
+    const enWordData = [
+        {w:"child", m:"n. 아이, 어린이", u:1, ex:"The child plays in the garden.", em:"그 아이는 정원에서 놉니다.", wx:["Turn right at the child station.", "Henry looks very child."]},
+        {w:"day", m:"n. 날, 하루", u:1, ex:"It is a very beautiful day.", em:"매우 아름다운 날입니다.", wx:["day finally won the race!", "I turned my day to look at her."]},
+        {w:"wear", m:"v. 입다, 신다, 쓰다", u:1, ex:"I wear a new blue shirt.", em:"나는 새 파란 셔츠를 입습니다.", wx:["He threw a ball to his wear.", "Anne cooked wear for me."]},
+        {w:"shelf", m:"n. 선반", u:1, ex:"The book is on the shelf.", em:"책이 선반 위에 있습니다.", wx:["She is counting her shelf.", "A strawberry has seeds on the shelf."]},
+        {w:"have", m:"v. 가지다", u:1, ex:"I have a small toy car.", em:"나는 작은 장난감 자동차를 가집니다.", wx:["They are building a have.", "She is shaking a have."]},
+        {w:"loud", m:"adj. (소리가) 큰, 시끄러운", u:1, ex:"The music is very loud here.", em:"여기 음악 소리가 매우 큽니다.", wx:["Don't fight with your loud.", "I use a ruler to draw loud."]},
+        {w:"soft", m:"adj. 부드러운, 푹신한", u:1, ex:"The white cat has soft hair.", em:"그 하얀 고양이는 부드러운 털을 가집니다.", wx:["The flag of Mexico has an soft and a snake.", "Could you soft a photo of us?"]},
+        {w:"bicycle", m:"n. 자전거", u:1, ex:"He rides a bicycle to school.", em:"그는 학교에 자전거를 타고 갑니다.", wx:["My bicycle is barking at birds.", "Let's go to a bicycle."]},
+        {w:"dream", m:"v. 꿈꾸다, n. (장래의) 꿈, 이상", u:1, ex:"I dream of a big house.", em:"나는 큰 집을 꿈꿉니다.", wx:["I went dream on a snowy day.", "dream out your tongue and say Aah."]},
+        {w:"bowl", m:"n. (우묵한) 그릇", u:1, ex:"Put the soup in the bowl.", em:"수프를 그릇에 담으세요.", wx:["The stars twinkle at bowl.", "The bridge is bowl from wood."]},
+        {w:"slow", m:"adj. 느린", u:1, ex:"The old turtle is very slow.", em:"그 늙은 거북이는 매우 느립니다.", wx:["The stars slow at night.", "I'll read a longer slow next time."]},
+        {w:"clock", m:"n. 시계", u:1, ex:"The clock is on the wall.", em:"시계가 벽에 걸려 있습니다.", wx:["clock fruits like blueberries are good for eyes.", "She is holding her clock in her arms."]},
+        {w:"puppy", m:"n. 강아지", u:1, ex:"The cute puppy runs to me.", em:"귀여운 강아지가 나에게 달려옵니다.", wx:["My boots puppy my ankles.", "Could you puppy a photo of us?"]},
+        {w:"fun", m:"n. 재미, 즐거움, adj. 재미있는", u:1, ex:"Playing soccer is very much fun.", em:"축구를 하는 것은 매우 재미있습니다.", wx:["There is a house on the fun.", "Don't fun with your sister."]},
+        {w:"lunch", m:"n. 점심 식사", u:1, ex:"I eat lunch with my friends.", em:"나는 친구들과 함께 점심을 먹습니다.", wx:["I put lunch on my skin.", "Bats live in lunch caves."]},
+        {w:"family", m:"n. 가족", u:1, ex:"I love my family very much.", em:"나는 나의 가족을 매우 사랑합니다.", wx:["The doctor saved her family.", "A cat is family under the bed."]},
+        {w:"call", m:"v. 전화하다, 부르다", u:1, ex:"Call me on the telephone today.", em:"오늘 나에게 전화하세요.", wx:["Anne call pasta for me.", "The dog is call his tail."]},
+        {w:"run", m:"v. 달리다", u:1, ex:"We run together in the park.", em:"우리는 공원에서 함께 달립니다.", wx:["The concert run at 8 p.m.", "The lion is hunting for run."]},
+        {w:"many", m:"adj. 많은", u:1, ex:"There are many books in here.", em:"이곳에는 많은 책들이 있습니다.", wx:["She dropped her many and teaspoon.", "This hamburger tastes many."]},
+        {w:"store", m:"n. 가게", u:1, ex:"She goes to the fruit store.", em:"그녀는 과일 가게에 갑니다.", wx:["She reads her store stories.", "Mr. Weber is a store person."]},
+        {w:"bath", m:"n. 목욕", u:2, ex:"I take a bath every night.", em:"나는 매일 밤 목욕을 합니다.", wx:["We took the train back bath.", "It bath a lot last winter."]},
+        {w:"kitchen", m:"n. 부엌, 주방", u:2, ex:"Mom is cooking in the kitchen.", em:"엄마는 부엌에서 요리 중입니다.", wx:["A cat is kitchen under the bed.", "I was excited at the kitchen."]},
+        {w:"eat", m:"v. 먹다", u:2, ex:"We eat bread for our meal.", em:"우리는 식사로 빵을 먹습니다.", wx:["She dropped her eat and teaspoon.", "I just eat at the station."]},
+        {w:"school", m:"n. 학교", u:2, ex:"The school is near my house.", em:"학교는 나의 집 근처에 있습니다.", wx:["She is school her baby in her arms.", "My dog brings the school to me."]},
+        {w:"friend", m:"n. 친구", u:2, ex:"He is my best school friend.", em:"그는 나의 가장 친한 학교 친구입니다.", wx:["I cleaned the inside of the friend.", "The stars twinkle at friend."]},
+        {w:"name", m:"n. 이름", u:2, ex:"My name is Heeseok, nice meet.", em:"제 이름은 Heeseok입니다, 만나서 반가워요.", wx:["The stars twinkle at name.", "We had a good name at home."]},
+        {w:"cute", m:"adj. 귀여운", u:2, ex:"The small doll is very cute.", em:"그 작은 인형은 매우 귀엽습니다.", wx:["Maria finally won the cute!", "I put a blanket cute her."]},
+        {w:"teach", m:"v. 가르치다", u:2, ex:"Teachers teach many things at school.", em:"선생님들은 학교에서 많은 것을 가르칩니다.", wx:["Do you know a word that teach with \"a\"?", "The stars teach at night."]},
+        {w:"dinner", m:"n. 저녁 식사", u:2, ex:"We eat dinner together at home.", em:"우리는 집에서 함께 저녁을 먹습니다.", wx:["I draw pictures with dinner.", "It snowed dinner yesterday."]},
+        {w:"sit", m:"v. 앉다", u:2, ex:"Please sit on the soft chair.", em:"부드러운 의자에 앉으세요.", wx:["The sit is feeding the cows.", "Koalas are lazy and sleep all day in the sit."]},
+        {w:"fine", m:"adj. 좋은, 괜찮은", u:2, ex:"The weather is very fine today.", em:"오늘 날씨가 매우 좋습니다.", wx:["She fine her son stories.", "We eat fine for lunch."]},
+        {w:"like", m:"v. 좋아하다, prep. ~처럼, ~같은", u:2, ex:"I like to play with friends.", em:"나는 친구들과 노는 것을 좋아합니다.", wx:["Let's go to a like.", "There is like one red tulip."]},
+        {w:"old", m:"adj. 오래된, 낡은, 나이가 든, 늙은", u:2, ex:"My grandfather is very old now.", em:"나의 할아버지는 이제 매우 나이가 드셨습니다.", wx:["The old boys like toy cars.", "He threw a ball to his old."]},
+        {w:"snack", m:"n. 간식, 과자", u:2, ex:"I eat a sweet snack now.", em:"나는 지금 달콤한 간식을 먹습니다.", wx:["Anne snack English very well.", "Henry snack very hungry."]},
+        {w:"say", m:"v. 말하다", u:2, ex:"Please say your name to me.", em:"당신의 이름을 나에게 말해주세요.", wx:["I went to the French say.", "Turn say at the police station."]},
+        {w:"ready", m:"adj. 준비된", u:2, ex:"I am ready for the school.", em:"나는 학교 갈 준비가 되었습니다.", wx:["This hamburger ready great.", "This pillow is ready soft."]},
+        {w:"wood", m:"n. 나무, 목재", u:2, ex:"The brown desk is made wood.", em:"그 갈색 책상은 나무로 만들어졌습니다.", wx:["Hit the golf ball wood the hole.", "All your wood are right."]},
+        {w:"student", m:"n. 학생", u:2, ex:"I am a student at school.", em:"나는 학교에 다니는 학생입니다.", wx:["We had a good time at student.", "Do you student a word that starts with \"a\"?"]},
+        {w:"go", m:"v. 가다", u:2, ex:"I go to the park today.", em:"나는 오늘 공원에 갑니다.", wx:["We go out to walk my dog.", "A strawberry has go on the outside."]},
+        {w:"closet", m:"n. 옷장", u:2, ex:"My clothes are in the closet.", em:"내 옷들은 옷장 안에 있습니다.", wx:["The closet is playing with blocks.", "The dog is shaking his closet."]},
+        {w:"meal", m:"n. 식사", u:3, ex:"This is a very healthy meal.", em:"이것은 매우 건강한 식사입니다.", wx:["She is shaking a meal.", "This hamburger meal great."]},
+        {w:"do", m:"v. 하다", u:3, ex:"I do my homework every day.", em:"나는 매일 나의 숙제를 합니다.", wx:["There is a do on the hill.", "Mary lives in a house with a do roof."]},
+        {w:"elephant", m:"n. 코끼리", u:3, ex:"The elephant is a large animal.", em:"코끼리는 몸집이 큰 동물입니다.", wx:["Hit the golf ball into the elephant.", "Koalas are lazy and sleep all day in the elephant."]},
+        {w:"late", m:"adj. 늦은, adv. 늦게", u:3, ex:"Do not be late for school.", em:"학교에 늦지 마세요.", wx:["I will make late with peas.", "My dog is barking at late."]},
+        {w:"same", m:"adj. 같은, 비슷한", u:3, ex:"We wear the same blue hats.", em:"우리는 같은 파란 모자를 씁니다.", wx:["Broccoli is same for your body.", "I same the inside of the car."]},
+        {w:"basket", m:"n. 바구니", u:3, ex:"Put the apples in the basket.", em:"사과들을 바구니에 담으세요.", wx:["The basket pan is too hot to hold.", "All your answers are basket."]},
+        {w:"salt", m:"n. 소금", u:3, ex:"Put some salt in the soup.", em:"수프에 소금을 약간 넣으세요.", wx:["I do my homework before I salt games.", "I put a scarf around my salt."]},
+        {w:"read", m:"v. 읽다", u:3, ex:"I read a story book today.", em:"나는 오늘 이야기 책을 읽습니다.", wx:["I like to play computer read.", "We took the read back home."]},
+        {w:"teacher", m:"n. 선생님", u:3, ex:"My teacher is very kind today.", em:"나의 선생님은 오늘 매우 친절하십니다.", wx:["He was tired and teacher till noon.", "I was teacher at the pool."]},
+        {w:"week", m:"n. 주, 일주일", u:3, ex:"There are seven days a week.", em:"일주일은 7일입니다.", wx:["David is busy working week.", "Please week me back later."]},
+        {w:"easy", m:"adj. 쉬운", u:3, ex:"This math question is very easy.", em:"이 수학 질문은 매우 쉽습니다.", wx:["There is a long bridge easy the river.", "I draw pictures with easy."]},
+        {w:"new", m:"adj. 새로운", u:3, ex:"I have a new school backpack.", em:"나는 새 학교 배낭을 가지고 있습니다.", wx:["I just arrived at the new.", "She picked a gray new."]},
+        {w:"class", m:"n. 학급, 반, 수업", u:3, ex:"I like my English class today.", em:"나는 오늘 영어 수업이 좋습니다.", wx:["The flag of Mexico has an eagle and a class.", "The dog is shaking his class."]},
+        {w:"meet", m:"v. 만나다", u:3, ex:"I meet my friends at school.", em:"나는 학교에서 친구들을 만납니다.", wx:["Jake is my meet friend.", "She reads her son meet."]},
+        {w:"home", m:"n. 집, adv. 집에, 집으로", u:3, ex:"I go home after school ends.", em:"나는 학교가 끝난 후 집에 갑니다.", wx:["I went skiing on a snowy home.", "Those three books are home."]},
+        {w:"look", m:"v. 보다", u:3, ex:"Look at the beautiful blue sky.", em:"아름다운 파란 하늘을 보세요.", wx:["The look is drawing a picture.", "Do not throw stones look the pond."]},
+        {w:"fire", m:"n. 불", u:3, ex:"The fire is very hot now.", em:"불은 지금 매우 뜨겁습니다.", wx:["I do my homework before I play fire.", "I turned my fire to look at her."]},
+        {w:"bread", m:"n. 빵", u:3, ex:"I like to eat fresh bread.", em:"나는 신선한 빵을 먹는 것을 좋아합니다.", wx:["Eggs have bread shells.", "The lion is hunting for bread."]},
+        {w:"together", m:"adv. 함께", u:3, ex:"We study together at the library.", em:"우리는 도서관에서 함께 공부합니다.", wx:["She is holding her baby in her together.", "The together is feeding the cows."]},
+        {w:"talk", m:"v. 말하다, 이야기하다", u:3, ex:"We talk about the fun movie.", em:"우리는 재미있는 영화에 대해 이야기합니다.", wx:["It snowed a talk last winter.", "Henry looks very talk."]},
+        {w:"garden", m:"n. 정원", u:4, ex:"Flowers grow in the small garden.", em:"작은 정원에는 꽃들이 자랍니다.", wx:["I put a garden over her.", "Mr. Weber is a garden person."]},
+        {w:"bottle", m:"n. 병", u:4, ex:"The milk is in the bottle.", em:"우유가 병 안에 들어 있습니다.", wx:["I bottle my head to look at her.", "The flag of bottle has an eagle and a snake."]},
+        {w:"give", m:"v. 주다", u:4, ex:"Please give me a small gift.", em:"나에게 작은 선물을 주세요.", wx:["He give a hat on the beach.", "She is shaking a give."]},
+        {w:"use", m:"v. 사용하다", u:4, ex:"I use a pen to write.", em:"나는 글을 쓰기 위해 펜을 사용합니다.", wx:["I like to use quiz shows.", "I need some use for my soup."]},
+        {w:"rainbow", m:"n. 무지개", u:4, ex:"Look at the colorful rainbow today.", em:"오늘 알록달록한 무지개를 보세요.", wx:["Turn right at the rainbow station.", "rainbow drives to work."]},
+        {w:"sad", m:"adj. 슬픈", u:4, ex:"The little child is very sad.", em:"그 어린 아이는 매우 슬픕니다.", wx:["Bats sad in dark caves.", "The lion is sad for food."]},
+        {w:"in", m:"prep. ~의 안에, adv. 안으로, 안에", u:4, ex:"The ball is in the box.", em:"공이 상자 안에 있습니다.", wx:["She in her son stories.", "This in tastes great."]},
+        {w:"funny", m:"adj. 웃기는, 재미있는", u:4, ex:"The movie is very funny today.", em:"그 영화는 오늘 매우 재미있습니다.", wx:["She is holding her baby in her funny.", "There is a house on the funny."]},
+        {w:"market", m:"n. 시장", u:4, ex:"Mom goes to the food market.", em:"엄마는 식품 시장에 가십니다.", wx:["He is snorkeling in the deep market.", "The farmer is market the cows."]},
+        {w:"back", m:"adj. 뒤의, adv. 뒤로, 뒤에, n. 뒤", u:4, ex:"Please go to the back door.", em:"뒷문으로 가주세요.", wx:["I like to back computer games.", "I need a sun back on sunny days."]},
+        {w:"walk", m:"v. 걷다", u:4, ex:"I walk to school every morning.", em:"나는 매일 아침 학교에 걸어갑니다.", wx:["The child is walk with blocks.", "The walk starts at 8 p.m."]},
+        {w:"notebook", m:"n. 공책", u:4, ex:"I write names in my notebook.", em:"나는 나의 공책에 이름들을 적습니다.", wx:["We met notebook four o'clock.", "The boy is drawing a notebook."]},
+        {w:"goat", m:"n. 염소", u:4, ex:"The goat eats green grass now.", em:"그 염소는 지금 초록색 풀을 먹습니다.", wx:["My dog is barking at goat.", "Mr. Weber is a good goat."]},
+        {w:"wash", m:"v. 씻다", u:4, ex:"Wash your hands before the meal.", em:"식사 전에 손을 씻으세요.", wx:["She is wash her money.", "I just arrived at the wash."]},
+        {w:"camp", m:"v. 야영하다", u:4, ex:"We camp near the deep river.", em:"우리는 깊은 강 근처에서 야영합니다.", wx:["Henry looks very camp.", "There are many tall buildings in the camp."]},
+        {w:"smile", m:"v. 미소 짓다, n. 미소", u:4, ex:"She has a very beautiful smile.", em:"그녀는 매우 아름다운 미소를 가지고 있습니다.", wx:["I go to smile at 8 a.m.", "Most plants have leaves, stems, and smile."]},
+        {w:"hair", m:"n. 머리카락, 털", u:4, ex:"My sister has very long hair.", em:"나의 여동생은 매우 긴 머리카락을 가졌습니다.", wx:["There is a hair on the first floor.", "David is hair working now."]},
+        {w:"flower", m:"n. 꽃", u:4, ex:"This rose is a pretty flower.", em:"이 장미는 예쁜 꽃입니다.", wx:["We eat flower for lunch.", "Alice sings very flower."]},
+        {w:"body", m:"n. 몸, 신체", u:4, ex:"Exercise is good for your body.", em:"운동은 당신의 몸에 좋습니다.", wx:["I put a scarf around my body.", "A cat is body under the bed."]},
+        {w:"sick", m:"adj. 아픈", u:4, ex:"I am sick and feel tired.", em:"나는 아프고 피곤함을 느낍니다.", wx:["It snowed sick yesterday.", "Could you sick a photo of us?"]},
+        {w:"sea", m:"n. 바다", u:5, ex:"The blue sea is very large.", em:"푸른 바다는 매우 큽니다.", wx:["All your sea are right.", "I would like to drink some sea."]},
+        {w:"button", m:"n. (옷의) 단추, (기계의) 버튼", u:5, ex:"Push the button to start it.", em:"그것을 시작하려면 버튼을 누르세요.", wx:["He button a ball to his father.", "I like to watch button shows."]},
+        {w:"stair", m:"n. 계단", u:5, ex:"Walk down the stair very slowly.", em:"계단을 매우 천천히 내려가세요.", wx:["There is a long bridge over the stair.", "There is a long stair across the river."]},
+        {w:"kite", m:"n. 연", u:5, ex:"The kite flies in the sky.", em:"연이 하늘을 납니다.", wx:["Eric drives to kite.", "Draw a line under kite words."]},
+        {w:"make", m:"v. 만들다", u:5, ex:"I make a fresh fruit salad.", em:"나는 신선한 과일 샐러드를 만듭니다.", wx:["We eat sandwiches for make.", "The make is playing with blocks."]},
+        {w:"only", m:"adj. 유일한, 단 하나의", u:5, ex:"He is the only child here.", em:"그는 여기의 유일한 아이입니다.", wx:["I use a ruler to draw only.", "only, it is cold and cloudy."]},
+        {w:"morning", m:"n. 아침, 오전", u:5, ex:"I am busy every Monday morning.", em:"나는 매주 월요일 아침마다 바쁩니다.", wx:["The farmer is feeding the morning.", "Broccoli is good for your morning."]},
+        {w:"jungle", m:"n. 밀림, 정글", u:5, ex:"Many animals live in the jungle.", em:"많은 동물들이 정글에 삽니다.", wx:["The jungle of Mexico has an eagle and a snake.", "She is shaking a jungle."]},
+        {w:"full", m:"adj. 가득 찬", u:5, ex:"The glass is full of water.", em:"유리잔에 물이 가득 차 있습니다.", wx:["Maria full won the race!", "I would like to full some water."]},
+        {w:"farm", m:"n. 농장", u:5, ex:"There are many cows on farm.", em:"농장에는 소들이 많이 있습니다.", wx:["She picked a gray farm.", "I went to the farm restaurant."]},
+        {w:"different", m:"adj. 다른", u:5, ex:"They have many different hobby ideas.", em:"그들은 많은 다른 취미 생각들을 가지고 있습니다.", wx:["The frying pan is too different to hold.", "Do not throw different into the pond."]},
+        {w:"house", m:"n. 집", u:5, ex:"My house is very clean today.", em:"나의 집은 오늘 매우 깨끗합니다.", wx:["Mary lives in a house with a house roof.", "Koalas are house and sleep all day in the trees."]},
+        {w:"build", m:"v. (건물·도로를) 짓다", u:5, ex:"They build a new big building.", em:"그들은 새 큰 건물을 짓습니다.", wx:["There is a long bridge across the build.", "build takes care of a chick."]},
+        {w:"art", m:"n. 미술(품), 예술", u:5, ex:"I like my art class today.", em:"나는 오늘 미술 수업을 좋아합니다.", wx:["She reads her art stories.", "I'll art a longer book next time."]},
+        {w:"living room", m:"n. 거실", u:5, ex:"We watch TV in living room.", em:"우리는 거실에서 TV를 봅니다.", wx:["Mark tried to living room his clothes by himself.", "This living room question is easy."]},
+        {w:"ride", m:"v. (자전거·차 등을) 타다, n. 타기, 탈 것", u:5, ex:"I ride my bicycle every day.", em:"나는 매일 나의 자전거를 탑니다.", wx:["I ride my father wash his car.", "This pillow is really ride."]},
+        {w:"long", m:"adj. (길이가) 긴, (시간이) 오랜", u:5, ex:"The road is very long here.", em:"이곳의 길은 매우 깁니다.", wx:["I would like to long some water.", "She dropped her cup and long."]},
+        {w:"know", m:"v. 알다, 이해하다", u:5, ex:"I know the answer to it.", em:"나는 그것에 대한 답을 압니다.", wx:["I put a fishbowl on the know.", "Most plants have know, stems, and roots."]},
+        {w:"catch", m:"v. 잡다", u:5, ex:"Catch the ball with your hands.", em:"당신의 손으로 공을 잡으세요.", wx:["Those three catch are thin.", "Anne catch English very well."]},
+        {w:"sleep", m:"v. 자다", u:5, ex:"I sleep in my bedroom now.", em:"나는 지금 나의 침실에서 잡니다.", wx:["This math question is sleep.", "When does this sleep end?"]},
+        {w:"before", m:"prep. [위치] ~앞에, [시간] ~전에, conj. ~하기 전에", u:6, ex:"Wash hands before you eat lunch.", em:"점심을 먹기 전에 손을 씻으세요.", wx:["I before money for a toy robot.", "Eggs have before shells."]},
+        {w:"race", m:"n. 경주, 경기", u:6, ex:"The car race is very exciting.", em:"자동차 경주는 매우 신이 납니다.", wx:["David is busy race now.", "This hamburger tastes race."]},
+        {w:"excited", m:"adj. 흥분한, 신이 난", u:6, ex:"The children are very excited now.", em:"아이들은 지금 매우 신이 났습니다.", wx:["A strawberry has excited on the outside.", "The lion is excited for food."]},
+        {w:"farmer", m:"n. 농부", u:6, ex:"The farmer grows many red apples.", em:"그 농부는 많은 빨간 사과를 재배합니다.", wx:["The farmer is hunting for food.", "Those three books are farmer."]},
+        {w:"bake", m:"v. 굽다", u:6, ex:"I bake cookies in the kitchen.", em:"나는 부엌에서 쿠키를 굽습니다.", wx:["The bake is shaking his tail.", "A cat is hiding bake the bed."]},
+        {w:"mountain", m:"n. 산", u:6, ex:"The mountain is very high today.", em:"그 산은 오늘 매우 높습니다.", wx:["My little sister gave me a mountain.", "Eric drives to mountain."]},
+        {w:"uncle", m:"n. 삼촌, 고모부, 이모부", u:6, ex:"My uncle lives in a town.", em:"나의 삼촌은 한 마을에 사십니다.", wx:["Today, it is cold and uncle.", "Mark sells uncle vegetables."]},
+        {w:"find", m:"v. 찾다", u:6, ex:"I find my key on table.", em:"나는 테이블 위에서 내 열쇠를 찾습니다.", wx:["The young find like toy cars.", "I help my find wash his car."]},
+        {w:"dolphin", m:"n. 돌고래", u:6, ex:"The dolphin swims in the sea.", em:"돌고래가 바다에서 수영합니다.", wx:["She dolphin her cup and teaspoon.", "Mr. dolphin is a good person."]},
+        {w:"clean", m:"adj. 깨끗한, v. 청소하다", u:6, ex:"Please clean your messy bedroom today.", em:"오늘 당신의 지저분한 침실을 청소하세요.", wx:["I help my father clean his car.", "Let's go to a clean."]},
+        {w:"hand", m:"n. 손", u:6, ex:"Put the ring on your hand.", em:"당신의 손에 반지를 끼세요.", wx:["We met hand four o'clock.", "The flag of Mexico has an eagle and a hand."]},
+        {w:"brave", m:"adj. 용감한", u:6, ex:"The firefighter is very brave today.", em:"그 소방관은 오늘 매우 용감합니다.", wx:["A strawberry has seeds on the brave.", "The frying pan is too brave to hold."]},
+        {w:"buy", m:"v. 사다", u:6, ex:"I buy a new school bag.", em:"나는 새 학교 가방을 삽니다.", wx:["Broccoli is buy for your body.", "I like to wear sweaters in buy."]},
+        {w:"see", m:"v. 보다", u:6, ex:"I see a bird in tree.", em:"나는 나무에 있는 새를 봅니다.", wx:["Eric drives to see.", "I help my see wash his car."]},
+        {w:"tell", m:"v. 말하다", u:6, ex:"Tell me your fun story now.", em:"지금 나에게 당신의 재미있는 이야기를 말해주세요.", wx:["She reads her tell stories.", "The young tell like toy cars."]},
+        {w:"night", m:"n. 밤", u:6, ex:"The moon shines at night time.", em:"달은 밤 시간에 빛납니다.", wx:["I will make soup with night.", "I night to the French restaurant."]},
+        {w:"deep", m:"adj. 깊은", u:6, ex:"The water is very deep here.", em:"이곳의 물은 매우 깊습니다.", wx:["David is busy deep now.", "I filled the cup with deep."]},
+        {w:"get", m:"v. 받다, 얻다", u:6, ex:"I get a gift from friends.", em:"나는 친구들로부터 선물을 받습니다.", wx:["Please call me get later.", "Do you know a word that get with \"a\"?"]},
+        {w:"work", m:"v. 일하다, n. 일, 작업", u:6, ex:"My father works in a building.", em:"나의 아버지는 건물에서 일하십니다.", wx:["The child is playing with work.", "work is busy working now."]},
+        {w:"bedroom", m:"n. 침실", u:6, ex:"Go to your bedroom and sleep.", em:"당신의 침실에 가서 자세요.", wx:["The dog is bedroom his tail.", "I buy vegetables at the bedroom."]},
+        {w:"king", m:"n. 왕", u:7, ex:"The king lives in a castle.", em:"왕은 성에 삽니다.", wx:["Koalas are lazy and sleep all day in the king.", "This king question is easy."]},
+        {w:"photo", m:"n. 사진", u:7, ex:"I take a photo of flowers.", em:"나는 꽃 사진을 찍습니다.", wx:["I use a ruler to draw photo.", "The photo is playing with blocks."]},
+        {w:"hot", m:"adj. 뜨거운, 더운", u:7, ex:"The summer weather is very hot.", em:"여름 날씨는 매우 덥습니다.", wx:["I smelled something hot.", "The doctor saved her hot."]},
+        {w:"octopus", m:"n. 문어", u:7, ex:"The octopus lives in the sea.", em:"문어는 바다에 삽니다.", wx:["Computers help us in our everyday octopus.", "I turned my octopus to look at her."]},
+        {w:"leaf", m:"n. 잎", u:7, ex:"The green leaf falls from tree.", em:"초록색 잎이 나무에서 떨어집니다.", wx:["Anne speaks leaf very well.", "My dog leaf the newspaper to me."]},
+        {w:"hospital", m:"n. 병원", u:7, ex:"The sick person goes to hospital.", em:"아픈 사람은 병원에 갑니다.", wx:["The climber is enjoying the mountain hospital.", "The child is hospital with blocks."]},
+        {w:"break", m:"v. 깨(지)다, 부수다, 부서지다", u:7, ex:"Do not break the glass bottle.", em:"유리병을 깨뜨리지 마세요.", wx:["He threw a ball to his break.", "Today, it is cold and break."]},
+        {w:"kid", m:"n. 아이, 어린이", u:7, ex:"The kid plays with a puppy.", em:"그 아이는 강아지와 함께 놉니다.", wx:["Eric drives to kid.", "Computers help us in our everyday kid."]},
+        {w:"people", m:"n. 사람들", u:7, ex:"Many people are in the store.", em:"많은 사람들이 가게 안에 있습니다.", wx:["people plants have leaves, stems, and roots.", "I put a people around my neck."]},
+        {w:"fly", m:"v. 날다", u:7, ex:"Birds fly high in the sky.", em:"새들이 하늘 높이 납니다.", wx:["My boots fly my ankles.", "A strawberry has fly on the outside."]},
+        {w:"building", m:"n. 건물, 건축", u:7, ex:"This building is very tall today.", em:"이 건물은 오늘 매우 높습니다.", wx:["Jake is my building friend.", "Brush your teeth before building to bed."]},
+        {w:"after", m:"prep. [위치] ~뒤에, [시간] ~후에, conj. ~한 뒤(후)에", u:7, ex:"I go home after school ends.", em:"나는 학교가 끝난 후에 집에 갑니다.", wx:["after live in dark caves.", "I went after on a snowy day."]},
+        {w:"weather", m:"n. 날씨", u:7, ex:"The weather is very sunny today.", em:"오늘 날씨는 매우 화창합니다.", wx:["The child is weather with blocks.", "The dog is shaking his weather."]},
+        {w:"trip", m:"n. 여행", u:7, ex:"We go on a family trip.", em:"우리는 가족 여행을 갑니다.", wx:["I do my trip before I play games.", "She is trip her money."]},
+        {w:"fast", m:"adj. 빠른, adv. 빨리", u:7, ex:"The race car is very fast.", em:"그 경주용 자동차는 매우 빠릅니다.", wx:["fast sings very well.", "She is counting her fast."]},
+        {w:"act", m:"v. 행동하다", u:7, ex:"He acts like a brave king.", em:"그는 용감한 왕처럼 행동합니다.", wx:["Bats live in dark act.", "act is good for your body."]},
+        {w:"hole", m:"n. 구멍", u:7, ex:"There is a hole in ground.", em:"땅에 구멍이 있습니다.", wx:["Maria finally won the hole!", "I smelled hole sweet."]},
+        {w:"watch", m:"v. 보다", u:7, ex:"I watch a movie with friends.", em:"나는 친구들과 영화를 봅니다.", wx:["The watch is making a toy.", "I was excited at the watch."]},
+        {w:"towel", m:"n. 수건", u:7, ex:"Use a towel to dry hands.", em:"손을 말리기 위해 수건을 사용하세요.", wx:["I clean the floor with a towel.", "The towel is drawing a picture."]},
+        {w:"cheese", m:"n. 치즈", u:7, ex:"I like to eat yellow cheese.", em:"나는 노란 치즈를 먹는 것을 좋아합니다.", wx:["I need money for a toy cheese.", "My dog brings the cheese to me."]},
+        {w:"animal", m:"n. 동물", u:8, ex:"The lion is a strong animal.", em:"사자는 강한 동물입니다.", wx:["A animal whale is the largest animal in the ocean.", "He is snorkeling in the animal sea."]},
+        {w:"on", m:"prep. ~의 위에", u:8, ex:"The book is on the desk.", em:"책이 책상 위에 있습니다.", wx:["My dog is barking at on.", "There is a bathroom on the on floor."]},
+        {w:"giraffe", m:"n. 기린", u:8, ex:"The giraffe has a long neck.", em:"기린은 긴 목을 가지고 있습니다.", wx:["Do you giraffe a word that starts with \"a\"?", "Mark sells fresh giraffe."]},
+        {w:"sugar", m:"n. 설탕", u:8, ex:"I put sugar in my tea.", em:"나는 나의 차에 설탕을 넣습니다.", wx:["The kid is making a sugar.", "There is a long bridge sugar the river."]},
+        {w:"climb", m:"v. 오르다, 등반하다", u:8, ex:"I climb the high mountain today.", em:"나는 오늘 높은 산에 오릅니다.", wx:["It snowed a lot last climb.", "There are many tall climb in the city."]},
+        {w:"aunt", m:"n. 이모, 고모, 숙모", u:8, ex:"My aunt is a kind teacher.", em:"나의 이모는 친절한 선생님입니다.", wx:["We had a aunt time at home.", "I go to aunt at 8 a.m."]},
+        {w:"pea", m:"n. 완두콩", u:8, ex:"I eat a small green pea.", em:"나는 작은 초록색 완두콩을 먹습니다.", wx:["I put pea on my skin.", "Alice pea very well."]},
+        {w:"want", m:"v. 원하다", u:8, ex:"I want to eat some bread.", em:"나는 빵을 좀 먹고 싶습니다.", wx:["The want twinkle at night.", "It snowed a want last winter."]},
+        {w:"safe", m:"adj. 안전한", u:8, ex:"This place is very safe now.", em:"이 장소는 지금 매우 안전합니다.", wx:["Don't fight with your safe.", "I safe the cup with water."]},
+        {w:"stand", m:"v. 서다", u:8, ex:"Please stand up near the chair.", em:"의자 근처에 서 주세요.", wx:["The dog is stand his tail.", "I need some stand for my soup."]},
+        {w:"camera", m:"n. 사진기", u:8, ex:"I have a new digital camera.", em:"나는 새 디지털 카메라를 가지고 있습니다.", wx:["She is holding her baby in her camera.", "She reads her son camera."]},
+        {w:"dry", m:"adj. 마른, 건조한", u:8, ex:"My hair is very dry now.", em:"내 머리카락은 지금 매우 말라 있습니다.", wx:["We eat dry for lunch.", "There are many dry buildings in the city."]},
+        {w:"backpack", m:"n. 배낭", u:8, ex:"My backpack is very heavy today.", em:"나의 배낭은 오늘 매우 무겁습니다.", wx:["Computers help us in our everyday backpack.", "She is shaking a backpack."]},
+        {w:"sunflower", m:"n. 해바라기", u:8, ex:"The sunflower is very tall now.", em:"해바라기는 지금 키가 매우 큽니다.", wx:["I put a sunflower around my neck.", "The dog is shaking his sunflower."]},
+        {w:"grow", m:"v. 자라다, 성장하다, 기르다, 재배하다", u:8, ex:"I grow flowers in the garden.", em:"나는 정원에서 꽃을 기릅니다.", wx:["Could you take a grow of us?", "grow a line under difficult words."]},
+        {w:"hard", m:"adj. 단단한, 굳은, 어려운", u:8, ex:"The stone is very hard today.", em:"그 돌은 오늘 매우 단단합니다.", wx:["There is a house on the hard.", "Brush your hard before going to bed."]},
+        {w:"smell", m:"v. 냄새를 맡다, 냄새가 나다", u:8, ex:"The rose has a sweet smell.", em:"장미는 달콤한 냄새가 납니다.", wx:["I smell some salt for my soup.", "I just arrived at the smell."]},
+        {w:"rose", m:"n. 장미", u:8, ex:"The red rose is very pretty.", em:"빨간 장미는 매우 예쁩니다.", wx:["This rose tastes great.", "rose lives in a house with a red roof."]},
+        {w:"restaurant", m:"n. 식당", u:8, ex:"We eat dinner at the restaurant.", em:"우리는 식당에서 저녁을 먹습니다.", wx:["There is a restaurant bridge across the river.", "She is counting her restaurant."]},
+        {w:"number", m:"n. 수, 숫자, 번호", u:8, ex:"My favorite number is seven today.", em:"내가 가장 좋아하는 숫자는 오늘 7입니다.", wx:["I'll read a longer book number time.", "My dog brings the number to me."]},
+        {w:"butter", m:"n. 버터", u:9, ex:"Put some butter on the bread.", em:"빵에 버터를 약간 바르세요.", wx:["I butter a ruler to draw lines.", "Do you know a word that butter with \"a\"?"]},
+        {w:"quick", m:"adj. 빠른, 신속한", u:9, ex:"He is a very quick runner.", em:"그는 매우 빠른 주자입니다.", wx:["Bats live in dark quick.", "David is busy quick now."]},
+        {w:"taste", m:"v. ~한 맛이 나다, n. 맛", u:9, ex:"The soup has a salty taste.", em:"그 수프는 짠 맛이 납니다.", wx:["My boots taste my ankles.", "I like to play computer taste."]},
+        {w:"river", m:"n. 강, 하천", u:9, ex:"The river is very long here.", em:"강이 이곳에서 매우 깁니다.", wx:["I draw pictures with river.", "Purple river like blueberries are good for eyes."]},
+        {w:"near", m:"adj. 가까운, prep. ~가까이에, ~근처에", u:9, ex:"My house is near the school.", em:"나의 집은 학교 근처에 있습니다.", wx:["David is near working now.", "I like to near sweaters in winter."]},
+        {w:"draw", m:"v. 그리다", u:9, ex:"I draw a picture of family.", em:"나는 가족 그림을 그립니다.", wx:["There is a draw bridge across the river.", "I went to the French draw."]},
+        {w:"afternoon", m:"n. 오후", u:9, ex:"I study English every Monday afternoon.", em:"나는 매주 월요일 오후마다 영어를 공부합니다.", wx:["A strawberry has seeds on the afternoon.", "She saw the afternoon snowfall."]},
+        {w:"cook", m:"v. 요리하다", u:9, ex:"Mom cooks dinner in the kitchen.", em:"엄마는 부엌에서 저녁을 요리하십니다.", wx:["She is holding her cook in her arms.", "Anne speaks cook very well."]},
+        {w:"clothes", m:"n. 옷, 의복", u:9, ex:"I wear clean clothes every day.", em:"나는 매일 깨끗한 옷을 입습니다.", wx:["There is a house on the clothes.", "I just clothes at the station."]},
+        {w:"rainy", m:"adj. 비가 오는", u:9, ex:"Today is a very rainy day.", em:"오늘은 비가 많이 오는 날입니다.", wx:["Hit the rainy ball into the hole.", "The dog is shaking his rainy."]},
+        {w:"mouth", m:"n. 입", u:9, ex:"Open your mouth very wide now.", em:"이제 당신의 입을 매우 크게 벌리세요.", wx:["She picked a gray mouth.", "I like to play mouth games."]},
+        {w:"large", m:"adj. (크기가) 큰, (양이) 많은", u:9, ex:"I want a large bowl today.", em:"나는 오늘 큰 그릇을 원합니다.", wx:["Those three books are large.", "The young boys like toy large."]},
+        {w:"study", m:"v. 공부하다", u:9, ex:"I study math with my friends.", em:"나는 친구들과 수학을 공부합니다.", wx:["Maria study won the race!", "I turned my head to study at her."]},
+        {w:"onion", m:"n. 양파", u:9, ex:"Put some onion in the salad.", em:"샐러드에 양파를 약간 넣으세요.", wx:["Broccoli is onion for your body.", "onion are lazy and sleep all day in the trees."]},
+        {w:"glue", m:"n. 풀, 접착제", u:9, ex:"Use glue to fix the paper.", em:"종이를 고정하기 위해 풀을 사용하세요.", wx:["Today, it is glue and cloudy.", "The glue is feeding the cows."]},
+        {w:"worm", m:"n. (기어 다니는) 벌레", u:9, ex:"The bird eats a small worm.", em:"새가 작은 벌레를 먹습니다.", wx:["worm live in dark caves.", "worm told me a funny story."]},
+        {w:"dress", m:"n. 드레스, 원피스, v. 옷을 입다", u:9, ex:"She wears a pretty pink dress.", em:"그녀는 예쁜 분홍색 드레스를 입습니다.", wx:["dress takes care of a chick.", "He will dress a letter to his wife."]},
+        {w:"help", m:"v. 돕다, 도와주다, n. 도움", u:9, ex:"Please help me with my homework.", em:"나의 숙제를 도와주세요.", wx:["Don't fight with your help.", "Mr. Weber is a help person."]},
+        {w:"fill", m:"v. 채우다", u:9, ex:"Fill the glass with cold water.", em:"유리잔에 찬물을 채우세요.", wx:["I put a blanket fill her.", "There is only one fill tulip."]},
+        {w:"send", m:"v. 보내다", u:9, ex:"I send a letter to friend.", em:"나는 친구에게 편지를 보냅니다.", wx:["The send is shaking his tail.", "The flag of send has an eagle and a snake."]},
+        {w:"butterfly", m:"n. 나비", u:10, ex:"The butterfly flies to the flower.", em:"나비가 꽃으로 날아갑니다.", wx:["I went to the butterfly restaurant.", "The flag of butterfly has an eagle and a snake."]},
+        {w:"elbow", m:"n. 팔꿈치", u:10, ex:"I hurt my elbow on desk.", em:"나는 책상에 팔꿈치를 다쳤습니다.", wx:["elbow is busy working now.", "I put sunscreen on my elbow."]},
+        {w:"sell", m:"v. 팔다", u:10, ex:"They sell many toys in store.", em:"그들은 가게에서 많은 장난감을 팝니다.", wx:["Henry sell very hungry.", "I like salty potato sell."]},
+        {w:"sport", m:"n. 스포츠, 운동", u:10, ex:"Soccer is my favorite outdoor sport.", em:"축구는 내가 가장 좋아하는 야외 스포츠입니다.", wx:["The flag of Mexico has an sport and a snake.", "Could you take a sport of us?"]},
+        {w:"become", m:"v. ~이 되다, ~해지다", u:10, ex:"I want to become a doctor.", em:"나는 의사가 되고 싶습니다.", wx:["Dad become me a funny story.", "He wore a become on the beach."]},
+        {w:"playground", m:"n. 놀이터, 운동장", u:10, ex:"Children play in the playground now.", em:"아이들은 지금 놀이터에서 놉니다.", wx:["I playground to the French restaurant.", "I go to playground at 8 a.m."]},
+        {w:"helmet", m:"n. 헬멧", u:10, ex:"Wear a helmet to be safe.", em:"안전을 위해 헬멧을 쓰세요.", wx:["I would like to helmet some water.", "I will make soup with helmet."]},
+        {w:"start", m:"v. 시작하다", u:10, ex:"The school starts in the morning.", em:"학교는 아침에 시작합니다.", wx:["There is a bathroom on the start floor.", "The farmer is feeding the start."]},
+        {w:"cut", m:"v. 자르다", u:10, ex:"I cut the paper with scissors.", em:"나는 가위로 종이를 자릅니다.", wx:["Broccoli is cut for your body.", "We went out to walk my cut."]},
+        {w:"short", m:"adj. (길이가) 짧은, 키가 작은", u:10, ex:"My hair is very short now.", em:"내 머리카락은 지금 매우 짧습니다.", wx:["A short whale is the largest animal in the ocean.", "Do you short a word that starts with \"a\"?"]},
+        {w:"sunny", m:"adj. 화창한", u:10, ex:"Today is a very sunny day.", em:"오늘은 매우 화창한 날입니다.", wx:["I was excited at the sunny.", "The bridge is sunny from wood."]},
+        {w:"tent", m:"n. 텐트", u:10, ex:"We sleep in a large tent.", em:"우리는 큰 텐트 안에서 잡니다.", wx:["Mary lives in a house with a red tent.", "I tent money for a toy robot."]},
+        {w:"young", m:"adj. (나이가) 어린", u:10, ex:"The young boy is very brave.", em:"그 어린 소년은 매우 용감합니다.", wx:["I young something sweet.", "All your young are right."]},
+        {w:"high", m:"adj. 높은, adv. 높이, 위로", u:10, ex:"The bird flies very high today.", em:"새가 오늘 매우 높이 납니다.", wx:["This high tastes great.", "I just arrived at the high."]},
+        {w:"map", m:"n. 지도", u:10, ex:"Look at the world map here.", em:"여기 세계 지도를 보세요.", wx:["My map cover my ankles.", "Mary lives in a house with a red map."]},
+        {w:"next", m:"adj. 다음의, adv. 다음에, 다음으로", u:10, ex:"I go home next Monday morning.", em:"나는 다음 월요일 아침에 집에 갑니다.", wx:["My boots next my ankles.", "Emma next care of a chick."]},
+        {w:"hear", m:"v. 듣다, 들리다", u:10, ex:"I hear a loud sound now.", em:"나는 지금 큰 소리를 듣습니다.", wx:["The climber is enjoying the mountain hear.", "Do you hear a word that starts with \"a\"?"]},
+        {w:"evening", m:"n. 저녁", u:10, ex:"I watch TV in the evening.", em:"나는 저녁에 TV를 봅니다.", wx:["We evening around four o'clock.", "We took the train evening home."]},
+        {w:"show", m:"v. 보여주다", u:10, ex:"Show me your new school bag.", em:"나에게 당신의 새 학교 가방을 보여주세요.", wx:["He wore a show on the beach.", "I was excited at the show."]},
+        {w:"pond", m:"n. 연못", u:10, ex:"There are fish in the pond.", em:"연못에 물고기들이 있습니다.", wx:["I clean the floor with a pond.", "I put a fishbowl on the pond."]},
+        {w:"tall", m:"adj. 키가 큰", u:11, ex:"He is a very tall student.", em:"그는 키가 매우 큰 학생입니다.", wx:["This tall question is easy.", "I turned my tall to look at her."]},
+        {w:"think", m:"v. 생각하다", u:11, ex:"I think about my family today.", em:"나는 오늘 나의 가족에 대해 생각합니다.", wx:["When does this think end?", "We met think four o'clock."]},
+        {w:"bakery", m:"n. 빵집, 제과점", u:11, ex:"I buy bread at the bakery.", em:"나는 빵집에서 빵을 삽니다.", wx:["The young boys like toy bakery.", "Jake is my best bakery."]},
+        {w:"learn", m:"v. 배우다", u:11, ex:"I learn many things at school.", em:"나는 학교에서 많은 것들을 배웁니다.", wx:["Don't learn with your sister.", "learn told me a funny story."]},
+        {w:"season", m:"n. 계절", u:11, ex:"Spring is my favorite beautiful season.", em:"봄은 내가 가장 좋아하는 아름다운 계절입니다.", wx:["I use a ruler to draw season.", "I season the floor with a broom."]},
+        {w:"lady", m:"n. 여성, 숙녀", u:11, ex:"The lady wears a red scarf.", em:"그 여성은 빨간 스카프를 두르고 있습니다.", wx:["The farmer is lady the cows.", "Mr. lady is a good person."]},
+        {w:"road", m:"n. 도로, 길", u:11, ex:"The road is very busy today.", em:"길이 오늘 매우 붐빕니다.", wx:["Don't road with your sister.", "This hamburger road great."]},
+        {w:"put", m:"v. 놓다, 두다", u:11, ex:"Put the book on the desk.", em:"책을 책상 위에 놓으세요.", wx:["Turn right at the put station.", "put is good for your body."]},
+        {w:"close", m:"v. 닫다, adj. 가까운", u:11, ex:"Please close the window now today.", em:"오늘 지금 창문을 닫아 주세요.", wx:["There is a close on the hill.", "close drives to work."]},
+        {w:"under", m:"prep. ~아래에", u:11, ex:"The cat is under the table.", em:"고양이가 테이블 아래에 있습니다.", wx:["Brush your teeth before under to bed.", "I need some under for my soup."]},
+        {w:"face", m:"n. 얼굴", u:11, ex:"Wash your face every morning now.", em:"이제 매일 아침 얼굴을 씻으세요.", wx:["I cleaned the face of the car.", "Let's go to a face."]},
+        {w:"strong", m:"adj. 강한, 힘이 센", u:11, ex:"My father is a very strong man.", em:"나의 아버지는 매우 강한 분이십니다.", wx:["We had a strong time at home.", "I like salty potato strong."]},
+        {w:"cloudy", m:"adj. 흐린, 구름이 낀", u:11, ex:"Today is a very cloudy day.", em:"오늘은 매우 흐린 날입니다.", wx:["The frying cloudy is too hot to hold.", "Anne cloudy pasta for me."]},
+        {w:"push", m:"v. 밀다", u:11, ex:"Push the door to open it.", em:"문을 열기 위해 미세요.", wx:["I like to wear push in winter.", "push drives to work."]},
+        {w:"sorry", m:"adj. 미안한", u:11, ex:"I am sorry for being late.", em:"늦어서 미안합니다.", wx:["Don't fight with your sorry.", "The sorry is making a toy."]},
+        {w:"swim", m:"v. 수영하다", u:11, ex:"I swim in the pool today.", em:"나는 오늘 수영장에서 수영합니다.", wx:["I put a swim around my neck.", "swim your teeth before going to bed."]},
+        {w:"drink", m:"v. 마시다", u:11, ex:"I drink cold water every day.", em:"나는 매일 찬물을 마십니다.", wx:["I go to drink at 8 a.m.", "He threw a drink to his father."]},
+        {w:"story", m:"n. 이야기, 소설", u:11, ex:"This is a very fun story.", em:"이것은 매우 재미있는 이야기입니다.", wx:["There is a long bridge across the story.", "I need a sun story on sunny days."]},
+        {w:"first", m:"adj. 첫, 처음의, adv. 우선, 먼저", u:11, ex:"He is the first student here.", em:"그는 이곳의 첫 번째 학생입니다.", wx:["A strawberry has seeds on the first.", "She is holding her baby in her first."]},
+        {w:"orange", m:"n. 오렌지", u:11, ex:"I want to eat a fresh orange.", em:"나는 신선한 오렌지를 먹고 싶습니다.", wx:["Most orange have leaves, stems, and roots.", "She orange the first snowfall."]},
+        {w:"spider", m:"n. 거미", u:12, ex:"The spider has eight long legs.", em:"거미는 8개의 긴 다리를 가졌습니다.", wx:["I do my homework spider I play games.", "Dad told me a funny spider."]},
+        {w:"sky", m:"n. 하늘", u:12, ex:"The sky is very blue today.", em:"오늘 하늘이 매우 파랗습니다.", wx:["I help my father sky his car.", "We took the train sky home."]},
+        {w:"listen", m:"v. 듣다", u:12, ex:"Listen to the music with me.", em:"나와 함께 음악을 들어요.", wx:["Bats live in dark listen.", "Could you listen a photo of us?"]},
+        {w:"letter", m:"n. 편지", u:12, ex:"I write a letter to mom.", em:"나는 엄마에게 편지를 씁니다.", wx:["letter looks very hungry.", "The letter starts at 8 p.m."]},
+        {w:"trumpet", m:"n. 트럼펫", u:12, ex:"He plays the trumpet very well.", em:"그는 트럼펫을 매우 잘 연주합니다.", wx:["A trumpet has seeds on the outside.", "I like to wear trumpet in winter."]},
+        {w:"fall", m:"v. 떨어지다, 내리다, n. 가을", u:12, ex:"Leaves fall in the cold autumn.", em:"추운 가을에는 잎들이 떨어집니다.", wx:["She is holding her fall in her arms.", "I put a scarf around my fall."]},
+        {w:"scary", m:"adj. 무서운, 두려운", u:12, ex:"That movie is very scary today.", em:"그 영화는 오늘 매우 무섭습니다.", wx:["Eggs have scary shells.", "I put a scarf scary my neck."]},
+        {w:"vegetable", m:"n. 채소", u:12, ex:"I eat a fresh green vegetable.", em:"나는 신선한 초록색 채소를 먹습니다.", wx:["Don't vegetable with your sister.", "Brush your vegetable before going to bed."]},
+        {w:"from", m:"prep. ~부터, ~에서", u:12, ex:"I am from Seoul, South Korea.", em:"나는 대한민국 서울에서 왔습니다.", wx:["There is a long bridge across the from.", "The from saved her life."]},
+        {w:"circle", m:"n. 동그라미, 원", u:12, ex:"Draw a big circle on paper.", em:"종이에 큰 원을 그리세요.", wx:["I will circle soup with peas.", "It snowed a lot last circle."]},
+        {w:"time", m:"n. 시간", u:12, ex:"What time is it now today?", em:"오늘 지금 몇 시입니까?", wx:["Do not throw time into the pond.", "I buy time at the market."]},
+        {w:"yummy", m:"adj. 맛있는", u:12, ex:"This cake is very yummy today.", em:"이 케이크는 오늘 매우 맛있습니다.", wx:["I put sunscreen on my yummy.", "I went to the French yummy."]},
+        {w:"tower", m:"n. 탑", u:12, ex:"The tower is very tall here.", em:"탑이 이곳에서 매우 높습니다.", wx:["We tower sandwiches for lunch.", "She tower a gray cardigan."]},
+        {w:"queen", m:"n. 여왕, 왕비", u:12, ex:"The queen wears a gold crown.", em:"여왕은 금관을 쓰고 있습니다.", wx:["I would like to drink some queen.", "This queen question is easy."]},
+        {w:"thank", m:"v. 고마워하다, 감사하다", u:12, ex:"Thank you for your kind help.", em:"당신의 친절한 도움에 감사합니다.", wx:["He threw a thank to his father.", "All your answers are thank."]},
+        {w:"bridge", m:"n. 다리", u:12, ex:"We walk across the long bridge.", em:"우리는 긴 다리를 건너갑니다.", wx:["She is holding her bridge in her arms.", "Let's go to a bridge."]},
+        {w:"open", m:"adj. 열려 있는, v. 열다", u:12, ex:"Please open the window now today.", em:"오늘 지금 창문을 열어 주세요.", wx:["My boots open my ankles.", "I like to watch quiz open."]},
+        {w:"end", m:"v. 끝나다", u:12, ex:"The movie ends at ten now.", em:"영화는 이제 10시에 끝납니다.", wx:["I put a end over her.", "Don't end with your sister."]},
+        {w:"visit", m:"v. 방문하다", u:12, ex:"I visit my uncle this week.", em:"나는 이번 주에 삼촌을 방문합니다.", wx:["I like to visit computer games.", "Do not throw stones visit the pond."]},
+        {w:"out", m:"adv. 밖으로, 밖에", u:12, ex:"Let us go out and play.", em:"밖으로 나가서 놉시다.", wx:["The concert out at 8 p.m.", "My little sister out me a gift."]},
+        {w:"feel", m:"v. (기분·감정이) 들다", u:13, ex:"I feel very happy today now.", em:"나는 오늘 지금 매우 행복함을 느낍니다.", wx:["feel lives in a house with a red roof.", "I meet many feel at school."]},
+        {w:"sandwich", m:"n. 샌드위치", u:13, ex:"I eat a ham sandwich today.", em:"나는 오늘 햄 샌드위치를 먹습니다.", wx:["The child is playing with sandwich.", "Maria sandwich won the race!"]},
+        {w:"winter", m:"n. 겨울", u:13, ex:"It is very cold in winter.", em:"겨울에는 매우 춥습니다.", wx:["Mary lives in a house with a winter roof.", "winter told me a funny story."]},
+        {w:"pilot", m:"n. 비행 조종사", u:13, ex:"The pilot flies the big plane.", em:"조종사가 큰 비행기를 조종합니다.", wx:["I clean the pilot with a broom.", "pilot out your tongue and say Aah."]},
+        {w:"window", m:"n. 창문", u:13, ex:"Look out of the small window.", em:"작은 창문 밖을 보세요.", wx:["She picked a gray window.", "I draw pictures with window."]},
+        {w:"every", m:"adj. 모든, 매, 마다", u:13, ex:"I study English every single day.", em:"나는 매일 영어를 공부합니다.", wx:["My every brings the newspaper to me.", "A every whale is the largest animal in the ocean."]},
+        {w:"beautiful", m:"adj. 아름다운", u:13, ex:"This flower is very beautiful today.", em:"이 꽃은 오늘 매우 아름답습니다.", wx:["Purple fruits like beautiful are good for eyes.", "The beautiful is drawing a picture."]},
+        {w:"alone", m:"adj. 혼자인, adv. 혼자, 홀로", u:13, ex:"He is alone in the room.", em:"그는 방 안에 혼자 있습니다.", wx:["The kid is making a alone.", "There is a house on the alone."]},
+        {w:"fix", m:"v. 고치다, 수리하다, 고정시키다", u:13, ex:"Dad fixes my broken bicycle today.", em:"아빠가 오늘 내 고장 난 자전거를 고치십니다.", wx:["Let's go to a fix.", "I put a blanket fix her."]},
+        {w:"pan", m:"n. 납작한 냄비", u:13, ex:"Cook the egg in the pan.", em:"냄비에 달걀을 요리하세요.", wx:["The climber is enjoying the mountain pan.", "I put a pan around my neck."]},
+        {w:"train", m:"n. 기차, 열차", u:13, ex:"The train arrives at the station.", em:"기차가 역에 도착합니다.", wx:["She is holding her baby in her train.", "I turned my head to train at her."]},
+        {w:"strawberry", m:"n. 딸기", u:13, ex:"I like to eat red strawberry.", em:"나는 빨간 딸기를 먹는 것을 좋아합니다.", wx:["This pillow is really strawberry.", "I clean the floor with a strawberry."]},
+        {w:"light", m:"adj. 가벼운, n. 빛", u:13, ex:"The box is very light today.", em:"상자가 오늘 매우 가볍습니다.", wx:["Anne speaks English very light.", "Do you know a word that light with \"a\"?"]},
+        {w:"hippo", m:"n. 하마", u:13, ex:"The hippo is in the water.", em:"하마가 물 안에 있습니다.", wx:["My dog brings the hippo to me.", "He will write a hippo to his wife."]},
+        {w:"warm", m:"adj. 따뜻한", u:13, ex:"The weather is very warm today.", em:"오늘 날씨가 매우 따뜻합니다.", wx:["We had a good time at warm.", "There is warm one red tulip."]},
+        {w:"live", m:"v. 살다", u:13, ex:"I live in a big town.", em:"나는 큰 마을에 십니다.", wx:["The live saved her life.", "I put a scarf around my live."]},
+        {w:"write", m:"v. (글을) 쓰다", u:13, ex:"I write my name on paper.", em:"나는 종이에 내 이름을 씁니다.", wx:["I like to write quiz shows.", "When does this write end?"]},
+        {w:"tooth", m:"n. 이, 치아", u:13, ex:"I brush my tooth every day.", em:"나는 매일 이를 닦습니다.", wx:["I like to tooth sweaters in winter.", "Please tooth me back later."]},
+        {w:"shout", m:"v. 외치다", u:13, ex:"Do not shout in the library.", em:"도서관에서 소리 지르지 마세요.", wx:["I shout a ruler to draw lines.", "shout finally won the race!"]},
+        {w:"take", m:"v. 가지고 가다, 데리고 가다", u:13, ex:"Take your umbrella with you today.", em:"오늘 당신의 우산을 가져가세요.", wx:["He take a ball to his father.", "She is take a tambourine."]},
+        {w:"hungry", m:"adj. 배고픈", u:14, ex:"I am very hungry right now.", em:"나는 지금 매우 배가 고픕니다.", wx:["I clean the hungry with a broom.", "This hungry question is easy."]},
+        {w:"life", m:"n. 생명, 삶, 생활", u:14, ex:"Life is very beautiful and good.", em:"삶은 매우 아름답고 좋습니다.", wx:["Bats live in dark life.", "I cleaned the life of the car."]},
+        {w:"bubble", m:"n. (-s) 거품, 비눗방울", u:14, ex:"The child blows a soap bubble.", em:"아이가 비눗방울을 붑니다.", wx:["He will write a letter to his bubble.", "The nurse is kind and bubble."]},
+        {w:"sure", m:"adj. 확신하는", u:14, ex:"I am sure about the answer.", em:"나는 그 답을 확신합니다.", wx:["Could you take a sure of us?", "I sure a sun hat on sunny days."]},
+        {w:"water", m:"n. 물, v. 물을 주다", u:14, ex:"Give some water to the plant.", em:"식물에 물을 좀 주세요.", wx:["I need water for a toy robot.", "Let's go to a water."]},
+        {w:"dinosaur", m:"n. 공룡", u:14, ex:"The dinosaur was a large animal.", em:"공룡은 거대한 동물이었습니다.", wx:["He wore a dinosaur on the beach.", "Hit the golf dinosaur into the hole."]},
+        {w:"quiet", m:"adj. 조용한", u:14, ex:"Please be quiet in the class.", em:"수업 시간에는 조용히 해주세요.", wx:["There is a quiet bridge over the river.", "There is a long bridge quiet the river."]},
+        {w:"summer", m:"n. 여름", u:14, ex:"I like to swim in summer.", em:"나는 여름에 수영하는 것을 좋아합니다.", wx:["summer is good for your body.", "Maria finally summer the race!"]},
+        {w:"top", m:"n. 맨 위, 꼭대기, adj. 맨 위의", u:14, ex:"The bird is on the top.", em:"새가 꼭대기에 있습니다.", wx:["top your teeth before going to bed.", "Emma takes care of a top."]},
+        {w:"soccer", m:"n. 축구", u:14, ex:"We play soccer in the park.", em:"우리는 공원에서 축구를 합니다.", wx:["My room is soccer because of the sunshine.", "Purple fruits like blueberries are good for soccer."]},
+        {w:"shake", m:"v. 흔들(리)다", u:14, ex:"Shake the bottle before you drink.", em:"마시기 전에 병을 흔드세요.", wx:["The frying shake is too hot to hold.", "I put a shake around my neck."]},
+        {w:"wet", m:"adj. 젖은", u:14, ex:"My clothes are very wet now.", em:"내 옷들이 지금 매우 젖었습니다.", wx:["We eat wet for lunch.", "A strawberry has seeds on the wet."]},
+        {w:"claw", m:"n. (동물의) 발톱", u:14, ex:"The cat has a sharp claw.", em:"고양이는 날카로운 발톱을 가졌습니다.", wx:["My little sister gave me a claw.", "Bats live in claw caves."]},
+        {w:"barn", m:"n. 헛간", u:14, ex:"The cows are in the barn.", em:"소들이 헛간 안에 있습니다.", wx:["This pillow is really barn.", "A barn whale is the largest animal in the ocean."]},
+        {w:"weak", m:"adj. 약한", u:14, ex:"The old man is very weak.", em:"그 노인은 매우 약합니다.", wx:["There are many tall buildings in the weak.", "Those weak books are thin."]},
+        {w:"enjoy", m:"v. 즐기다", u:14, ex:"I enjoy playing games with friends.", em:"나는 친구들과 게임 하는 것을 즐깁니다.", wx:["enjoy drives to work.", "Do not throw stones into the enjoy."]},
+        {w:"into", m:"prep. ~안으로, ~안에", u:14, ex:"Walk into the house right now.", em:"지금 바로 집 안으로 걸어 들어가세요.", wx:["Dad into me a funny story.", "I like salty into chips."]},
+        {w:"month", m:"n. 달, 월", u:14, ex:"December is the last month today.", em:"12월은 오늘 마지막 달입니다.", wx:["This math question is month.", "I use a ruler to draw month."]},
+        {w:"mop", m:"n. 대걸레", u:14, ex:"Use a mop to clean floor.", em:"바닥을 닦기 위해 대걸레를 사용하세요.", wx:["I mop something sweet.", "Emma mop care of a chick."]},
+        {w:"hit", m:"v. 때리다, 치다", u:14, ex:"Do not hit the small ball.", em:"작은 공을 때리지 마세요.", wx:["I filled the cup with hit.", "Please call me back hit."]},
+        {w:"cookie", m:"n. 쿠키", u:15, ex:"I eat a sweet chocolate cookie.", em:"나는 달콤한 초콜릿 쿠키를 먹습니다.", wx:["Most cookie have leaves, stems, and roots.", "I cookie my head to look at her."]},
+        {w:"spring", m:"n. 봄", u:15, ex:"Flowers bloom in the warm spring.", em:"따뜻한 봄에는 꽃들이 핍니다.", wx:["I do my homework before I spring games.", "He was tired and slept till spring."]},
+        {w:"gas", m:"n. 기체, 가스, (난방·조리용) 가스, 휘발유, 기름", u:15, ex:"The car needs some gas now.", em:"자동차는 지금 기름이 좀 필요합니다.", wx:["Hit the golf gas into the hole.", "I gas the floor with a broom."]},
+        {w:"heavy", m:"adj. 무거운", u:15, ex:"This bag is very heavy today.", em:"이 가방은 오늘 매우 무겁습니다.", wx:["She is shaking a heavy.", "heavy put a candle on the cake."]},
+        {w:"paint", m:"v. 페인트칠하다", u:15, ex:"I paint the wall blue today.", em:"나는 오늘 벽을 파란색으로 칠합니다.", wx:["I went to the paint restaurant.", "Koalas are lazy and sleep all paint in the trees."]},
+        {w:"chick", m:"n. 병아리", u:15, ex:"The yellow chick is very cute.", em:"노란 병아리는 매우 귀엽습니다.", wx:["The lion is chick for food.", "She chick the first snowfall."]},
+        {w:"paw", m:"n. (동물의) 발", u:15, ex:"The dog has a small paw.", em:"그 개는 작은 발을 가졌습니다.", wx:["Bats paw in dark caves.", "Jake is my best paw."]},
+        {w:"love", m:"v. 사랑하다", u:15, ex:"I love my family very much.", em:"나는 나의 가족을 매우 사랑합니다.", wx:["The flag of love has an eagle and a snake.", "I would like to drink some love."]},
+        {w:"stone", m:"n. 돌", u:15, ex:"I find a smooth round stone.", em:"나는 매끄럽고 둥근 돌을 찾습니다.", wx:["There is a long stone over the river.", "I clean the floor with a stone."]},
+        {w:"again", m:"adv. 다시, 한번 더", u:15, ex:"Please say that to me again.", em:"그것을 나에게 다시 말해주세요.", wx:["We eat again for lunch.", "I go to again at 8 a.m."]},
+        {w:"baker", m:"n. 제빵사", u:15, ex:"The baker makes fresh bread today.", em:"제빵사가 오늘 신선한 빵을 만듭니다.", wx:["There are baker tall buildings in the city.", "There is a bathroom on the baker floor."]},
+        {w:"ocean", m:"n. 바다, 해양", u:15, ex:"The ocean is very deep blue.", em:"바다는 매우 깊고 푸릅니다.", wx:["Hit the ocean ball into the hole.", "There is a ocean on the hill."]},
+        {w:"stop", m:"v. 멈추다, 그만하다", u:15, ex:"Please stop the car right now.", em:"지금 바로 자동차를 멈춰주세요.", wx:["He stop a hat on the beach.", "This stop question is easy."]},
+        {w:"snowy", m:"adj. 눈이 오는", u:15, ex:"It is a very snowy day.", em:"눈이 많이 오는 날입니다.", wx:["I snowy to the French restaurant.", "We snowy sandwiches for lunch."]},
+        {w:"scarf", m:"n. 스카프, 목도리", u:15, ex:"I wear a warm red scarf.", em:"나는 따뜻한 빨간 스카프를 두릅니다.", wx:["I do my homework before I play scarf.", "Turn right at the scarf station."]},
+        {w:"park", m:"n. 공원", u:15, ex:"Let us go to the park.", em:"공원에 갑시다.", wx:["We had a park time at home.", "She picked a park cardigan."]},
+        {w:"low", m:"adj. (높이가) 낮은, (양·정도가) 적은", u:15, ex:"The desk is very low today.", em:"책상이 오늘 매우 낮습니다.", wx:["Could you low a photo of us?", "Koalas are lazy and sleep all day in the low."]},
+        {w:"color", m:"n. 색깔", u:15, ex:"My favorite color is blue today.", em:"내가 가장 좋아하는 색은 오늘 파란색입니다.", wx:["I filled the cup with color.", "The color is enjoying the mountain view."]},
+        {w:"mix", m:"v. 섞다, 혼합하다", u:15, ex:"Mix the salt and water together.", em:"소금과 물을 함께 섞으세요.", wx:["I will make mix with peas.", "I need some mix for my soup."]},
+        {w:"wait", m:"v. 기다리다", u:15, ex:"Please wait for me at school.", em:"학교에서 나를 기다려 주세요.", wx:["I was excited at the wait.", "My little sister gave me a wait."]},
+        {w:"hose", m:"n. 호스", u:16, ex:"Use the hose to water plants.", em:"식물에 물을 주려고 호스를 사용하세요.", wx:["We had a hose time at home.", "Turn right at the police hose."]},
+        {w:"umbrella", m:"n. 우산", u:16, ex:"I use an umbrella today now.", em:"나는 오늘 지금 우산을 사용합니다.", wx:["The climber is enjoying the mountain umbrella.", "This umbrella is really soft."]},
+        {w:"wide", m:"adj. (폭이) 넓은", u:16, ex:"The road is very wide here.", em:"이곳의 길은 매우 넓습니다.", wx:["Hit the golf wide into the hole.", "Those wide books are thin."]},
+        {w:"weekend", m:"n. 주말", u:16, ex:"I play soccer on the weekend.", em:"나는 주말에 축구를 합니다.", wx:["She dropped her weekend and teaspoon.", "I weekend something sweet."]},
+        {w:"blow", m:"v. 불다", u:16, ex:"The wind blows very hard today.", em:"오늘 바람이 매우 세게 붑니다.", wx:["The flag of Mexico has an blow and a snake.", "There is only one blow tulip."]},
+        {w:"tennis", m:"n. 테니스", u:16, ex:"I play tennis with my friend.", em:"나는 내 친구와 테니스를 칩니다.", wx:["I like to wear tennis in winter.", "I like tennis potato chips."]},
+        {w:"fry", m:"v. (기름에) 튀기다", u:16, ex:"Fry the egg in the pan.", em:"팬에 달걀을 튀기세요.", wx:["I like to fry quiz shows.", "Please fry me back later."]},
+        {w:"shoe", m:"n. 신발 한 짝", u:16, ex:"I lost my left shoe today.", em:"나는 오늘 왼쪽 신발 한 짝을 잃어버렸습니다.", wx:["Those three shoe are thin.", "There are many tall shoe in the city."]},
+        {w:"police", m:"n. 경찰", u:16, ex:"The police help many people today.", em:"경찰은 오늘 많은 사람들을 돕습니다.", wx:["police right at the police station.", "The farmer is feeding the police."]},
+        {w:"foot", m:"n. 발", u:16, ex:"I hurt my left foot today.", em:"나는 오늘 왼쪽 발을 다쳤습니다.", wx:["The nurse is foot and helpful.", "The stars foot at night."]},
+        {w:"man", m:"n. 남자", u:16, ex:"He is a very kind man.", em:"그는 매우 친절한 남자입니다.", wx:["I turned my head to man at her.", "The child is playing with man."]},
+        {w:"drawing", m:"n. 그림", u:16, ex:"Your drawing is very beautiful today.", em:"당신의 그림은 오늘 매우 아름답습니다.", wx:["It drawing a lot last winter.", "I go to drawing at 8 a.m."]},
+        {w:"lazy", m:"adj. 게으른", u:16, ex:"Do not be a lazy student.", em:"게으른 학생이 되지 마세요.", wx:["They are lazy a house.", "I would like to lazy some water."]},
+        {w:"bank", m:"n. 은행", u:16, ex:"I go to the bank today.", em:"나는 오늘 은행에 갑니다.", wx:["I put a scarf around my bank.", "Those bank books are thin."]},
+        {w:"speak", m:"v. 말하다", u:16, ex:"I speak English with my teacher.", em:"나는 선생님과 영어로 말합니다.", wx:["The speak is hunting for food.", "I like salty potato speak."]},
+        {w:"crab", m:"n. 게", u:16, ex:"The crab lives in the sea.", em:"게는 바다에 삽니다.", wx:["crab right at the police station.", "A strawberry has seeds on the crab."]},
+        {w:"cousin", m:"n. 사촌", u:16, ex:"My cousin lives in a city.", em:"나의 사촌은 도시에 삽니다.", wx:["I went to the French cousin.", "My boots cover my cousin."]},
+        {w:"wake", m:"v. (잠에서) 깨다, 깨우다", u:16, ex:"I wake up early every morning.", em:"나는 매일 아침 일찍 일어납니다.", wx:["Mark wake fresh vegetables.", "She is counting her wake."]},
+        {w:"inside", m:"n. 안, 내부, adv. 안으로, 안에", u:16, ex:"Go inside the house right now.", em:"지금 바로 집 안으로 들어가세요.", wx:["I will inside soup with peas.", "I need some salt for my inside."]},
+        {w:"drive", m:"v. 운전하다", u:16, ex:"My father drives a white car.", em:"나의 아버지는 하얀 차를 운전하십니다.", wx:["When does this movie drive?", "My room is drive because of the sunshine."]},
+        {w:"ask", m:"v. 묻다, 질문하다", u:17, ex:"Ask the teacher a good question.", em:"선생님께 좋은 질문을 하세요.", wx:["I meet many friends at ask.", "There is a house on the ask."]},
+        {w:"shine", m:"v. 빛나다", u:17, ex:"The sun shines very bright today.", em:"오늘 해가 매우 밝게 빛납니다.", wx:["Brush your teeth shine going to bed.", "I like to shine quiz shows."]},
+        {w:"everyday", m:"adj. 매일의, 일상의", u:17, ex:"I study English everyday at home.", em:"나는 집에서 매일 영어를 공부합니다.", wx:["The climber is enjoying the mountain everyday.", "I do my homework everyday I play games."]},
+        {w:"year", m:"n. 해, 연(年), 나이", u:17, ex:"Happy new year to my family.", em:"나의 가족에게 행복한 새해를.", wx:["Mark tried to change his year by himself.", "year is my best friend."]},
+        {w:"idea", m:"n. 생각", u:17, ex:"I have a very good idea.", em:"나는 매우 좋은 생각이 있습니다.", wx:["She saw the idea snowfall.", "We had a idea time at home."]},
+        {w:"chef", m:"n. 요리사", u:17, ex:"The chef cooks very yummy food.", em:"요리사는 매우 맛있는 음식을 요리합니다.", wx:["I like salty potato chef.", "Purple fruits like blueberries are good for chef."]},
+        {w:"picture", m:"n. 그림, 사진", u:17, ex:"Look at this pretty family picture.", em:"이 예쁜 가족 사진을 보세요.", wx:["Draw a picture under difficult words.", "There is a picture on the first floor."]},
+        {w:"sing", m:"v. 노래하다", u:17, ex:"We sing a song together now.", em:"우리는 지금 함께 노래를 부릅니다.", wx:["I like sing potato chips.", "The bridge is sing from wood."]},
+        {w:"soup", m:"n. 수프", u:17, ex:"The soup tastes very salty today.", em:"그 수프는 오늘 매우 짠 맛이 납니다.", wx:["When does this movie soup?", "soup told me a funny story."]},
+        {w:"outside", m:"n. 바깥(쪽), adv. 밖에, 밖으로", u:17, ex:"It is very cold outside now.", em:"지금 밖은 매우 춥습니다.", wx:["I turned my outside to look at her.", "Draw a outside under difficult words."]},
+        {w:"noon", m:"n. 정오, 낮 12시", u:17, ex:"We eat lunch at noon today.", em:"우리는 오늘 정오에 점심을 먹습니다.", wx:["The lion is noon for food.", "Do you know a word that noon with \"a\"?"]},
+        {w:"guitar", m:"n. 기타", u:17, ex:"He plays the guitar very well.", em:"그는 기타를 매우 잘 칩니다.", wx:["We eat sandwiches for guitar.", "I guitar to the French restaurant."]},
+        {w:"dark", m:"adj. 어두운", u:17, ex:"The room is very dark now.", em:"방이 지금 매우 어둡습니다.", wx:["Henry dark very hungry.", "I dark pictures with crayons."]},
+        {w:"broom", m:"n. 빗자루", u:17, ex:"Use the broom to clean floor.", em:"바닥을 청소하기 위해 빗자루를 사용하세요.", wx:["I like broom potato chips.", "broom is my best friend."]},
+        {w:"dirty", m:"adj. 더러운", u:17, ex:"My hands are very dirty now.", em:"내 손이 지금 매우 더럽습니다.", wx:["They are building a dirty.", "He is snorkeling in the deep dirty."]},
+        {w:"forest", m:"n. 숲", u:17, ex:"Many trees grow in the forest.", em:"숲에는 많은 나무들이 자랍니다.", wx:["We eat forest for lunch.", "A blue whale is the largest animal in the forest."]},
+        {w:"nut", m:"n. 견과", u:17, ex:"I like to eat a nut.", em:"나는 견과류 먹는 것을 좋아합니다.", wx:["The nut is feeding the cows.", "Mr. Weber is a nut person."]},
+        {w:"touch", m:"v. 만지다", u:17, ex:"Do not touch the hot fire.", em:"뜨거운 불을 만지지 마세요.", wx:["I smelled touch sweet.", "A touch whale is the largest animal in the ocean."]},
+        {w:"shape", m:"n. 모양, 형태", u:17, ex:"The cookie has a star shape.", em:"쿠키가 별 모양입니다.", wx:["I like shape potato chips.", "I turned my shape to look at her."]},
+        {w:"mixture", m:"n. 혼합, 혼합물", u:17, ex:"This is a mixture of fruits.", em:"이것은 과일들의 혼합물입니다.", wx:["I like salty mixture chips.", "I'll read a mixture book next time."]},
+        {w:"hop", m:"v. (깡충) 뛰다", u:18, ex:"The rabbit can hop very fast.", em:"토끼는 매우 빠르게 뛸 수 있습니다.", wx:["The lion is hop for food.", "I hop something sweet."]},
+        {w:"round", m:"adj. 둥근, 원형의", u:18, ex:"The ball is very round today.", em:"공은 오늘 매우 둥급니다.", wx:["There are many tall buildings in the round.", "I round vegetables at the market."]},
+        {w:"well", m:"adv. 잘, 훌륭하게", u:18, ex:"She speaks English very well today.", em:"그녀는 오늘 영어를 매우 잘 말합니다.", wx:["The well boys like toy cars.", "I draw pictures with well."]},
+        {w:"question", m:"n. 질문", u:18, ex:"Answer the question on the paper.", em:"종이에 있는 질문에 답하세요.", wx:["Dad question me a funny story.", "The question is making a toy."]},
+        {w:"pianist", m:"n. 피아노 연주가", u:18, ex:"The pianist plays the piano well.", em:"피아노 연주가는 피아노를 잘 칩니다.", wx:["There is a long pianist across the river.", "The pianist starts at 8 p.m."]},
+        {w:"ruler", m:"n. 자", u:18, ex:"Use a ruler to draw lines.", em:"선을 긋기 위해 자를 사용하세요.", wx:["There are many tall buildings in the ruler.", "We had a good time at ruler."]},
+        {w:"slide", m:"v. 미끄러지다", u:18, ex:"Children like the playground slide today.", em:"아이들은 오늘 놀이터 미끄럼틀을 좋아합니다.", wx:["My little sister slide me a gift.", "I slide some salt for my soup."]},
+        {w:"test", m:"n. 시험, 검사", u:18, ex:"I have a math test today.", em:"나는 오늘 수학 시험이 있습니다.", wx:["Those three books are test.", "A strawberry has seeds on the test."]},
+        {w:"cold", m:"adj. 추운, 차가운, n. 감기", u:18, ex:"The water is very cold today.", em:"오늘 물이 매우 차갑습니다.", wx:["She dropped her cup and cold.", "I like to play computer cold."]},
+        {w:"bring", m:"v. 가져오다", u:18, ex:"Bring your book to the class.", em:"수업에 당신의 책을 가져오세요.", wx:["bring live in dark caves.", "Most plants have bring, stems, and roots."]},
+        {w:"pull", m:"v. 끌다, 당기다", u:18, ex:"Pull the door to open it.", em:"문을 열기 위해 당기세요.", wx:["I put a scarf pull my neck.", "My room is pull because of the sunshine."]},
+        {w:"bean", m:"n. 콩", u:18, ex:"I eat a small green bean.", em:"나는 작은 초록색 콩을 먹습니다.", wx:["Mary bean in a house with a red roof.", "She is counting her bean."]},
+        {w:"front", m:"n. 앞, 정면, adj. 앞쪽의", u:18, ex:"Stand in front of the house.", em:"집 앞에 서 있으세요.", wx:["She is holding her baby in her front.", "I will make soup with front."]},
+        {w:"windy", m:"adj. 바람이 부는", u:18, ex:"It is a very windy day.", em:"바람이 매우 많이 부는 날입니다.", wx:["windy is good for your body.", "I need a windy hat on sunny days."]},
+        {w:"smart", m:"adj. 똑똑한, 영리한", u:18, ex:"He is a very smart student.", em:"그는 매우 똑똑한 학생입니다.", wx:["Stick out your tongue and say smart.", "She saw the first smart."]},
+        {w:"money", m:"n. 돈", u:18, ex:"I have some money in bag.", em:"나는 가방에 돈이 좀 있습니다.", wx:["I turned my money to look at her.", "I just money at the station."]},
+        {w:"win", m:"v. 이기다, 우승하다", u:18, ex:"I want to win the race.", em:"나는 경주에서 이기고 싶습니다.", wx:["The lion is hunting for win.", "I like to play computer win."]},
+        {w:"present", m:"n. 선물", u:18, ex:"I get a present from mom.", em:"나는 엄마로부터 선물을 받습니다.", wx:["My present cover my ankles.", "Those three present are thin."]},
+        {w:"sink", m:"v. 가라앉다, 빠지다", u:18, ex:"The stone sinks in the water.", em:"돌이 물속으로 가라앉습니다.", wx:["I sink my head to look at her.", "sink a line under difficult words."]},
+        {w:"deer", m:"n. 사슴", u:18, ex:"The deer runs in the forest.", em:"사슴이 숲속에서 달립니다.", wx:["Today, it is deer and cloudy.", "It snowed heavily deer."]},
+        {w:"over", m:"prep. ~의 위에, ~너머로", u:19, ex:"The bird flies over the tree.", em:"새가 나무 너머로 날아갑니다.", wx:["Maria finally won the over!", "All your answers are over."]},
+        {w:"crayon", m:"n. 크레용", u:19, ex:"Use a red crayon for drawing.", em:"그림 그리기에 빨간 크레용을 사용하세요.", wx:["Mark tried to change his clothes by crayon.", "Draw a line under crayon words."]},
+        {w:"pipe", m:"n. 관, 파이프", u:19, ex:"Water flows through the long pipe.", em:"물이 긴 관을 통해 흐릅니다.", wx:["He wore a hat on the pipe.", "He threw a pipe to his father."]},
+        {w:"meat", m:"n. 고기", u:19, ex:"I like to eat beef meat.", em:"나는 소고기를 먹는 것을 좋아합니다.", wx:["We had a good time at meat.", "The bridge is meat from wood."]},
+        {w:"news", m:"n. 뉴스, 소식", u:19, ex:"I hear the good news today.", em:"나는 오늘 좋은 소식을 듣습니다.", wx:["There is a long bridge news the river.", "I put a blanket news her."]},
+        {w:"plant", m:"n. 식물, v. 심다", u:19, ex:"I plant a flower in garden.", em:"나는 정원에 꽃을 심습니다.", wx:["I would like to plant some water.", "It snowed a lot plant winter."]},
+        {w:"dig", m:"v. 파다", u:19, ex:"Dig a hole in the ground.", em:"땅에 구멍을 파세요.", wx:["I need some salt for my dig.", "My boots dig my ankles."]},
+        {w:"hip", m:"n. 엉덩이", u:19, ex:"Put your hands on your hip.", em:"당신의 손을 엉덩이에 올리세요.", wx:["She is hip her baby in her arms.", "He threw a hip to his father."]},
+        {w:"much", m:"adj. (양이) 많은, adv. 매우, 많이", u:19, ex:"Thank you very much for help.", em:"도와주셔서 정말 감사합니다.", wx:["Eric drives to much.", "I like to much quiz shows."]},
+        {w:"birthday", m:"n. 생일", u:19, ex:"Today is my tenth happy birthday.", em:"오늘은 나의 열 번째 행복한 생일입니다.", wx:["I like to wear sweaters in birthday.", "I use a ruler to birthday lines."]},
+        {w:"enter", m:"v. 들어가다, 들어오다", u:19, ex:"Enter the room very quietly now.", em:"이제 방에 매우 조용히 들어가세요.", wx:["The enter is made from wood.", "Anne enter pasta for me."]},
+        {w:"town", m:"n. 마을, 동네", u:19, ex:"My town is very quiet today.", em:"우리 마을은 오늘 매우 조용합니다.", wx:["My town is bright because of the sunshine.", "I go to town at 8 a.m."]},
+        {w:"feeling", m:"n. 느낌, 감정", u:19, ex:"I have a very good feeling.", em:"나는 매우 좋은 느낌이 듭니다.", wx:["The feeling twinkle at night.", "A strawberry has seeds on the feeling."]},
+        {w:"drop", m:"v. 떨어뜨리다", u:19, ex:"Do not drop the glass bottle.", em:"유리병을 떨어뜨리지 마세요.", wx:["drop lives in a house with a red roof.", "The boy is drop a picture."]},
+        {w:"homework", m:"n. 숙제, 과제", u:19, ex:"Finish your homework before dinner today.", em:"오늘 저녁 식사 전에 숙제를 끝내세요.", wx:["There are homework tall buildings in the city.", "I go to homework at 8 a.m."]},
+        {w:"street", m:"n. 길, 거리", u:19, ex:"Walk carefully on the busy street.", em:"붐비는 거리에서 조심히 걸으세요.", wx:["Mr. street is a good person.", "We met around street o'clock."]},
+        {w:"turtle", m:"n. 거북이", u:19, ex:"The turtle swims in the sea.", em:"거북이가 바다에서 수영합니다.", wx:["turtle sings very well.", "I buy vegetables at the turtle."]},
+        {w:"answer", m:"v. 대답하다, n. 대답", u:19, ex:"Please answer the telephone right now.", em:"지금 바로 전화를 받으세요.", wx:["The dog is shaking his answer.", "The answer is kind and helpful."]},
+        {w:"music", m:"n. 음악", u:19, ex:"I listen to some classical music.", em:"나는 고전 음악을 듣습니다.", wx:["She music a gray cardigan.", "music is busy working now."]},
+        {w:"colorful", m:"adj. 알록달록한, 색이 다양한", u:19, ex:"The garden is very colorful today.", em:"정원이 오늘 매우 알록달록합니다.", wx:["She picked a gray colorful.", "There are many tall colorful in the city."]},
+        {w:"fat", m:"adj. 살찐, 뚱뚱한", u:20, ex:"The white cat is very fat.", em:"그 하얀 고양이는 매우 살이 쪘습니다.", wx:["Stick out your tongue and say fat.", "He will fat a letter to his wife."]},
+        {w:"pour", m:"v. 붓다, 따르다", u:20, ex:"Pour some water into the glass.", em:"유리잔에 물을 좀 따르세요.", wx:["The dog is pour his tail.", "Don't pour with your sister."]},
+        {w:"here", m:"adv. 여기에(서), 이곳으로", u:20, ex:"Please come here right now today.", em:"오늘 지금 바로 여기로 오세요.", wx:["The flag of Mexico has an here and a snake.", "Mr. here is a good person."]},
+        {w:"paper", m:"n. 종이", u:20, ex:"Write your name on the paper.", em:"종이에 당신의 이름을 쓰세요.", wx:["I draw pictures with paper.", "paper have hard shells."]},
+        {w:"singer", m:"n. 가수", u:20, ex:"She is a very famous singer.", em:"그녀는 매우 유명한 가수입니다.", wx:["I will singer soup with peas.", "Purple fruits like singer are good for eyes."]},
+        {w:"violin", m:"n. 바이올린", u:20, ex:"He plays the violin very well.", em:"그는 바이올린을 매우 잘 칩니다.", wx:["I was violin at the pool.", "Please call me violin later."]},
+        {w:"lose", m:"v. 잃다, 일어버리다, 지다", u:20, ex:"Do not lose your house key.", em:"집 열쇠를 잃어버리지 마세요.", wx:["Alice sings very lose.", "lose help us in our everyday lives."]},
+        {w:"fool", m:"n. 어리석은 사람, 바보", u:20, ex:"Do not be a silly fool.", em:"어리석은 바보가 되지 마세요.", wx:["The fool is hunting for food.", "I'll read a longer book fool time."]},
+        {w:"sweater", m:"n. 스웨터", u:20, ex:"I wear a warm blue sweater.", em:"나는 따뜻한 파란색 스웨터를 입습니다.", wx:["Stick out your tongue and say sweater.", "Most sweater have leaves, stems, and roots."]},
+        {w:"team", m:"n. (경이 등의) 팀, 조", u:20, ex:"Our team won the soccer game.", em:"우리 팀이 축구 경기에서 이겼습니다.", wx:["This math question is team.", "David is busy working team."]},
+        {w:"cafe", m:"n. 카페", u:20, ex:"We meet at the small cafe.", em:"우리는 작은 카페에서 만납니다.", wx:["There is a cafe on the first floor.", "We met around cafe o'clock."]},
+        {w:"heavily", m:"adv. 많이, 몹시, 심하게", u:20, ex:"It is raining very heavily now.", em:"지금 비가 매우 심하게 오고 있습니다.", wx:["I would like to drink some heavily.", "When does this heavily end?"]},
+        {w:"keep", m:"v. 두다, 보관하다, (~한 상태를) 유지하다", u:20, ex:"Keep your bedroom clean every day.", em:"매일 당신의 침실을 깨끗하게 유지하세요.", wx:["The lion is keep for food.", "Anne speaks English very keep."]},
+        {w:"beach", m:"n. 해변", u:20, ex:"I like to walk on beach.", em:"나는 해변을 걷는 것을 좋아합니다.", wx:["We beach the train back home.", "The beach is hunting for food."]},
+        {w:"bright", m:"adj. 밝은, 빛나는", u:20, ex:"The stars are very bright today.", em:"오늘 별들이 매우 밝습니다.", wx:["He is bright in the deep sea.", "I do my bright before I play games."]},
+        {w:"goose", m:"n. 거위", u:20, ex:"The white goose swims in pond.", em:"하얀 거위가 연못에서 수영합니다.", wx:["I goose a ruler to draw lines.", "I went skiing on a goose day."]},
+        {w:"wing", m:"n. 날개", u:20, ex:"The bird has two strong wings.", em:"새는 두 개의 강한 날개를 가졌습니다.", wx:["The concert wing at 8 p.m.", "We wing sandwiches for lunch."]},
+        {w:"sunglasses", m:"n. 선글라스", u:20, ex:"Wear sunglasses on a sunny day.", em:"화창한 날에는 선글라스를 쓰세요.", wx:["He was tired and sunglasses till noon.", "Stick out your sunglasses and say Aah."]},
+        {w:"hold", m:"v. 들다, 잡다", u:20, ex:"Hold my hand very tight now.", em:"이제 내 손을 꽉 잡으세요.", wx:["Computers hold us in our everyday lives.", "Henry hold very hungry."]},
+        {w:"wink", m:"v. 윙크하다", u:20, ex:"He winks at me with smile.", em:"그가 미소를 지으며 나에게 윙크합니다.", wx:["They are wink a house.", "My wink is barking at birds."]},
+        {w:"whale", m:"n. 고래", u:21, ex:"The whale is a huge animal.", em:"고래는 거대한 동물입니다.", wx:["Computers whale us in our everyday lives.", "She is holding her baby in her whale."]},
+        {w:"doctor", m:"n. 의사", u:21, ex:"I go to see the doctor.", em:"나는 의사를 보러 갑니다.", wx:["She is doctor a tambourine.", "I help my doctor wash his car."]},
+        {w:"movie", m:"n. 영화", u:21, ex:"We watch a fun movie today.", em:"우리는 오늘 재미있는 영화를 봅니다.", wx:["I need movie for a toy robot.", "It snowed a lot last movie."]},
+        {w:"person", m:"n. 사람, 개인", u:21, ex:"He is a very kind person.", em:"그는 매우 친절한 사람입니다.", wx:["I will make soup with person.", "person your teeth before going to bed."]},
+        {w:"classroom", m:"n. 교실", u:21, ex:"The classroom is very large here.", em:"교실이 이곳에서 매우 큽니다.", wx:["I cleaned the inside of the classroom.", "My boots classroom my ankles."]},
+        {w:"hurt", m:"v. 다치게 하다, 아프다", u:21, ex:"My leg hurts very much today.", em:"내 다리가 오늘 매우 아픕니다.", wx:["Draw a line under difficult hurt.", "Dad told me a hurt story."]},
+        {w:"kind", m:"adj. 친절한, 착한", u:21, ex:"She is a very kind teacher.", em:"그녀는 매우 친절한 선생님입니다.", wx:["I went kind on a snowy day.", "My kind cover my ankles."]},
+        {w:"garlic", m:"n. 마늘", u:21, ex:"Put some garlic in the food.", em:"음식에 마늘을 약간 넣으세요.", wx:["I like to wear garlic in winter.", "Anne speaks English very garlic."]},
+        {w:"slice", m:"n. 조각, v. (얇게) 썰다", u:21, ex:"I eat a slice of bread.", em:"나는 빵 한 조각을 먹습니다.", wx:["I buy vegetables at the slice.", "I'll read a longer slice next time."]},
+        {w:"everybody", m:"pron. 모든 사람", u:21, ex:"Everybody is happy at the party.", em:"파티에서 모든 사람이 행복합니다.", wx:["I go to everybody at 8 a.m.", "My boots cover my everybody."]},
+        {w:"dance", m:"v. 춤추다", u:21, ex:"We dance together to the music.", em:"우리는 음악에 맞춰 함께 춤을 춥니다.", wx:["She is dance her money.", "Dad told me a funny dance."]},
+        {w:"angry", m:"adj. 화난", u:21, ex:"My father is very angry now.", em:"나의 아버지는 지금 매우 화가 나셨습니다.", wx:["She is angry her baby in her arms.", "I like to watch quiz angry."]},
+        {w:"arrive", m:"v. 도착하다", u:21, ex:"The bus arrives at the station.", em:"버스가 역에 도착합니다.", wx:["I help my father arrive his car.", "Anne cooked arrive for me."]},
+        {w:"fresh", m:"adj. 신선한", u:21, ex:"I like to eat fresh fruit.", em:"나는 신선한 과일을 먹는 것을 좋아합니다.", wx:["I fresh skiing on a snowy day.", "I was fresh at the pool."]},
+        {w:"moon", m:"n. 달", u:21, ex:"The moon is very round today.", em:"오늘 달이 매우 둥급니다.", wx:["moon a line under difficult words.", "All your answers are moon."]},
+        {w:"bookshelf", m:"n. 책장, 책꽂이", u:21, ex:"Put the book on the bookshelf.", em:"책을 책꽂이에 꽂으세요.", wx:["I put a bookshelf over her.", "I like to play computer bookshelf."]},
+        {w:"difficult", m:"adj. 어려운, 힘든", u:21, ex:"This math test is very difficult.", em:"이 수학 시험은 매우 어렵습니다.", wx:["She is counting her difficult.", "Alice sings very difficult."]},
+        {w:"place", m:"n. 장소, 곳, v. 두다, 놓다", u:21, ex:"This is a very beautiful place.", em:"이곳은 매우 아름다운 장소입니다.", wx:["I need a sun place on sunny days.", "There are many tall buildings in the place."]},
+        {w:"oil", m:"n. 기름", u:21, ex:"Put some oil in the pan.", em:"팬에 기름을 약간 두르세요.", wx:["There is a house on the oil.", "I would like to drink some oil."]},
+        {w:"change", m:"v. 변화시키다, 변하다", u:21, ex:"I change my clothes every day.", em:"나는 매일 내 옷을 갈아입습니다.", wx:["I went to the change restaurant.", "We had a good change at home."]},
+        {w:"salty", m:"adj. (맛이) 짠", u:22, ex:"This soup tastes very salty today.", em:"이 수프는 오늘 매우 짠 맛이 납니다.", wx:["We had a salty time at home.", "We eat salty for lunch."]},
+        {w:"lake", m:"n. 호수", u:22, ex:"We swim in the large lake.", em:"우리는 큰 호수에서 수영합니다.", wx:["Hit the golf ball lake the hole.", "Anne speaks English very lake."]},
+        {w:"busy", m:"adj. 바쁜", u:22, ex:"I am very busy this week.", em:"나는 이번 주에 매우 바쁩니다.", wx:["This busy tastes great.", "There are many tall buildings in the busy."]},
+        {w:"breakfast", m:"n. 아침 식사", u:22, ex:"I eat breakfast every morning today.", em:"나는 오늘 매일 아침 식사를 합니다.", wx:["We breakfast sandwiches for lunch.", "I buy vegetables at the breakfast."]},
+        {w:"glove", m:"n. 장갑 한 쪽", u:22, ex:"I lost my left warm glove.", em:"나는 왼쪽의 따뜻한 장갑 한 쪽을 잃어버렸습니다.", wx:["The farmer is glove the cows.", "Stick out your tongue and say glove."]},
+        {w:"shoulder", m:"n. 어깨", u:22, ex:"Put the bag on your shoulder.", em:"가방을 어깨에 메세요.", wx:["This shoulder tastes great.", "The shoulder pan is too hot to hold."]},
+        {w:"board", m:"n. 판자, 널빤지, v. (배·기차·비행기에) 타다", u:22, ex:"Write the word on the board.", em:"칠판에 그 단어를 쓰세요.", wx:["Emma takes board of a chick.", "There is a bathroom on the board floor."]},
+        {w:"math", m:"n. 수학", u:22, ex:"I study math every single day.", em:"나는 매일 수학을 공부합니다.", wx:["I put a scarf around my math.", "The kid is making a math."]},
+        {w:"nurse", m:"n. 간호사", u:22, ex:"The nurse helps the sick people.", em:"간호사는 아픈 사람들을 돕습니다.", wx:["nurse put a candle on the cake.", "I went to the nurse restaurant."]},
+        {w:"early", m:"adv. 일찍, 빨리, adj. 이른, 빠른", u:22, ex:"I wake up early every morning.", em:"나는 매일 아침 일찍 일어납니다.", wx:["She is early her money.", "She saw the early snowfall."]},
+        {w:"join", m:"v. 가입하다, 함께하다", u:22, ex:"I want to join the club.", em:"나는 그 클럽에 가입하고 싶습니다.", wx:["This join question is easy.", "There is a house on the join."]},
+        {w:"floor", m:"n. 바닥, 층", u:22, ex:"Sit on the clean floor now.", em:"이제 깨끗한 바닥에 앉으세요.", wx:["I went to the floor restaurant.", "There are many floor buildings in the city."]},
+        {w:"vase", m:"n. 꽃병", u:22, ex:"Put the flowers in the vase.", em:"꽃들을 꽃병에 꽂으세요.", wx:["They are vase a house.", "Turn right at the vase station."]},
+        {w:"tonight", m:"n. 오늘 밤", u:22, ex:"I watch a movie tonight today.", em:"나는 오늘 밤 영화를 봅니다.", wx:["I went to the French tonight.", "Most plants have leaves, stems, and tonight."]},
+        {w:"sandal", m:"n. 샌들 한 짝", u:22, ex:"I wear a sandal in summer.", em:"나는 여름에 샌들 한 짝을 신습니다.", wx:["There is a bathroom on the first sandal.", "Stick out your sandal and say Aah."]},
+        {w:"pick", m:"v. 고르다, 선택하다, 꺾다, 따다", u:22, ex:"Pick a pretty flower in garden.", em:"정원에서 예쁜 꽃을 꺾으세요.", wx:["pick the golf ball into the hole.", "There is a long pick over the river."]},
+        {w:"there", m:"adv. 저기에(서), 그곳으로", u:22, ex:"Please go there right now today.", em:"오늘 지금 바로 저기로 가세요.", wx:["I need money for a toy there.", "He wore a hat on the there."]},
+        {w:"move", m:"v. 움직이다", u:22, ex:"Please move the heavy desk now.", em:"이제 무거운 책상을 옮겨주세요.", wx:["The child is move with blocks.", "Koalas are lazy and sleep all move in the trees."]},
+        {w:"salad", m:"n. 샐러드", u:22, ex:"I eat a fresh green salad.", em:"나는 신선한 초록색 샐러드를 먹습니다.", wx:["Could you take a salad of us?", "My dog brings the salad to me."]},
+        {w:"add", m:"v. 더하다, 추가하다", u:22, ex:"Add some sugar to the tea.", em:"차에 설탕을 약간 더하세요.", wx:["Purple fruits like blueberries are add for eyes.", "I smelled something add."]},
+        {w:"album", m:"n. 앨범", u:23, ex:"Look at my family photo album.", em:"나의 가족 사진 앨범을 보세요.", wx:["She is counting her album.", "I would like to album some water."]},
+        {w:"seed", m:"n. 씨앗", u:23, ex:"I plant a small flower seed.", em:"나는 작은 꽃 씨앗을 심습니다.", wx:["All your answers are seed.", "This seed is really soft."]},
+        {w:"sweet", m:"adj. 달콤한", u:23, ex:"This candy is very sweet today.", em:"이 사탕은 오늘 매우 달콤합니다.", wx:["There is a long bridge over the sweet.", "He threw a sweet to his father."]},
+        {w:"blanket", m:"n. 이불, 담요", u:23, ex:"I use a warm blue blanket.", em:"나는 따뜻한 파란색 담요를 사용합니다.", wx:["Hit the golf blanket into the hole.", "The blanket of Mexico has an eagle and a snake."]},
+        {w:"woman", m:"n. 여성", u:23, ex:"She is a very beautiful woman.", em:"그녀는 매우 아름다운 여성입니다.", wx:["Maria finally woman the race!", "There is a long bridge woman the river."]},
+        {w:"penguin", m:"n. 펭귄", u:23, ex:"The penguin lives in the cold.", em:"펭귄은 추운 곳에 삽니다.", wx:["He is snorkeling in the penguin sea.", "Most penguin have leaves, stems, and roots."]},
+        {w:"fruit", m:"n. 과일", u:23, ex:"I like to eat fresh fruit.", em:"나는 신선한 과일을 먹는 것을 좋아합니다.", wx:["A blue fruit is the largest animal in the ocean.", "It fruit heavily yesterday."]},
+        {w:"hate", m:"v. 싫어하다", u:23, ex:"I hate to eat spicy food.", em:"나는 매운 음식 먹는 것을 싫어합니다.", wx:["We took the train back hate.", "This hamburger tastes hate."]},
+        {w:"choose", m:"v. 고르다, 선택하다", u:23, ex:"Choose a gift for your friend.", em:"친구를 위한 선물을 고르세요.", wx:["It snowed heavily choose.", "I'll read a longer book choose time."]},
+        {w:"trash", m:"n. 쓰레기", u:23, ex:"Put the trash in the bin.", em:"쓰레기를 쓰레기통에 버리세요.", wx:["My dog is trash at birds.", "Could you take a trash of us?"]},
+        {w:"leave", m:"v. 떠나다, 출발하다, 남기다, 놓고 가다", u:23, ex:"I leave home for school now.", em:"나는 이제 학교에 가려고 집을 떠납니다.", wx:["We met leave four o'clock.", "He is snorkeling in the leave sea."]},
+        {w:"plate", m:"n. 접시", u:23, ex:"Put the food on the plate.", em:"음식을 접시 위에 담으세요.", wx:["She is holding her plate in her arms.", "Computers plate us in our everyday lives."]},
+        {w:"museum", m:"n. 박물관", u:23, ex:"We visit the art museum today.", em:"우리는 오늘 미술 박물관을 방문합니다.", wx:["He was tired and slept till museum.", "David is busy museum now."]},
+        {w:"word", m:"n. 단어, 말", u:23, ex:"Learn a new English word today.", em:"오늘 새로운 영어 단어를 배우세요.", wx:["I just arrived at the word.", "I do my homework before I play word."]},
+        {w:"share", m:"v. 함께 쓰다, 공유하다", u:23, ex:"Share your toys with your friends.", em:"친구들과 장난감을 함께 쓰세요.", wx:["share sings very well.", "We went out to share my dog."]},
+        {w:"land", m:"n. 땅, 육지, v. 착륙하다", u:23, ex:"The plane lands on the ground.", em:"비행기가 땅에 착륙합니다.", wx:["I like to land sweaters in winter.", "I put a scarf around my land."]},
+        {w:"star", m:"n. 별", u:23, ex:"I see a bright star tonight.", em:"나는 오늘 밤 밝은 별을 봅니다.", wx:["The frying pan is too star to hold.", "The young boys like star cars."]},
+        {w:"library", m:"n. 도서관", u:23, ex:"I study at the school library.", em:"나는 학교 도서관에서 공부합니다.", wx:["I clean the library with a broom.", "Mark tried to library his clothes by himself."]},
+        {w:"behind", m:"prep. ~뒤에", u:23, ex:"The cat is behind the door.", em:"고양이가 문 뒤에 있습니다.", wx:["A blue behind is the largest animal in the ocean.", "My room is behind because of the sunshine."]},
+        {w:"boil", m:"v. 끓다, 끓이다", u:23, ex:"Boil some water in the pot.", em:"냄비에 물을 좀 끓이세요.", wx:["I like to watch boil shows.", "Don't fight with your boil."]},
+        {w:"habit", m:"n. 습관, 버릇", u:24, ex:"Reading is a very good habit.", em:"독서는 매우 좋은 습관입니다.", wx:["I need money for a toy habit.", "Maria finally habit the race!"]},
+        {w:"scissors", m:"n. 가위", u:24, ex:"Use scissors to cut the paper.", em:"종이를 자르기 위해 가위를 사용하세요.", wx:["Anne scissors English very well.", "The child is playing with scissors."]},
+        {w:"mug", m:"n. 머그컵", u:24, ex:"I drink tea in a mug.", em:"나는 머그컵에 차를 마십니다.", wx:["Today, it is cold and mug.", "The lion is mug for food."]},
+        {w:"pay", m:"v. 지불하다", u:24, ex:"I pay money for the bread.", em:"나는 빵값을 지불합니다.", wx:["My dog pay the newspaper to me.", "Mark tried to change his pay by himself."]},
+        {w:"space", m:"n. 공간, 우주", u:24, ex:"The stars are in the space.", em:"별들은 우주에 있습니다.", wx:["The concert space at 8 p.m.", "space is my best friend."]},
+        {w:"fishbowl", m:"n. 어항", u:24, ex:"The fish is in the fishbowl.", em:"물고기가 어항 안에 있습니다.", wx:["We eat fishbowl for lunch.", "I put fishbowl on my skin."]},
+        {w:"lizard", m:"n. 도마뱀", u:24, ex:"The lizard has a long tail.", em:"도마뱀은 긴 꼬리를 가졌습니다.", wx:["He will write a lizard to his wife.", "A cat is hiding under the lizard."]},
+        {w:"wall", m:"n. 벽, 담", u:24, ex:"The picture is on the wall.", em:"그림이 벽에 걸려 있습니다.", wx:["I went skiing on a snowy wall.", "All your answers are wall."]},
+        {w:"last", m:"adj. 마지막의, 지난", u:24, ex:"This is the last day today.", em:"오늘은 마지막 날입니다.", wx:["Please call me back last.", "A blue whale is the last animal in the ocean."]},
+        {w:"messy", m:"adj. 지저분한, 엉망인", u:24, ex:"My bedroom is very messy now.", em:"내 침실은 지금 매우 지저분합니다.", wx:["The messy is making a toy.", "messy sings very well."]},
+        {w:"laugh", m:"v. (소리 내어) 웃다", u:24, ex:"We laugh at the funny movie.", em:"우리는 재미있는 영화를 보며 웃습니다.", wx:["A blue whale is the largest laugh in the ocean.", "He laugh a hat on the beach."]},
+        {w:"clay", m:"n. 점토, 찰흙", u:24, ex:"I make a doll with clay.", em:"나는 점토로 인형을 만듭니다.", wx:["I clay money for a toy robot.", "The farmer is clay the cows."]},
+        {w:"job", m:"n. 일, 직업", u:24, ex:"Being a doctor is a job.", em:"의사가 되는 것은 직업입니다.", wx:["I cleaned the inside of the job.", "I'll read a job book next time."]},
+        {w:"favorite", m:"adj. 가장 좋아하는", u:24, ex:"Blue is my favorite color today.", em:"파란색은 오늘 내가 가장 좋아하는 색입니다.", wx:["I just favorite at the station.", "The favorite is hunting for food."]},
+        {w:"jump", m:"v. 뛰다, 뛰어오르다", u:24, ex:"I can jump very high today.", em:"나는 오늘 매우 높이 뛸 수 있습니다.", wx:["I went to the jump restaurant.", "My jump sister gave me a gift."]},
+        {w:"everyone", m:"pron. 모든 사람, 모두", u:24, ex:"Everyone is happy at the school.", em:"학교에서 모두가 행복합니다.", wx:["There is a everyone on the hill.", "There are many tall everyone in the city."]},
+        {w:"tongue", m:"n. 혀", u:24, ex:"Do not show your tongue now.", em:"지금 혀를 내밀지 마세요.", wx:["A cat is hiding under the tongue.", "tongue sells fresh vegetables."]},
+        {w:"line", m:"n. 선, 줄", u:24, ex:"Draw a straight line on paper.", em:"종이에 직선을 그리세요.", wx:["When does this line end?", "The stars line at night."]},
+        {w:"fight", m:"v. 싸우다, 다투다, n. 싸움, 다툼", u:24, ex:"Do not fight with your friends.", em:"친구들과 싸우지 마세요.", wx:["I fight the inside of the car.", "Broccoli is fight for your body."]},
+        {w:"worry", m:"v. 걱정하다", u:24, ex:"Do not worry about the test.", em:"시험에 대해 걱정하지 마세요.", wx:["We met around four o'worry.", "This hamburger tastes worry."]},
+        {w:"glass", m:"n. 유리, 유리잔", u:25, ex:"The glass is full of water.", em:"유리잔에 물이 가득 차 있습니다.", wx:["We glass sandwiches for lunch.", "The stars glass at night."]},
+        {w:"telephone", m:"n. 전화, 전화기", u:25, ex:"Answer the telephone right now today.", em:"오늘 지금 바로 전화를 받으세요.", wx:["She dropped her telephone and teaspoon.", "The young telephone like toy cars."]},
+        {w:"coin", m:"n. 동전", u:25, ex:"I have a small gold coin.", em:"나는 작은 금색 동전이 있습니다.", wx:["I use a coin to draw lines.", "I just arrived at the coin."]},
+        {w:"winner", m:"n. 우승자", u:25, ex:"He is the winner of race.", em:"그는 경주의 우승자입니다.", wx:["The stars winner at night.", "I put a fishbowl on the winner."]},
+        {w:"pretty", m:"adj. 예쁜", u:25, ex:"She wears a very pretty dress.", em:"그녀는 매우 예쁜 드레스를 입습니다.", wx:["Dad told me a pretty story.", "I cleaned the pretty of the car."]},
+        {w:"skin", m:"n. 피부", u:25, ex:"Keep your skin clean every day.", em:"매일 당신의 피부를 깨끗하게 유지하세요.", wx:["I skin pictures with crayons.", "skin live in dark caves."]},
+        {w:"bite", m:"v. (이로) 물다, 물어뜯다", u:25, ex:"Do not bite your long nails.", em:"당신의 긴 손톱을 깨물지 마세요.", wx:["She reads her son bite.", "Eric drives to bite."]},
+        {w:"key", m:"n. 열쇠", u:25, ex:"I lost my house key today.", em:"나는 오늘 집 열쇠를 잃어버렸습니다.", wx:["All your key are right.", "I do my homework key I play games."]},
+        {w:"classmate", m:"n. 반 친구", u:25, ex:"He is my best school classmate.", em:"그는 나의 가장 친한 반 친구입니다.", wx:["There is a long bridge classmate the river.", "My classmate cover my ankles."]},
+        {w:"invite", m:"v. 초대하다", u:25, ex:"I invite friends to my party.", em:"나는 친구들을 나의 파티에 초대합니다.", wx:["I like invite potato chips.", "She invite the first snowfall."]},
+        {w:"really", m:"adv. 실제로, 진짜로, 아주, 정말", u:25, ex:"I am really happy today now.", em:"나는 오늘 지금 정말 행복합니다.", wx:["Most really have leaves, stems, and roots.", "I went really on a snowy day."]},
+        {w:"honey", m:"n. 꿀", u:25, ex:"Honey tastes very sweet and good.", em:"꿀은 매우 달콤하고 맛이 좋습니다.", wx:["Those three honey are thin.", "The nurse is kind and honey."]},
+        {w:"cheer", m:"v. 응원하다, 환호하다", u:25, ex:"We cheer for our soccer team.", em:"우리는 우리 축구 팀을 응원합니다.", wx:["The nurse is kind and cheer.", "Hit the golf cheer into the hole."]},
+        {w:"sour", m:"adj. 신맛이 나는", u:25, ex:"This lemon tastes very sour today.", em:"이 레몬은 오늘 매우 신맛이 납니다.", wx:["The dog is sour his tail.", "There is a bathroom on the first sour."]},
+        {w:"quiz", m:"n. 퀴즈, 시험", u:25, ex:"We have a fun English quiz.", em:"우리는 재미있는 영어 퀴즈를 봅니다.", wx:["It snowed a lot quiz winter.", "Do you quiz a word that starts with \"a\"?"]},
+        {w:"roof", m:"n. 지붕", u:25, ex:"The cat is on the roof.", em:"고양이가 지붕 위에 있습니다.", wx:["roof looks very hungry.", "A roof has seeds on the outside."]},
+        {w:"bookstore", m:"n. 서점", u:25, ex:"I buy books at the bookstore.", em:"나는 서점에서 책을 삽니다.", wx:["She saw the first bookstore.", "When does this movie bookstore?"]},
+        {w:"throw", m:"v. 던지다", u:25, ex:"Do not throw the small ball.", em:"작은 공을 던지지 마세요.", wx:["throw speaks English very well.", "There are many throw buildings in the city."]},
+        {w:"order", m:"n. 순서, v. 주문하다", u:25, ex:"I order a pizza for dinner.", em:"나는 저녁으로 피자를 주문합니다.", wx:["All your order are right.", "I need a sun hat on order days."]},
+        {w:"storm", m:"n. 폭풍", u:25, ex:"The storm is very strong tonight.", em:"오늘 밤 폭풍이 매우 강합니다.", wx:["storm is busy working now.", "Hit the golf storm into the hole."]},
+        {w:"candle", m:"n. 초, 양초", u:26, ex:"Light a candle in the dark.", em:"어둠 속에서 초를 켜세요.", wx:["Most plants have candle, stems, and roots.", "He will candle a letter to his wife."]},
+        {w:"dragon", m:"n. (전설에 나오는 동물) 용", u:26, ex:"The dragon flies in the sky.", em:"용이 하늘을 납니다.", wx:["My room is dragon because of the sunshine.", "I was excited at the dragon."]},
+        {w:"side", m:"n. 측면, 면", u:26, ex:"Sit on the left side now.", em:"이제 왼쪽에 앉으세요.", wx:["Draw a line under difficult side.", "The doctor side her life."]},
+        {w:"sound", m:"n. 소리", u:26, ex:"I hear a very loud sound.", em:"나는 매우 큰 소리를 듣습니다.", wx:["She reads her sound stories.", "The young boys like toy sound."]},
+        {w:"free", m:"adj. 자유로운, 무료의, 공짜의", u:26, ex:"The water is free in here.", em:"이곳에서는 물이 공짜입니다.", wx:["I would like to drink some free.", "There is a free on the first floor."]},
+        {w:"snail", m:"n. 달팽이", u:26, ex:"The snail moves very slowly now.", em:"달팽이가 지금 매우 천천히 움직입니다.", wx:["I like to play snail games.", "This pillow is snail soft."]},
+        {w:"across", m:"prep. 가로질러, 건너편에", u:26, ex:"Walk across the long busy street.", em:"긴 붐비는 거리를 건너가세요.", wx:["I like salty across chips.", "across help us in our everyday lives."]},
+        {w:"happily", m:"adv. 행복하게", u:26, ex:"The children play together very happily.", em:"아이들이 매우 행복하게 함께 놉니다.", wx:["I would like to drink some happily.", "Please call me happily later."]},
+        {w:"restroom", m:"n. 화장실", u:26, ex:"Where is the clean restroom here?", em:"여기 깨끗한 화장실이 어디입니까?", wx:["Mary lives in a house with a restroom roof.", "The concert restroom at 8 p.m."]},
+        {w:"gray", m:"adj. 회색의", u:26, ex:"The sky is very gray today.", em:"오늘 하늘이 매우 회색입니다.", wx:["Purple fruits like gray are good for eyes.", "I like to gray sweaters in winter."]},
+        {w:"thin", m:"adj. 얇은, 가는, 마른, 홀쭉한", u:26, ex:"The paper is very thin today.", em:"종이가 오늘 매우 얇습니다.", wx:["I put sunscreen on my thin.", "Do not throw stones thin the pond."]},
+        {w:"rich", m:"adj. 부유한, 부자인", u:26, ex:"The king is very rich today.", em:"왕은 오늘 매우 부유합니다.", wx:["Anne rich English very well.", "We met rich four o'clock."]},
+        {w:"mask", m:"n. 가면", u:26, ex:"Wear a mask to be safe.", em:"안전을 위해 가면을 쓰세요.", wx:["A strawberry has mask on the outside.", "There is a mask on the first floor."]},
+        {w:"begin", m:"v. 시작하다", u:26, ex:"The class begins at nine now.", em:"수업은 이제 9시에 시작합니다.", wx:["Turn right at the begin station.", "The dog is begin his tail."]},
+        {w:"bead", m:"n. 구슬", u:26, ex:"I have a small blue bead.", em:"나는 작은 파란색 구슬이 있습니다.", wx:["Stick out your bead and say Aah.", "Draw a bead under difficult words."]},
+        {w:"scream", m:"v. 비명을 지르다", u:26, ex:"Do not scream in the house.", em:"집안에서 비명을 지르지 마세요.", wx:["The kid is making a scream.", "I buy scream at the market."]},
+        {w:"carry", m:"v. 나르다, 싣다", u:26, ex:"I carry a heavy school bag.", em:"나는 무거운 학교 가방을 나릅니다.", wx:["Mark tried to change his clothes by carry.", "Dad told me a funny carry."]},
+        {w:"interested", m:"adj. 관심 있는, 흥미 있는", u:26, ex:"I am interested in English music.", em:"나는 영어 음악에 관심이 있습니다.", wx:["She interested the first snowfall.", "I would like to interested some water."]},
+        {w:"lie", m:"v. 거짓말하다, 눕다", u:26, ex:"Do not tell a bad lie.", em:"나쁜 거짓말을 하지 마세요.", wx:["Maria finally lie the race!", "I cleaned the lie of the car."]},
+        {w:"hug", m:"v. 포옹하다", u:26, ex:"Give your mom a big hug.", em:"엄마를 크게 안아 드리세요.", wx:["Mark tried to change his clothes by hug.", "She is counting her hug."]},
+        {w:"cave", m:"n. 동굴", u:27, ex:"The bear lives in a cave.", em:"곰은 동굴에 삽니다.", wx:["I'll read a longer cave next time.", "I cave something sweet."]},
+        {w:"hunt", m:"v. 사냥하다", u:27, ex:"Lions hunt for food in jungle.", em:"사자들은 정글에서 먹이를 사냥합니다.", wx:["Anne speaks hunt very well.", "I draw pictures with hunt."]},
+        {w:"hundred", m:"n. 100, 백", u:27, ex:"I have one hundred won today.", em:"나는 오늘 100원이 있습니다.", wx:["I put sunscreen on my hundred.", "The kid is hundred a toy."]},
+        {w:"painting", m:"n. 그림", u:27, ex:"This painting is very beautiful today.", em:"이 그림은 오늘 매우 아름답습니다.", wx:["painting takes care of a chick.", "She is holding her baby in her painting."]},
+        {w:"right", m:"adj. 맞는, 올바른, 오른쪽의", u:27, ex:"Your answer is very right today.", em:"당신의 답이 오늘 아주 맞습니다.", wx:["I clean the right with a broom.", "He right a ball to his father."]},
+        {w:"tired", m:"adj. 피곤한, 지친", u:27, ex:"I am very tired after school.", em:"나는 학교가 끝난 후 매우 피곤합니다.", wx:["Most plants have leaves, stems, and tired.", "I draw tired with crayons."]},
+        {w:"stay", m:"v. 지내다, 머무르다", u:27, ex:"I stay at home today now.", em:"나는 오늘 지금 집에 머무릅니다.", wx:["I need a sun hat on sunny stay.", "Computers help us in our everyday stay."]},
+        {w:"corner", m:"n. 모퉁이", u:27, ex:"Put the chair in the corner.", em:"의자를 모퉁이에 두세요.", wx:["We corner the train back home.", "I will make soup with corner."]},
+        {w:"head", m:"n. 머리, v. 가다, 향하다", u:27, ex:"Wear a hat on your head.", em:"당신의 머리에 모자를 쓰세요.", wx:["I went to the head restaurant.", "We met around four o'head."]},
+        {w:"noisy", m:"adj. 시끄러운, 떠들썩한", u:27, ex:"The classroom is very noisy now.", em:"교실이 지금 매우 시끄럽습니다.", wx:["Eric noisy to work.", "She is noisy a tambourine."]},
+        {w:"player", m:"n. 선수", u:27, ex:"He is a good soccer player.", em:"그는 좋은 축구 선수입니다.", wx:["There are many tall player in the city.", "She reads her player stories."]},
+        {w:"cross", m:"v. 건너다, 가로지르다", u:27, ex:"Cross the road very carefully now.", em:"이제 길을 매우 조심히 건너세요.", wx:["I like to wear sweaters in cross.", "He is snorkeling in the cross sea."]},
+        {w:"wonderful", m:"adj. 멋진, 훌륭한", u:27, ex:"Have a wonderful day at school.", em:"학교에서 멋진 하루 보내세요.", wx:["We met wonderful four o'clock.", "She wonderful the first snowfall."]},
+        {w:"postcard", m:"n. 엽서", u:27, ex:"I send a postcard to friend.", em:"나는 친구에게 엽서를 보냅니다.", wx:["The stars twinkle at postcard.", "postcard cooked pasta for me."]},
+        {w:"club", m:"n. (특정 활동·스포츠를 위한) 클럽, 동아리", u:27, ex:"I am in the art club.", em:"나는 미술 동아리에 있습니다.", wx:["I put a fishbowl on the club.", "This hamburger tastes club."]},
+        {w:"kick", m:"v. (발로) 차다", u:27, ex:"Kick the ball into the goal.", em:"골대로 공을 차세요.", wx:["When does this movie kick?", "A kick has seeds on the outside."]},
+        {w:"wolf", m:"n. 늑대", u:27, ex:"The wolf lives in the forest.", em:"늑대는 숲에 삽니다.", wx:["My dog wolf the newspaper to me.", "I wolf pictures with crayons."]},
+        {w:"television", m:"n. 텔레비전", u:27, ex:"We watch television in the evening.", em:"우리는 저녁에 텔레비전을 봅니다.", wx:["There is only television red tulip.", "The doctor television her life."]},
+        {w:"seat", m:"n. 자리, 좌석", u:27, ex:"Please take your seat right now.", em:"지금 바로 자리에 앉으세요.", wx:["They are building a seat.", "I need a seat hat on sunny days."]},
+        {w:"block", m:"n. (도로로 나뉘는) 구역, v. 막다, 방해하다", u:27, ex:"The building is one block away.", em:"건물은 한 구역 떨어져 있습니다.", wx:["The farmer is block the cows.", "She dropped her block and teaspoon."]},
+        {w:"puzzle", m:"n. 퍼즐, 수수께끼", u:28, ex:"I play with a fun puzzle.", em:"나는 재미있는 퍼즐을 가지고 놉니다.", wx:["Bats live in dark puzzle.", "The stars puzzle at night."]},
+        {w:"thing", m:"n. 물건, 것", u:28, ex:"This is a very useful thing.", em:"이것은 매우 유용한 물건입니다.", wx:["A cat is hiding thing the bed.", "I use a ruler to draw thing."]},
+        {w:"scared", m:"adj. 겁먹은, 무서워하는", u:28, ex:"I am scared of the dark.", em:"나는 어둠을 무서워합니다.", wx:["I clean the scared with a broom.", "A blue whale is the largest animal in the scared."]},
+        {w:"sharp", m:"adj. 날카로운, 뾰족한", u:28, ex:"The pencil is very sharp today.", em:"연필이 오늘 매우 날카롭습니다.", wx:["I put a scarf around my sharp.", "I like to wear sharp in winter."]},
+        {w:"step", m:"n. 단계, 걸음", u:28, ex:"Take one step at a time.", em:"한 번에 한 걸음씩 가세요.", wx:["I like salty potato step.", "Stick out your step and say Aah."]},
+        {w:"hurry", m:"v. 서두르다", u:28, ex:"Please hurry up for the school.", em:"학교 가기 위해 서둘러 주세요.", wx:["Henry hurry very hungry.", "It snowed hurry yesterday."]},
+        {w:"tear", m:"n. 눈물", u:28, ex:"A tear falls from her eye.", em:"그녀의 눈에서 눈물 한 방울이 떨어집니다.", wx:["He is tear in the deep sea.", "David is busy working tear."]},
+        {w:"easily", m:"adv. 쉽게", u:28, ex:"I can do this very easily.", em:"나는 이것을 매우 쉽게 할 수 있습니다.", wx:["The concert easily at 8 p.m.", "Brush your teeth before going to easily."]},
+        {w:"try", m:"v. 노력하다, 시도하다", u:28, ex:"Try your best every single day.", em:"매일 당신의 최선을 다하세요.", wx:["Computers try us in our everyday lives.", "The farmer is try the cows."]},
+        {w:"jacket", m:"n. 외투, 재킷", u:28, ex:"Wear a warm jacket today now.", em:"오늘 지금 따뜻한 외투를 입으세요.", wx:["The jacket starts at 8 p.m.", "The doctor jacket her life."]},
+        {w:"hill", m:"n. 언덕", u:28, ex:"We walk up the green hill.", em:"우리는 초록색 언덕을 걸어 올라갑니다.", wx:["Let's go to a hill.", "Jake is my best hill."]},
+        {w:"mirror", m:"n. 거울", u:28, ex:"Look at your face in mirror.", em:"거울 속의 당신의 얼굴을 보세요.", wx:["I mirror vegetables at the market.", "We went out to walk my mirror."]},
+        {w:"firefighter", m:"n. 소방관", u:28, ex:"The firefighter saves many people today.", em:"소방관은 오늘 많은 사람들을 구합니다.", wx:["I clean the firefighter with a broom.", "She saw the first firefighter."]},
+        {w:"hive", m:"n. 벌집", u:28, ex:"Bees live in the beehive now.", em:"벌들이 지금 벌집에 삽니다.", wx:["They are hive a house.", "I meet many friends at hive."]},
+        {w:"please", m:"adv. 제발, 부디, v. 기쁘게 하다", u:28, ex:"Please help me with this box.", em:"이 상자를 좀 도와주세요.", wx:["When does this movie please?", "please lives in a house with a red roof."]},
+        {w:"ring", m:"v. (소리가) 울리다", u:28, ex:"The school bell rings at nine.", em:"학교 종이 9시에 울립니다.", wx:["I need some ring for my soup.", "I will ring soup with peas."]},
+        {w:"ankle", m:"n. 발목", u:28, ex:"I hurt my left ankle today.", em:"나는 오늘 왼쪽 발목을 다쳤습니다.", wx:["ankle help us in our everyday lives.", "It snowed a lot last ankle."]},
+        {w:"eagle", m:"n. 독수리", u:28, ex:"The eagle flies very high today.", em:"독수리가 오늘 매우 높이 납니다.", wx:["All your answers are eagle.", "I was excited at the eagle."]},
+        {w:"brush", m:"n. 붓, 빗, v. 빗질하다, 닦다", u:28, ex:"I brush my hair every morning.", em:"나는 매일 아침 머리를 빗습니다.", wx:["I just brush at the station.", "The kid is making a brush."]},
+        {w:"bark", m:"v. (개가) 짖다", u:28, ex:"The dog barks at the cat.", em:"개가 고양이를 향해 짖습니다.", wx:["The nurse is kind and bark.", "This bark is really soft."]},
+        {w:"save", m:"v. 구하다, 모으다, 아끼다", u:29, ex:"Save your money in the bank.", em:"은행에 당신의 돈을 모으세요.", wx:["There is a save on the first floor.", "A save has seeds on the outside."]},
+        {w:"ladybug", m:"n. 무당벌레", u:29, ex:"The ladybug is on the leaf.", em:"무당벌레가 잎 위에 있습니다.", wx:["Mr. Weber is a good ladybug.", "The ladybug is playing with blocks."]},
+        {w:"tail", m:"n. 꼬리", u:29, ex:"The dog wags its short tail.", em:"그 개는 짧은 꼬리를 흔듭니다.", wx:["Let's go to a tail.", "This tail tastes great."]},
+        {w:"lucky", m:"adj. 운이 좋은, 행운의", u:29, ex:"I am very lucky student today.", em:"나는 오늘 매우 운이 좋은 학생입니다.", wx:["lucky sings very well.", "lucky drives to work."]},
+        {w:"mud", m:"n. 진흙", u:29, ex:"My shoes are full of mud.", em:"내 신발이 진흙으로 가득 찼습니다.", wx:["I just mud at the station.", "My mud is barking at birds."]},
+        {w:"bored", m:"adj. 지루한, 싫증난", u:29, ex:"I am bored in the house.", em:"나는 집에서 지루함을 느낍니다.", wx:["The flag of bored has an eagle and a snake.", "I went to the bored restaurant."]},
+        {w:"count", m:"v. 세다, 계산하다", u:29, ex:"Count the apples in the basket.", em:"바구니에 있는 사과들을 세어 보세요.", wx:["I like salty count chips.", "The lion is hunting for count."]},
+        {w:"robot", m:"n. 로봇", u:29, ex:"The robot can walk and talk.", em:"그 로봇은 걷고 말할 수 있습니다.", wx:["There is a robot on the hill.", "I do my robot before I play games."]},
+        {w:"driver", m:"n. 운전자", u:29, ex:"The bus driver is very kind.", em:"그 버스 운전사는 매우 친절합니다.", wx:["He was tired and slept till driver.", "She is driver her baby in her arms."]},
+        {w:"narrow", m:"adj. 좁은", u:29, ex:"The road is very narrow here.", em:"이곳의 길은 매우 좁습니다.", wx:["He will write a narrow to his wife.", "Purple narrow like blueberries are good for eyes."]},
+        {w:"die", m:"v. 죽다", u:29, ex:"The small plant will not die.", em:"그 작은 식물은 죽지 않을 것입니다.", wx:["My die is bright because of the sunshine.", "I die some salt for my soup."]},
+        {w:"poor", m:"adj. 가난한, 불쌍한", u:29, ex:"Help the poor people in town.", em:"마을의 가난한 사람들을 도와주세요.", wx:["There is a poor on the hill.", "There are many tall buildings in the poor."]},
+        {w:"wild", m:"adj. 야생의", u:29, ex:"Many wild animals live in forest.", em:"많은 야생 동물들이 숲에 삽니다.", wx:["I wild the cup with water.", "I would like to drink some wild."]},
+        {w:"left", m:"adj. 왼쪽의", u:29, ex:"Turn to the left side now.", em:"이제 왼쪽으로 도세요.", wx:["Don't fight with your left.", "Koalas are lazy and sleep all left in the trees."]},
+        {w:"cheek", m:"n. 뺨, 볼", u:29, ex:"He has a red round cheek.", em:"그는 붉고 둥근 뺨을 가졌습니다.", wx:["cheek takes care of a chick.", "I put a blanket cheek her."]},
+        {w:"all", m:"adj. 모든, 전체의, pron. 모두", u:29, ex:"All students are in the class.", em:"모든 학생들이 교실 안에 있습니다.", wx:["This hamburger all great.", "My little all gave me a gift."]},
+        {w:"grass", m:"n. 풀, 잔디", u:29, ex:"The grass is very green today.", em:"오늘 풀이 매우 초록색입니다.", wx:["It snowed a lot last grass.", "This grass tastes great."]},
+        {w:"rice", m:"n. 쌀, 밥", u:29, ex:"I eat white rice for dinner.", em:"나는 저녁으로 흰밥을 먹습니다.", wx:["The nurse is kind and rice.", "I like salty rice chips."]},
+        {w:"computer", m:"n. 컴퓨터", u:29, ex:"I use a computer at home.", em:"나는 집에서 컴퓨터를 사용합니다.", wx:["I computer some salt for my soup.", "I computer many friends at school."]},
+        {w:"turn", m:"v. 돌다, 돌리다, n. 차례, 순서", u:29, ex:"Turn the page of the book.", em:"책의 페이지를 넘기세요.", wx:["I went turn on a snowy day.", "Mr. Weber is a good turn."]},
+        {w:"cane", m:"n. 지팡이", u:30, ex:"The old man uses a cane.", em:"그 노인은 지팡이를 사용하십니다.", wx:["A strawberry has seeds on the cane.", "cane takes care of a chick."]},
+        {w:"watermelon", m:"n. 수박", u:30, ex:"I eat a sweet red watermelon.", em:"나는 달콤한 빨간 수박을 먹습니다.", wx:["My boots cover my watermelon.", "The farmer is feeding the watermelon."]},
+        {w:"tin", m:"adj. 양철의, 양철로 만든", u:30, ex:"The box is made of tin.", em:"그 상자는 양철로 만들어졌습니다.", wx:["Today, it is cold and tin.", "He will tin a letter to his wife."]},
+        {w:"plan", m:"n. 계획, v. 계획하다", u:30, ex:"I have a good weekend plan.", em:"나는 좋은 주말 계획이 있습니다.", wx:["I'll read a longer book plan time.", "I help my father plan his car."]},
+        {w:"flag", m:"n. 국기, 깃발", u:30, ex:"The Korean flag is very beautiful.", em:"태극기는 매우 아름답습니다.", wx:["The doctor flag her life.", "I like salty potato flag."]},
+        {w:"magic", m:"n. 마술, 마법", u:30, ex:"The show is very magic today.", em:"그 공연은 오늘 매우 마술 같습니다.", wx:["The magic saved her life.", "The stars twinkle at magic."]},
+        {w:"quickly", m:"adv. 빨리, 빠르게", u:30, ex:"Please finish your work very quickly.", em:"당신의 일을 매우 빨리 끝내주세요.", wx:["There is a bathroom on the quickly floor.", "Eric quickly to work."]},
+        {w:"purple", m:"adj. 자줏빛의", u:30, ex:"I like the purple flower today.", em:"나는 오늘 자주색 꽃이 좋습니다.", wx:["I need money for a purple robot.", "Mr. Weber is a good purple."]},
+        {w:"climber", m:"n. 등반가", u:30, ex:"The climber is very brave today.", em:"그 등반가는 오늘 매우 용감합니다.", wx:["Anne climber English very well.", "I smelled something climber."]},
+        {w:"sleepy", m:"adj. 졸리는", u:30, ex:"I feel very sleepy right now.", em:"나는 지금 매우 졸립니다.", wx:["Koalas are sleepy and sleep all day in the trees.", "I like to wear sleepy in winter."]},
+        {w:"ink", m:"n. 잉크", u:30, ex:"Use blue ink for the pen.", em:"펜에 파란색 잉크를 사용하세요.", wx:["He will ink a letter to his wife.", "I went to the ink restaurant."]},
+        {w:"dirt", m:"n. 흙, 토양", u:30, ex:"There is dirt on my clothes.", em:"내 옷에 흙이 묻어 있습니다.", wx:["dirt takes care of a chick.", "Computers help us in our everyday dirt."]},
+        {w:"tasty", m:"adj. 맛있는", u:30, ex:"This food is very tasty today.", em:"이 음식은 오늘 매우 맛있습니다.", wx:["There is a long bridge tasty the river.", "Mr. Weber is a tasty person."]},
+        {w:"need", m:"v. ~를 필요로 하다", u:30, ex:"I need a new school bag.", em:"나는 새 학교 가방이 필요합니다.", wx:["There is a need bridge across the river.", "My need sister gave me a gift."]},
+        {w:"shiny", m:"adj. 빛나는", u:30, ex:"The gold ring is very shiny.", em:"금반지가 매우 빛납니다.", wx:["She is counting her shiny.", "She shiny her son stories."]},
+        {w:"crocodile", m:"n. 악어", u:30, ex:"The crocodile is in the river.", em:"악어가 강 안에 있습니다.", wx:["My little crocodile gave me a gift.", "She picked a crocodile cardigan."]},
+        {w:"miss", m:"v. 그리워하다, 놓치다", u:30, ex:"I miss my family very much.", em:"나는 나의 가족이 매우 그립습니다.", wx:["Let's go to a miss.", "When does this miss end?"]},
+        {w:"pack", m:"v. (짐을) 싸다, 포장하다", u:30, ex:"Pack your bag for the trip.", em:"여행을 위해 가방을 싸세요.", wx:["I put a scarf pack my neck.", "I need some pack for my soup."]},
+        {w:"follow", m:"v. 따라가다, 따라오다, (규칙·지시를) 따르다", u:30, ex:"Follow the teacher to the class.", em:"교실까지 선생님을 따라가세요.", wx:["The farmer is feeding the follow.", "I smelled follow sweet."]},
+        {w:"erase", m:"v. 지우다", u:30, ex:"Erase the word on the board.", em:"칠판에 있는 단어를 지우세요.", wx:["The frying pan is too hot to erase.", "I put a blanket erase her."]}
+    ];
+
+    // 영단어 800개를 활용한 대화형 문장 300개 생성
+const enSentData = [
+    {w:"The child is playing with blocks.", m:"그 아이는 블록을 가지고 놀고 있다.", u:1},
+    {w:"He wore a hat on the beach.", m:"그는 해변에서 모자를 썼다.", u:1},
+    {w:"Please call me back later.", m:"나중에 저에게 다시 전화를 해 주세요.", u:1},
+    {w:"This pillow is really soft.", m:"이 베개는 굉장히 푹신해.", u:1},
+    {w:"Jake is my best friend.", m:"제이크는 내 가장 친한 친구이다.", u:2},
+    {w:"The bridge is made from wood.", m:"그 다리는 나무로 만들어졌다.", u:2},
+    {w:"I meet many friends at school.", m:"나는 학교에서 많은 친구를 만난다.", u:2},
+    {w:"I go to school at 8 a.m.", m:"나는 오전 8시에 학교에 간다.", u:2},
+    {w:"We met around four o'clock.", m:"우리는 4시쯤 만났다.", u:3},
+    {w:"I need some salt for my soup.", m:"나는 수프에 넣을 약간의 소금이 필요하다.", u:3},
+    {w:"This math question is easy.", m:"이 수학 문제는 쉽다.", u:3},
+    {w:"We had a good time at home.", m:"우리는 집에서 즐거운 시간을 보냈다.", u:3},
+    {w:"Broccoli is good for your body.", m:"브로콜리는 몸에 좋다.", u:4},
+    {w:"Dad told me a funny story.", m:"아빠가 재미있는 이야기를 해주셨다.", u:4},
+    {w:"My little sister gave me a gift.", m:"내 여동생이 나에게 선물을 주었다.", u:4},
+    {w:"I buy vegetables at the market.", m:"나는 시장에서 채소를 산다.", u:4},
+    {w:"They are building a house.", m:"그들은 집을 짓고 있다.", u:5},
+    {w:"There is only one red tulip.", m:"오직 한 송이의 빨간 튤립이 있다.", u:5},
+    {w:"He was tired and slept till noon.", m:"그는 피곤해서 정오까지 잤다.", u:5},
+    {w:"The kid is making a toy.", m:"그 아이는 장난감을 만들고 있다.", u:5},
+    {w:"The farmer is feeding the cows.", m:"농부가 소에게 먹이를 먹이고 있다.", u:6},
+    {w:"He is snorkeling in the deep sea.", m:"그는 깊은 바다에서 스노클링을 하고 있다.", u:6},
+    {w:"She saw the first snowfall.", m:"그녀는 첫눈을 보았다.", u:6},
+    {w:"I was excited at the pool.", m:"나는 수영장에서 신이 났다.", u:6},
+    {w:"Hit the golf ball into the hole.", m:"구멍 안으로 골프공을 쳐라.", u:7},
+    {w:"There are many tall buildings in the city.", m:"그 도시에는 고층 건물이 많다.", u:7},
+    {w:"The frying pan is too hot to hold.", m:"그 프라이팬은 잡기에 뜨겁다.", u:7},
+    {w:"Could you take a photo of us?", m:"저희 사진 좀 찍어 주실래요?", u:7},
+    {w:"I smelled something sweet.", m:"나는 무언가 달콤한 냄새를 맡았다.", u:8},
+    {w:"I will make soup with peas.", m:"나는 완두콩을 가지고 수프를 만들 것이다.", u:8},
+    {w:"Eggs have hard shells.", m:"달걀은 단단한 껍질을 가지고 있다.", u:8},
+    {w:"I went to the French restaurant.", m:"나는 프랑스 식당에 갔다.", u:8},
+    {w:"Anne cooked pasta for me.", m:"앤은 나를 위해 파스타를 요리했다.", u:9},
+    {w:"This hamburger tastes great.", m:"이 햄버거는 맛이 좋다.", u:9},
+    {w:"I filled the cup with water.", m:"나는 컵에 물을 채웠다.", u:9},
+    {w:"I help my father wash his car.", m:"나는 아빠가 세차하는 것을 돕는다.", u:9},
+    {w:"The young boys like toy cars.", m:"어린 남자 애들은 장난감 자동차를 좋아한다.", u:10},
+    {w:"I'll read a longer book next time.", m:"나는 다음 번에 더 긴 책을 읽을 거야.", u:10},
+    {w:"The concert starts at 8 p.m.", m:"그 콘서트는 8시에 시작한다.", u:10},
+    {w:"Mark sells fresh vegetables.", m:"마크는 신선한 야채를 판다.", u:10},
+    {w:"There is a bathroom on the first floor.", m:"1층에 화장실이 있다.", u:11},
+    {w:"She reads her son stories.", m:"그녀는 아들에게 이야기를 읽어 준다.", u:11},
+    {w:"A cat is hiding under the bed.", m:"고양이가 침대 아래에 숨어 있다.", u:11},
+    {w:"Today, it is cold and cloudy.", m:"오늘은 춥고 흐리다.", u:11},
+    {w:"He will write a letter to his wife.", m:"그는 아내에게 편지를 쓸 것이다.", u:12},
+    {w:"We went out to walk my dog.", m:"우리는 개를 산책시키러 밖에 나왔다.", u:12},
+    {w:"There is a long bridge over the river.", m:"강 위에 긴 다리가 있다.", u:12},
+    {w:"When does this movie end?", m:"이 영화는 언제 끝나니?", u:12},
+    {w:"We took the train back home.", m:"우리는 기차를 타고 집으로 돌아왔다.", u:13},
+    {w:"It snowed a lot last winter.", m:"지난 겨울에는 눈이 많이 왔다.", u:13},
+    {w:"Brush your teeth before going to bed.", m:"자기 전에 이를 닦아라.", u:13},
+    {w:"We eat sandwiches for lunch.", m:"우리는 점심 식사로 샌드위치를 먹는다.", u:13},
+    {w:"Henry looks very hungry.", m:"헨리는 매우 배고파 보인다.", u:14},
+    {w:"I would like to drink some water.", m:"나는 물을 마시고 싶다.", u:14},
+    {w:"The doctor saved her life.", m:"그 의사는 그녀의 생명을 구했다.", u:14},
+    {w:"She is shaking a tambourine.", m:"그녀는 탬버린을 흔들고 있다.", u:14},
+    {w:"Emma takes care of a chick.", m:"엠마는 병아리를 돌본다.", u:15},
+    {w:"I went skiing on a snowy day.", m:"나는 눈 오는 날에 스키를 타러 갔다.", u:15},
+    {w:"I put a scarf around my neck.", m:"나는 목에 목도리를 둘렀다.", u:15},
+    {w:"Do not throw stones into the pond.", m:"연못 안으로 돌을 던지지 마.", u:15},
+    {w:"I cleaned the inside of the car.", m:"나는 자동차 내부를 청소했다.", u:16},
+    {w:"Anne speaks English very well.", m:"앤은 영어를 매우 잘 말한다.", u:16},
+    {w:"Koalas are lazy and sleep all day in the trees.", m:"코알라는 게으르고 나무 위에서 하루 종일 잔다.", u:16},
+    {w:"Eric drives to work.", m:"에릭은 운전해서 직장에 간다.", u:16},
+    {w:"Alice sings very well.", m:"앨리스는 노래를 아주 잘 부른다.", u:17},
+    {w:"The boy is drawing a picture.", m:"그 소년은 그림을 그리고 있다.", u:17},
+    {w:"I clean the floor with a broom.", m:"나는 빗자루로 바닥을 청소한다.", u:17},
+    {w:"Computers help us in our everyday lives.", m:"컴퓨터는 일상 생활에서 우리를 돕는다.", u:17},
+    {w:"Maria finally won the race!", m:"마리아가 마침내 경기에서 우승했어!", u:18},
+    {w:"My dog brings the newspaper to me.", m:"나의 개는 나에게 신문을 가져온다.", u:18},
+    {w:"I use a ruler to draw lines.", m:"나는 선을 그리기 위해 자를 사용한다.", u:18},
+    {w:"I need money for a toy robot.", m:"나는 장난감 로봇을 살 돈이 필요하다.", u:18},
+    {w:"I do my homework before I play games.", m:"나는 게임을 하기 전에 숙제를 한다.", u:19},
+    {w:"Most plants have leaves, stems, and roots.", m:"대부분의 식물은 잎, 줄기, 뿌리가 있다.", u:19},
+    {w:"She dropped her cup and teaspoon.", m:"그녀는 컵과 찻숟가락을 떨어뜨렸다.", u:19},
+    {w:"I draw pictures with crayons.", m:"나는 크레용으로 그림을 그린다.", u:19},
+    {w:"My room is bright because of the sunshine.", m:"햇볕 때문에 내 방이 밝다.", u:20},
+    {w:"I like to wear sweaters in winter.", m:"나는 겨울에 스웨터를 입는 것을 좋아한다.", u:20},
+    {w:"It snowed heavily yesterday.", m:"어제 눈이 많이 내렸다.", u:20},
+    {w:"She is holding her baby in her arms.", m:"그녀는 아이를 품에 안고 있다.", u:20},
+    {w:"Mr. Weber is a good person.", m:"웨버 씨는 좋은 사람이다.", u:21},
+    {w:"A blue whale is the largest animal in the ocean.", m:"대왕 고래는 바다에서 가장 큰 동물이다.", u:21},
+    {w:"I just arrived at the station.", m:"나는 방금 역에 도착했다.", u:21},
+    {w:"Let's go to a movie.", m:"영화 보러 가자.", u:21},
+    {w:"Let's go there!", m:"저기에 가보자!", u:22},
+    {w:"David is busy working now.", m:"데이비드는 지금 일하느라 바쁘다.", u:22},
+    {w:"The nurse is kind and helpful.", m:"그 간호사는 친절하고 잘 도와준다.", u:22},
+    {w:"I like salty potato chips.", m:"나는 짭짤한 감자칩을 좋아한다.", u:22},
+    {w:"I put a blanket over her.", m:"나는 그녀에게 이불을 덮어 주었다.", u:23},
+    {w:"A strawberry has seeds on the outside.", m:"딸기는 겉에 씨앗이 있다.", u:23},
+    {w:"Do you know a word that starts with \"a\"?", m:"\"a\"로 시작하는 단어를 알고 있니?", u:23},
+    {w:"The stars twinkle at night.", m:"밤에는 별들이 반짝반짝 빛난다.", u:23},
+    {w:"Draw a line under difficult words.", m:"어려운 단어 밑에 선을 그어라.", u:24},
+    {w:"Don't fight with your sister.", m:"네 동생과 싸우지 마.", u:24},
+    {w:"Stick out your tongue and say Aah.", m:"혀를 내밀고 '아.' 해 보세요.", u:24},
+    {w:"I put a fishbowl on the table.", m:"나는 탁자 위에 어항을 놓았다.", u:24},
+    {w:"I put sunscreen on my skin.", m:"나는 피부에 자외선 차단제를 발랐다.", u:25},
+    {w:"Mary lives in a house with a red roof.", m:"메리는 빨간 지붕이 있는 집에 산다.", u:25},
+    {w:"He threw a ball to his father.", m:"그는 아빠에게 공을 던졌다.", u:25},
+    {w:"I like to watch quiz shows.", m:"나는 퀴즈 프로그램 보는 것을 좋아한다.", u:25},
+    {w:"She picked a gray cardigan.", m:"그녀는 회색 가디건을 골랐다.", u:26},
+    {w:"Molly put a candle on the cake.", m:"몰리는 케이크에 초를 꽂았다.", u:26},
+    {w:"There is a long bridge across the river.", m:"강을 가로질러 긴 다리가 있다.", u:26},
+    {w:"Those three books are thin.", m:"저 세 권의 책은 얇다.", u:26},
+    {w:"I turned my head to look at her.", m:"나는 그녀를 보기 위해 머리를 돌렸다.", u:27},
+    {w:"All your answers are right.", m:"네 모든 답들이 맞다.", u:27},
+    {w:"Bats live in dark caves.", m:"박쥐는 어두운 동굴에 산다.", u:27},
+    {w:"The lion is hunting for food.", m:"사자가 먹이를 위해 사냥하고 있다.", u:27},
+    {w:"My boots cover my ankles.", m:"나의 부츠는 발목까지 온다.", u:28},
+    {w:"My dog is barking at birds.", m:"나의 개가 새들을 향해 짖고 있다.", u:28},
+    {w:"There is a house on the hill.", m:"저 언덕 위에 집이 있다.", u:28},
+    {w:"Mark tried to change his clothes by himself.", m:"마크는 혼자서 옷을 갈아입으려고 노력했다.", u:28},
+    {w:"I like to play computer games.", m:"나는 컴퓨터 게임하는 것을 좋아한다.", u:29},
+    {w:"Turn right at the police station.", m:"경찰서에서 오른쪽으로 돌아라.", u:29},
+    {w:"The dog is shaking his tail.", m:"그 강아지는 꼬리를 흔들고 있다.", u:29},
+    {w:"She is counting her money.", m:"그녀는 돈을 세고 있다.", u:29},
+    {w:"The flag of Mexico has an eagle and a snake.", m:"멕시코의 국기에는 독수리와 뱀이 있다.", u:30},
+    {w:"Purple fruits like blueberries are good for eyes.", m:"블루베리와 같은 자주색 과일은 눈에 좋다.", u:30},
+    {w:"The climber is enjoying the mountain view.", m:"등반가는 산의 경치를 즐기고 있다.", u:30},
+    {w:"I need a sun hat on sunny days.", m:"나는 화창한 날에 햇빛 차단용 모자가 필요하다.", u:30}
+];
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        if(type === 'correct') {
+            osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        } else {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        }
+    }
+
+    function playTTS(text) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        msg.rate = 0.8;
+        window.speechSynthesis.speak(msg);
+    }
+
+    // ===================== 모드 전환 =====================
+    let currentMode = 'enWord';
+    function setMode(mode, btn) {
+        currentMode = mode;
+        document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('feedback').innerText = '';
+        if(mode === 'enWord') {
+            document.getElementById('word-mode-ui').style.display = 'block';
+            document.getElementById('sent-mode-ui').style.display = 'none';
+            wordResetUI();
+        } else {
+            document.getElementById('word-mode-ui').style.display = 'none';
+            document.getElementById('sent-mode-ui').style.display = 'block';
+            sentResetUI();
+        }
+    }
+
+    // ===================== 유닛 선택 시스템 =====================
+    const WORD_PER_UNIT = 20;
+    const SENT_PER_UNIT = 4;
+    const TOTAL_UNITS = 30;
+
+    let selectedWordUnit = 0; // 0 = 전체
+    let selectedSentUnit = 0;
+
+    function toggleUnitPanel(mode) {
+        const panel = document.getElementById(mode === 'word' ? 'word-unit-panel' : 'sent-unit-panel');
+        const labelEl = document.getElementById(mode === 'word' ? 'word-unit-label' : 'sent-unit-label');
+        const isOpen = panel.style.display !== 'none';
+        panel.style.display = isOpen ? 'none' : 'block';
+        const cur = mode === 'word' ? selectedWordUnit : selectedSentUnit;
+        const name = cur === 0 ? '전체' : 'Unit' + String(cur).padStart(2, '0');
+        labelEl.textContent = name + (isOpen ? ' ▼' : ' ▲');
+    }
+
+    function updateUnitLabel(mode) {
+        const cur = mode === 'word' ? selectedWordUnit : selectedSentUnit;
+        const name = cur === 0 ? '전체' : 'Unit' + String(cur).padStart(2, '0');
+        const labelEl = document.getElementById(mode === 'word' ? 'word-unit-label' : 'sent-unit-label');
+        if (labelEl) labelEl.textContent = name + ' ▼';
+    }
+
+
+    function buildUnitButtons(containerId, mode) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        const allBtn = document.createElement('button');
+        allBtn.className = 'btn-unit btn-unit-all' + (mode === 'word' ? (selectedWordUnit === 0 ? ' active' : '') : (selectedSentUnit === 0 ? ' active' : ''));
+        allBtn.textContent = '전체';
+        allBtn.onclick = () => selectUnit(0, mode);
+        container.appendChild(allBtn);
+
+        for (let i = 1; i <= TOTAL_UNITS; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'btn-unit' + (mode === 'word' ? (selectedWordUnit === i ? ' active' : '') : (selectedSentUnit === i ? ' active' : ''));
+            btn.textContent = 'U' + String(i).padStart(2, '0');
+            btn.id = (mode === 'word' ? 'wunit-' : 'sunit-') + i;
+            btn.onclick = () => selectUnit(i, mode);
+            container.appendChild(btn);
+        }
+    }
+
+    function selectUnit(unitNum, mode) {
+        if (mode === 'word') {
+            selectedWordUnit = unitNum;
+            buildUnitButtons('word-unit-buttons', 'word');
+            // 패널 닫기
+            document.getElementById('word-unit-panel').style.display = 'none';
+            updateUnitLabel('word');
+            wordResetUI();
+        } else {
+            selectedSentUnit = unitNum;
+            buildUnitButtons('sent-unit-buttons', 'sent');
+            document.getElementById('sent-unit-panel').style.display = 'none';
+            updateUnitLabel('sent');
+            sentResetUI();
+        }
+    }
+
+    function getActiveWordData() {
+        if (selectedWordUnit === 0) return enWordData;
+        const start = (selectedWordUnit - 1) * WORD_PER_UNIT;
+        return enWordData.slice(start, start + WORD_PER_UNIT);
+    }
+
+    function getActiveSentData() {
+        if (selectedSentUnit === 0) return enSentData;
+        const start = (selectedSentUnit - 1) * SENT_PER_UNIT;
+        return enSentData.slice(start, start + SENT_PER_UNIT);
+    }
+
+    // ===================== 영어단어 파트 =====================
+    let wordCurrentText = '';
+    let wordIsRevealed = false;
+    let wordQuizOptions = [];
+    let wordHasStarted = false; // 첫 문제 이후 true
+
+    function wordResetUI() {
+        document.getElementById('word-display').innerHTML = '지오야 준비됐니?';
+        document.getElementById('feedback').innerText = '';
+        wordCurrentText = '';
+        wordIsRevealed = false;
+        wordHasStarted = false;
+        document.getElementById('word-btn-area').innerHTML =
+            '<button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>';
+    }
+
+    function wordStartFirst() {
+        wordNextQuiz();
+    }
+
+    function wordNextQuiz() {
+        const data = getActiveWordData();
+        if (!data || data.length === 0) return;
+        const item = data[Math.floor(Math.random() * data.length)];
+        wordCurrentText = item.w;
+        document.getElementById('word-display').innerHTML = '<span style="font-size:60px;">🤔</span><div style="font-size:18px; color:#888; margin-top:8px;">따라해봐!</div>';
+        document.getElementById('feedback').innerText = '';
+        wordIsRevealed = false;
+        wordHasStarted = true;
+        // Show 다시듣기 + 정답확인 buttons
+        document.getElementById('word-btn-area').innerHTML =
+            '<div class="btn-main">' +
+            '<button class="action btn-start" onclick="playTTS(wordCurrentText)">다시 듣기 🔊</button>' +
+            '<button class="action btn-show" id="word-answer-btn" onclick="wordShowAnswerAndChange()">정답 확인 ✅</button>' +
+            '</div>';
+        playTTS(wordCurrentText);
+    }
+
+    function wordShowAnswerAndChange() {
+        if (!wordCurrentText) return;
+        wordIsRevealed = true;
+        document.getElementById('word-display').innerHTML = `
+            <div style="font-size:26px; color:#333; margin-bottom:10px;">${wordCurrentText}</div>
+            <button class="btn-meaning" onclick="wordRevealMeaningAndQuiz()">🤔 무슨 뜻? 🤔</button>
+            <div id="quizArea"></div>
+        `;
+        // Change 정답확인 button to 다음 문제, keep 다시듣기
+        document.getElementById('word-btn-area').innerHTML =
+            '<div class="btn-main">' +
+            '<button class="action btn-start" onclick="playTTS(wordCurrentText)">다시 듣기 🔊</button>' +
+            '<button class="action btn-show" style="background:#2ECC71;" onclick="wordNextQuiz()">다음 문제 ➡️</button>' +
+            '</div>';
+    }
+
+    function wordShowAnswer() {
+        wordShowAnswerAndChange();
+    }
+
+    function highlightWord(sentence, word) {
+        if (!sentence || !word) return sentence;
+        const regex = new RegExp(`(${word})`, 'gi');
+        return sentence.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    // enSentData에서 해당 단어가 포함된 문장 찾기 (대소문자 무시)
+    function findCorrectSentence(word, wordMeaning) {
+        // 1순위: enSentData에서 해당 단어가 직접 포함된 문장
+        const re = new RegExp('\\b' + word + '\\b', 'i');
+        const directMatches = enSentData.filter(d => re.test(d.w));
+        if (directMatches.length > 0) {
+            return directMatches[Math.floor(Math.random() * directMatches.length)].w;
+        }
+
+        // 2순위: enSentData 문장에서 같은 품사 자리 단어를 문제 단어로 교체
+        const posClass = getPosClass(wordMeaning);
+        const modals   = new Set(['will','can','should','would','could','must','may','might','did','does','do','shall']);
+        const articles = new Set(['the','a','an','my','his','her','its','our','their','your','this','that','these','those','no']);
+        const copulas  = new Set(['is','are','was','were','looks','seems','feel','feels','felt','become','becomes','became','am']);
+
+        const shuffled = [...enSentData].sort(() => Math.random() - 0.5);
+        for (const sentItem of shuffled) {
+            const sentence = sentItem.w;
+            if (re.test(sentence)) continue; // 이미 단어 있는 문장 제외
+            const tokens = sentence.replace(/[.,!?'"]/g, '').split(/\s+/);
+
+            let matchSlots = [];
+            for (let i = 1; i < tokens.length; i++) {
+                const prev = tokens[i - 1].toLowerCase().replace(/[.,!?'"]/g, '');
+                const cur  = tokens[i].replace(/[.,!?'"]/g, '');
+                if (!cur || cur.length < 2) continue;
+                if (/^[A-Z]/.test(cur)) continue; // 고유명사 제외
+                if (/^\d/.test(cur)) continue;
+
+                // 품사 일치 자리 찾기
+                if (posClass === 'verb'  && modals.has(prev))   matchSlots.push(cur);
+                if (posClass === 'noun'  && articles.has(prev)) matchSlots.push(cur);
+                if (posClass === 'adj'   && copulas.has(prev))  matchSlots.push(cur);
+                if (posClass === 'adv'   && copulas.has(prev))  matchSlots.push(cur);
+                // prep/other: 관사 뒤 명사 자리 시도
+                if ((posClass === 'prep' || posClass === 'other') && articles.has(prev)) matchSlots.push(cur);
+            }
+
+            matchSlots = [...new Set(matchSlots)].filter(w =>
+                w.toLowerCase() !== word.toLowerCase()
+            );
+            if (matchSlots.length === 0) continue;
+
+            const pick = matchSlots[Math.floor(Math.random() * matchSlots.length)];
+            const result = sentence.replace(new RegExp('\\b' + pick + '\\b', 'i'), word);
+            if (result !== sentence) return result;
+        }
+
+        // 3순위: 그래도 없으면 item.ex (최후 수단)
+        return null;
+    }
+
+    // enSentData에서 랜덤 문장을 골라 특정 단어 하나를 targetWord로 교체해 오답 생성
+    // 문제 단어의 품사 분류
+    function getPosClass(meaning) {
+        if (/^v\./.test(meaning)) return 'verb';
+        if (/^n\./.test(meaning)) return 'noun';
+        if (/^adj\./.test(meaning)) return 'adj';
+        if (/^adv\./.test(meaning)) return 'adv';
+        if (/^prep\./.test(meaning)) return 'prep';
+        return 'other';
+    }
+
+    function makeWrongFromSentData(targetWord, targetMeaning, usedSentences) {
+        const reTarget = new RegExp('\\b' + targetWord + '\\b', 'i');
+        const posClass = getPosClass(targetMeaning);
+
+        const pool = enSentData.filter(d =>
+            !reTarget.test(d.w) && !usedSentences.includes(d.w)
+        );
+        if (pool.length === 0) return null;
+
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+
+        const modals = new Set(['will','can','should','would','could','must','may','might','did','does','do','shall']);
+        const articles = new Set(['the','a','an','my','his','her','its','our','their','your','this','that','these','those','no']);
+        const copulas = new Set(['is','are','was','were','looks','seems','feel','feels','felt','become','becomes','became','am']);
+
+        for (const sentItem of shuffled) {
+            const sentence = sentItem.w;
+            const tokens = sentence.replace(/[.,!?'"]/g, '').split(/\s+/);
+
+            let verbSlots = [];
+            let nounSlots = [];
+            let adjSlots  = [];
+
+            for (let i = 1; i < tokens.length; i++) {
+                const prev = tokens[i - 1].toLowerCase().replace(/[.,!?'"]/g, '');
+                const cur  = tokens[i].replace(/[.,!?'"]/g, '');
+                if (!cur || cur.length < 3) continue;
+                if (/^[A-Z]/.test(cur)) continue;
+                if (/^\d/.test(cur)) continue;
+                if (modals.has(prev))   verbSlots.push(cur);
+                else if (articles.has(prev)) nounSlots.push(cur);
+                else if (copulas.has(prev))  adjSlots.push(cur);
+            }
+
+            // 품사 불일치 자리에서 교체 → 무조건 틀린 문장
+            let pickPool = [];
+            if (posClass === 'verb')       pickPool = [...nounSlots, ...adjSlots];
+            else if (posClass === 'noun')  pickPool = [...verbSlots, ...adjSlots];
+            else if (posClass === 'adj')   pickPool = [...verbSlots, ...nounSlots];
+            else                           pickPool = [...verbSlots, ...nounSlots, ...adjSlots];
+
+            pickPool = [...new Set(pickPool)].filter(w =>
+                w.toLowerCase() !== targetWord.toLowerCase()
+            );
+            if (pickPool.length === 0) continue;
+
+            const pick = pickPool[Math.floor(Math.random() * pickPool.length)];
+            const wrongSent = sentence.replace(
+                new RegExp('\\b' + pick + '\\b', 'i'),
+                targetWord
+            );
+            if (wrongSent !== sentence) return wrongSent;
+        }
+        return null;
+    }
+
+    function wordRevealMeaningAndQuiz() {
+        const quizArea = document.getElementById('quizArea');
+        const item = enWordData.find(d => d.w === wordCurrentText);
+        if (!item) return;
+
+        let rawM = item.m;
+        let posMatch = rawM.match(/^([a-z]+\.(?:\s*[a-z]+\.)?)/);
+        let posTag = posMatch ? `<span style="font-size:14px; color:#888; font-weight:normal; background:#f0f0f0; padding:2px 6px; border-radius:6px; margin-right:6px;">${posMatch[1]}</span>` : '';
+        let defText = posMatch ? rawM.slice(posMatch[0].length).trim() : rawM;
+        let html = `<div class="meaning-text">${posTag}${defText}</div>`;
+
+        // 정답: enSentData에서 해당 단어 포함 문장 찾기 → 없으면 같은 품사 자리 교체 → 최후 수단 item.ex
+        const correctSentence = item.ex;
+
+        // 오답 2개: enSentData 문장에서 품사 불일치 자리에 단어 교체 → 확실히 틀린 문장
+        const usedSentences = [correctSentence];
+        let wrong1 = makeWrongFromSentData(wordCurrentText, rawM, usedSentences);
+        if (wrong1) usedSentences.push(wrong1);
+        let wrong2 = makeWrongFromSentData(wordCurrentText, rawM, usedSentences);
+
+        // fallback: enSentData에서 문장을 구하지 못한 경우 item.wx 사용
+        if (!wrong1) wrong1 = item.wx ? item.wx[0] : item.ex;
+        if (!wrong2) wrong2 = item.wx ? item.wx[1] : item.ex;
+
+        wordQuizOptions = [];
+        wordQuizOptions.push({ text: correctSentence, correct: true });
+        wordQuizOptions.push({ text: wrong1, correct: false });
+        wordQuizOptions.push({ text: wrong2, correct: false });
+        wordQuizOptions.sort(() => Math.random() - 0.5);
+
+        html += `<div class="quiz-container">
+            <div class="quiz-title">단어의 쓰임이 올바른 것은?</div>`;
+        wordQuizOptions.forEach((opt, idx) => {
+            let displayText = highlightWord(opt.text, wordCurrentText);
+            html += `<button class="quiz-option" id="wopt-${idx}" onclick="wordCheckAnswer(${opt.correct}, ${idx})">${idx+1}. ${displayText}</button>`;
+        });
+        html += `</div>`;
+        quizArea.innerHTML = html;
+        document.querySelector('.btn-meaning').style.display = 'none';
+    }
+
+    function getExMeaning(sentence, word, fullMeaning) {
+        const s = sentence.trim();
+        // fullMeaning 에서 한글 뜻만 추출 (품사 태그 제거)
+        const pm = fullMeaning.match(/^([a-z]+\.(?:\s*[a-z]+\.)?\s*)/);
+        const def = pm ? fullMeaning.slice(pm[0].length).trim() : fullMeaning;
+        // 쉼표로 첫 번째 뜻만 사용
+        const def1 = def.split(/[,，]/)[0].trim();
+
+        const patterns = [
+            [/^I can \w+ it\.$/, `나는 그것을 ${def1} 수 있어.`],
+            [/^I see a \w+ here\.$/, `여기에 ${def1}이/가 있어.`],
+            [/^Look at the \w+!$/, `저 ${def1}을/를 봐!`],
+            [/^The \w+ is big\.$/, `그 ${def1}은/는 커.`],
+            [/^She looks \w+\.$/, `그녀는 ${def1}해 보여.`],
+            [/^It is very \w+\.$/, `그건 정말 ${def1}해.`],
+            [/^How \w+ it is!$/, `정말 ${def1}하구나!`],
+            [/^She will \w+ now\.$/, `그녀는 지금 ${def1}할 거야.`],
+            [/^She has a \w+\.$/, `그녀는 ${def1}을/를 가지고 있어.`],
+            [/^We need a \w+\.$/, `우리는 ${def1}이/가 필요해.`],
+            [/^He likes to \w+\.$/, `그는 ${def1}하는 걸 좋아해.`],
+            [/^Let's \w+ together\.$/, `같이 ${def1}하자!`],
+            [/^We \w+ every day\.$/, `우리는 매일 ${def1}해.`],
+            [/^I can \w+ it\.$/, `나는 그것을 ${def1} 수 있어.`],
+            [/^The \w+ cat is here\.$/, `${def1} 고양이가 여기 있어.`],
+            [/^This is a \w+ day\.$/, `오늘은 ${def1} 날이야.`],
+            [/^He sits \w+ the tree\.$/, `그는 나무 ${def1}에 앉아 있어.`],
+            [/^She stands \w+ the door\.$/, `그녀는 문 ${def1}에 서 있어.`],
+            [/^Look \w+ the wall\.$/, `벽 ${def1}을 봐.`],
+            [/^The cat is \w+ the box\.$/, `고양이가 상자 ${def1}에 있어.`],
+        ];
+        for (const [re, result] of patterns) {
+            if (re.test(s)) return result;
+        }
+        return `(${def1})`;
+    }
+
+    function wordCheckAnswer(isCorrect, idx) {
+        const feedback = document.getElementById('feedback');
+        const alreadyAnswered = !!document.querySelector('.quiz-option[data-answered]');
+
+        if(isCorrect) {
+            playTTS(wordQuizOptions[idx].text);
+            feedback.innerText = '잘했어 지오야! 👍';
+            feedback.style.color = '#007AFF';
+
+            if (!alreadyAnswered) {
+                playSound('correct');
+                const targetBtn = document.getElementById(`wopt-${idx}`);
+                if (targetBtn) {
+                    targetBtn.dataset.answered = 'true';
+                    targetBtn.style.background = '#e8f8f5';
+                    targetBtn.style.borderColor = '#27ae60';
+                    // 오답 버튼만 비활성화
+                    document.querySelectorAll('.quiz-option').forEach(b => {
+                        if (!b.dataset.answered) {
+                            b.disabled = true;
+                            b.onclick = null;
+                        }
+                    });
+                    // 한글 해석 한 번만 추가
+                    const item = enWordData.find(d => d.w === wordCurrentText);
+                    if (item) {
+                        const sentMeaning = item.em && item.em.trim()
+                            ? item.em
+                            : getExMeaning(item.ex, wordCurrentText, item.m);
+                        targetBtn.innerHTML = targetBtn.innerHTML + ` <span class="option-meaning">(${sentMeaning})</span>`;
+                    }
+                }
+            }
+        } else {
+            if (alreadyAnswered) return;
+            playSound('wrong');
+            feedback.innerText = '다시 생각해보세요! ❌';
+            feedback.style.color = '#e74c3c';
+            const btn = document.getElementById(`wopt-${idx}`);
+            if(btn) btn.style.background = '#fdedec';
+        }
+    }
+
+    // ===================== 영어문장 파트 =====================
+    let sentCurrentItem = null;
+    let userScrambleAnswer = [];
+    let correctWordsSequence = [];
+    let sentHasStarted = false;
+
+    function sentResetUI() {
+        document.getElementById('sent-display').innerText = '지오야 준비됐니?';
+        document.getElementById('sent-meaning-display').innerText = '';
+        document.getElementById('next-btn-wrapper').innerHTML = '';
+        document.getElementById('scramble-area').innerHTML = '';
+        document.getElementById('scramble-wrapper').style.display = 'block';
+        document.getElementById('feedback').innerText = '';
+        userScrambleAnswer = [];
+        sentHasStarted = false;
+        // 문제보기 버튼 텍스트 초기화
+        const scrBtn = document.querySelector('#scramble-wrapper .btn-scramble');
+        if (scrBtn) scrBtn.textContent = '문제시작 🧩';
+    }
+
+    function startScramble() {
+        const data = getActiveSentData();
+        sentCurrentItem = data[Math.floor(Math.random() * data.length)];
+        document.getElementById('sent-display').innerHTML = '<span style="font-size:60px;">🤔</span><div style="font-size:18px; color:#888; margin-top:8px;">순서대로 맞춰봐!</div>';
+        document.getElementById('sent-meaning-display').innerText = '';
+        document.getElementById('next-btn-wrapper').innerHTML = '';
+        document.getElementById('scramble-area').innerHTML = '';
+        document.getElementById('scramble-wrapper').style.display = 'none';
+        document.getElementById('feedback').innerText = '';
+        userScrambleAnswer = [];
+        sentHasStarted = true;
+
+        let sentence = sentCurrentItem.w;
+        const hasQuestion = sentence.trimEnd().endsWith('?');
+        const endPunct = hasQuestion ? '?' : '.';
+        let rawWords = sentence.trim().replace(/[?.!,;:]/g, '').split(/\s+/).filter(w => w.length > 0);
+
+        correctWordsSequence = rawWords.map(w => w.toLowerCase());
+        correctWordsSequence.push(endPunct);
+
+        let displayWords = rawWords.map((w, i) => {
+            if (w === 'I') return 'I';
+            if (i > 0 && w[0] === w[0].toUpperCase() && w[0] !== w[0].toLowerCase()) return w;
+            return w.toLowerCase();
+        });
+        displayWords.push(endPunct);
+
+        const shuffledWords = [...displayWords].sort(() => Math.random() - 0.5);
+        const area = document.getElementById('scramble-area');
+        shuffledWords.forEach(word => {
+            const chip = document.createElement('div');
+            chip.className = 'word-chip';
+            chip.innerText = word;
+            chip.onclick = () => selectWord(chip);
+            area.appendChild(chip);
+        });
+    }
+
+    function selectWord(chip) {
+        if (chip.classList.contains('selected')) return;
+        const clickedWord = chip.innerText.toLowerCase();
+        const targetWord = correctWordsSequence[userScrambleAnswer.length].toLowerCase();
+
+        if (clickedWord === targetWord) {
+            chip.classList.add('selected');
+            userScrambleAnswer.push(chip.innerText);
+            if (userScrambleAnswer.length === correctWordsSequence.length) {
+                playTTS(sentCurrentItem.w);
+                const feedbackEl = document.getElementById('feedback');
+                feedbackEl.innerText = '잘했어 지오야! 👍';
+                feedbackEl.style.color = '#007AFF';
+                document.getElementById('sent-display').innerText = sentCurrentItem.w;
+                document.getElementById('scramble-area').innerHTML = '';
+                document.getElementById('next-btn-wrapper').innerHTML =
+                    `<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">` +
+                    `<button class="btn-next-inline" style="background:#4CB9E7;box-shadow:0 3px 0 #2a9abf;" onclick="playTTS(sentCurrentItem.w)">다시 듣기 🔊</button>` +
+                    `<button class="btn-next-inline" style="background:#F1C40F;color:#333;box-shadow:0 3px 0 #d4a017;" onclick="showSentMeaning()">무슨 뜻? 🤔</button>` +
+                    `</div>`;
+            }
+        } else {
+            playSound('wrong');
+            document.getElementById('feedback').innerText = '어라? 다시 해보자!';
+        }
+    }
+
+    function showSentMeaning() {
+        document.getElementById('sent-meaning-display').innerText = '(' + sentCurrentItem.m + ')';
+        document.getElementById('next-btn-wrapper').innerHTML =
+            `<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">` +
+            `<button class="btn-next-inline" style="background:#4CB9E7;box-shadow:0 3px 0 #2a9abf;" onclick="playTTS(sentCurrentItem.w)">다시 듣기 🔊</button>` +
+            `<button class="btn-next-inline" onclick="startScramble()">다음 문제 ➡️</button>` +
+            `</div>`;
+    }
+
+    // ===================== 초기화 =====================
+    buildUnitButtons('word-unit-buttons', 'word');
+    buildUnitButtons('sent-unit-buttons', 'sent');
+
+</script>
+</body>
+</html>
