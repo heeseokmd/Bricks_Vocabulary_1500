@@ -1293,14 +1293,10 @@ const enSentData = [
         const endPunct = hasQuestion ? '?' : '.';
         let rawWords = sentence.trim().replace(/[?.!,;:]/g, '').split(/\s+/).filter(w => w.length > 0);
 
-        correctWordsSequence = rawWords.map(w => w.toLowerCase());
+        correctWordsSequence = rawWords.map(w => w);
         correctWordsSequence.push(endPunct);
 
-        let displayWords = rawWords.map((w, i) => {
-            if (w === 'I') return 'I';
-            if (i > 0 && w[0] === w[0].toUpperCase() && w[0] !== w[0].toLowerCase()) return w;
-            return w.toLowerCase();
-        });
+        let displayWords = rawWords.map(w => w);
         displayWords.push(endPunct);
 
         const shuffledWords = [...displayWords].sort(() => Math.random() - 0.5);
