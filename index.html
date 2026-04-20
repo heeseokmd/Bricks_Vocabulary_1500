@@ -6,10 +6,10 @@
     <title>지오의 영어공부</title>
     <style>
         :root {
-            --primary-bg: #fffaf0; /* 따뜻한 느낌의 연한 크림색 */
+            --primary-bg: #fffaf0; 
             --card-bg: #ffffff;
             --text-main: #2d3436;
-            --accent-color: #ff7675; /* 포인트 컬러 (사랑스러운 느낌) */
+            --accent-color: #ff7675;
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
 
@@ -20,13 +20,13 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
+            margin: 20px 0; /* 위아래 여백 추가 */
         }
 
         .container {
             text-align: center;
             background: var(--card-bg);
-            padding: 3.5rem 2.5rem;
+            padding: 3rem 2rem;
             border-radius: 30px;
             box-shadow: var(--shadow);
             width: 90%;
@@ -35,35 +35,35 @@
         }
 
         .emoji {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
             display: block;
         }
 
         h1 {
             color: var(--text-main);
             margin-bottom: 0.5rem;
-            font-size: 1.7rem;
+            font-size: 1.6rem;
             font-weight: 800;
             line-height: 1.4;
         }
 
         .subtitle {
             color: var(--accent-color);
-            font-size: 1.1rem;
-            margin-bottom: 2.5rem;
+            font-size: 1rem;
+            margin-bottom: 2rem;
             font-weight: 500;
         }
 
         .button-group {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px; /* 간격을 살짝 좁혀서 전체 높이 조절 */
         }
 
         .btn {
-            padding: 18px 20px;
-            font-size: 1.1rem;
+            padding: 16px 20px;
+            font-size: 1.05rem;
             font-weight: 700;
             text-decoration: none;
             color: white;
@@ -76,17 +76,19 @@
         }
 
         .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-            filter: brightness(1.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            filter: brightness(1.05);
         }
 
-        /* 부드러운 파스텔 톤 그라데이션 */
+        /* 단계별 컬러 그라데이션 확장 */
         .v300  { background: linear-gradient(135deg, #74b9ff, #0984e3); }
         .v900  { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
         .v1500 { background: linear-gradient(135deg, #fab1a0, #ff7675); }
         .v2300 { background: linear-gradient(135deg, #55efc4, #00b894); }
         .v3100 { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); color: #636e72; }
+        .v3900 { background: linear-gradient(135deg, #fd79a8, #e84393); } /* 핑크 톤 추가 */
+        .v4800 { background: linear-gradient(135deg, #636e72, #2d3436); } /* 다크 톤으로 최종단계 강조 */
 
     </style>
 </head>
@@ -98,11 +100,13 @@
         <p class="subtitle">Bricks Vocabulary Series</p>
         
         <div class="button-group">
-            <a href="https://example.com/bricks300" class="btn v300">Bricks Vocabulary 300</a>
-            <a href="https://example.com/bricks900" class="btn v900">Bricks Vocabulary 900</a>
+            <a href="Bricks_Vocabulary_300.html" class="btn v300">Bricks Vocabulary 300</a>
+            <a href="Bricks_Vocabulary_900.html" class="btn v900">Bricks Vocabulary 900</a>
             <a href="Bricks_Vocabulary_1500.html" class="btn v1500">Bricks Vocabulary 1500</a>
-            <a href="https://example.com/bricks2300" class="btn v2300">Bricks Vocabulary 2300</a>
-            <a href="https://example.com/bricks3100" class="btn v3100">Bricks Vocabulary 3100</a>
+            <a href="Bricks_Vocabulary_2300.html" class="btn v2300">Bricks Vocabulary 2300</a>
+            <a href="Bricks_Vocabulary_3100.html" class="btn v3100">Bricks Vocabulary 3100</a>
+            <a href="Bricks_Vocabulary_3900.html" class="btn v3900">Bricks Vocabulary 3900</a>
+            <a href="Bricks_Vocabulary_4800.html" class="btn v4800">Bricks Vocabulary 4800</a>
         </div>
     </div>
 
