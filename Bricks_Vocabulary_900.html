@@ -1084,16 +1084,27 @@ const enSentData = [
         const reTarget = new RegExp('\\b' + targetWord + '\\b', 'i');
         const posClass = getPosClass(targetMeaning);
 
+        // 단어가 가진 모든 품사 파악 (다품사 단어 처리용)
+        const hasVerb = /\bv\./.test(targetMeaning);
+        const hasNoun = /\bn\./.test(targetMeaning);
+        const hasAdj  = /\badj\./.test(targetMeaning);
+
         const pool = enSentData.filter(d =>
             !reTarget.test(d.w) && !usedSentences.includes(d.w)
         );
         if (pool.length === 0) return null;
 
-        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+        // Fisher-Yates 셔플 (sort() 방식은 편향 발생)
+        const shuffled = [...pool];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
 
-        const modals = new Set(['will','can','should','would','could','must','may','might','did','does','do','shall']);
+        const modals   = new Set(['will','can','should','would','could','must','may','might','did','does','do','shall']);
         const articles = new Set(['the','a','an','my','his','her','its','our','their','your','this','that','these','those','no']);
-        const copulas = new Set(['is','are','was','were','looks','seems','feel','feels','felt','become','becomes','became','am']);
+        const copulas  = new Set(['is','are','was','were','looks','seems','feel','feels','felt','become','becomes','became','am']);
+        const subjPronouns = new Set(['you','we','they','he','she','it','one','anyone','everyone','someone','nobody','somebody','anybody']);
 
         for (const sentItem of shuffled) {
             const sentence = sentItem.w;
@@ -1110,32 +1121,35 @@ const enSentData = [
                 if (!cur || cur.length < 3) continue;
                 if (/^[A-Z]/.test(cur)) continue;
                 if (/^\d/.test(cur)) continue;
+                const curL = cur.toLowerCase();
                 if (modals.has(prev)) {
-                    verbSlots.push(cur);
+                    if (!subjPronouns.has(curL)) verbSlots.push(cur);
                 } else if (articles.has(prev)) {
-                    // 관사 뒤에 또 다른 일반 단어가 이어지면 수식어 자리(관사+수식어+명사 구조)
-                    // → adj를 넣으면 형용사+명사, 명사를 넣으면 명사+명사 복합어로 정문이 됨
-                    // → 어떤 품사를 넣어도 정문이 될 수 있으므로 pickPool에서 완전히 제외
-                    const nextIsWord = next && next.length >= 3
+                    const nextIsWord = next.length >= 3
                         && !modals.has(next.toLowerCase())
                         && !articles.has(next.toLowerCase())
                         && !copulas.has(next.toLowerCase())
                         && !/[.,!?]/.test(next);
-                    if (!nextIsWord) {
-                        nounSlots.push(cur); // 헤드 명사 자리만 수집
-                    }
-                    // nextIsWord면 수식어 자리 → 어떤 품사도 넣으면 정문 가능 → 버림
+                    if (!nextIsWord) nounSlots.push(cur);
                 } else if (copulas.has(prev)) {
-                    adjSlots.push(cur);
+                    if (!subjPronouns.has(curL)) adjSlots.push(cur);
                 }
             }
 
-            // 품사 불일치 자리에서 교체 → 무조건 틀린 문장
+            // ★ 핵심: 단어가 가진 모든 품사에 해당하는 슬롯은 pickPool에서 제외
             let pickPool = [];
-            if (posClass === 'verb')       pickPool = [...nounSlots, ...adjSlots];
-            else if (posClass === 'noun')  pickPool = [...verbSlots, ...adjSlots];
-            else if (posClass === 'adj')   pickPool = [...verbSlots, ...nounSlots];
-            else                           pickPool = [...verbSlots, ...nounSlots, ...adjSlots];
+            if (posClass === 'verb') {
+                pickPool = hasNoun ? [...adjSlots] : [...nounSlots, ...adjSlots];
+            } else if (posClass === 'noun') {
+                pickPool = hasVerb ? [...adjSlots] : [...verbSlots, ...adjSlots];
+            } else if (posClass === 'adj') {
+                if (hasVerb && hasNoun)     pickPool = [];
+                else if (hasVerb)           pickPool = [...nounSlots];
+                else if (hasNoun)           pickPool = [...verbSlots];
+                else                        pickPool = [...verbSlots, ...nounSlots];
+            } else {
+                pickPool = [...verbSlots, ...nounSlots, ...adjSlots];
+            }
 
             pickPool = [...new Set(pickPool)].filter(w =>
                 w.toLowerCase() !== targetWord.toLowerCase()
@@ -1151,7 +1165,6 @@ const enSentData = [
         }
         return null;
     }
-
     function wordRevealMeaningAndQuiz() {
         const quizArea = document.getElementById('quizArea');
         const item = enWordData.find(d => d.w === wordCurrentText);
