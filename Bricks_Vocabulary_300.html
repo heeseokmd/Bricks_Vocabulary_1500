@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BricksVocabulary 300</title>
+    <style>
+        :root { --p: #333333; --s: #FFD384; --bg: #F0F4F8; --txt: #2D3436; }
+        body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: var(--bg); color: var(--txt); text-align: center; padding: 20px; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .container { width: 95%; max-width: 650px; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        h1 { color: #000000; font-size: 20px; margin-bottom: 25px; font-weight: bold; }
+
+        /* 디스플레이 영역 */
+        #word-display { font-size: 22px; font-weight: bold; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #000000; margin: 20px 0; border: 2px solid #EEEEEE; border-radius: 20px; background: #F9F9F9; padding: 20px; word-break: keep-all; line-height: 1.5; }
+
+        /* 공통 버튼 */
+        .btn-main { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button.action { padding: 20px 10px; font-size: 18px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
+        .btn-start { background: #4CB9E7; }
+        .btn-show { background: #FF5F5F; }
+
+        /* 퀴즈 스타일 */
+        .btn-meaning { margin-top: 15px; padding: 10px 15px; font-size: 16px; font-weight: bold; background: #f0f0f0; border: 2px dashed #bbb; border-radius: 12px; cursor: pointer; color: #555; }
+        .meaning-text { color: #E74C3C; font-size: 22px; font-weight: bold; margin: 15px 0; }
+        .quiz-container { margin-top: 10px; text-align: left; width: 100%; border-top: 1px dashed #ccc; padding-top: 15px; }
+        .quiz-title { font-size: 16px; color: #555; margin-bottom: 12px; font-weight: bold; text-align: center; }
+        .quiz-option { display: block; width: 100%; padding: 12px; margin-bottom: 8px; background: white; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; font-size: 16px; transition: 0.2s; color: #333; text-align: left; line-height: 1.4; box-sizing: border-box; }
+        .quiz-option:hover { border-color: #4CB9E7; background: #f0faff; }
+        .highlight { color: #007AFF; font-weight: bold; }
+        .option-meaning { font-size: 14px; color: #666; font-weight: normal; margin-left: 5px; }
+
+        #feedback { margin-top: 5px; font-weight: bold; font-size: 20px; text-align: center; min-height: 30px; }
+        .btn-unit { padding: 5px 8px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; color: #555; transition: 0.15s; min-width: 48px; }
+        .btn-unit.active { background: #4CB9E7; color: white; border-color: #4CB9E7; }
+        .btn-unit-all { background: #FFD384; border-color: #e6b800; color: #855b1b; }
+        .btn-unit-all.active { background: #e6b800; color: #5a3e00; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>✨ 사랑스럽고 멋진 지오의 영어공부 ✨<br><span style="font-size:14px; font-weight:normal; color:#888;">(Bricks Vocabulary 300)</span></h1>
+
+    <!-- 영어단어 모드 UI -->
+    <div id="word-mode-ui">
+        <div id="word-unit-selector" style="margin-bottom:15px;">
+            <button onclick="toggleUnitPanel()" id="word-unit-toggle" style="width:100%;padding:10px 16px;background:#f8f8f8;border:2px solid #ddd;border-radius:14px;cursor:pointer;font-size:14px;font-weight:bold;color:#555;display:flex;align-items:center;justify-content:space-between;">
+                <span>📚 유닛 선택</span>
+                <span id="word-unit-label" style="color:#4CB9E7;font-size:13px;">전체 ▼</span>
+            </button>
+            <div id="word-unit-panel" style="display:none;margin-top:8px;padding:12px;background:#f8f8f8;border-radius:14px;border:2px solid #eee;">
+                <div id="word-unit-buttons" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div id="word-display">지오야 준비됐니?</div>
+        <div id="word-btn-area">
+            <button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>
+        </div>
+    </div>
+
+    <div id="feedback"></div>
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="index.html" style="display: inline-block; padding: 14px 30px; background: #AAAAAA; color: white; border-radius: 20px; font-size: 16px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 0 rgba(0,0,0,0.15);">메인화면으로 🏠</a>
+    </div>
+</div>
+
+<script>
+    const enWordData = 
+[
+        {w:'bear', m:'곰', ex:'I see a big brown bear.', em:'나는 크고 갈색인 곰을 본다.', unit:1},
+        {w:'have', m:'가지다', ex:'I have a red toy car.', em:'나는 빨간 장난감 자동차를 가지고 있다.', unit:1},
+        {w:'cap', m:'모자', ex:'He wears a blue baseball cap.', em:'그는 파란 야구 모자를 쓰고 있다.', unit:1},
+        {w:'frog', m:'개구리', ex:'The green frog jumps very high.', em:'초록 개구리가 아주 높이 점프한다.', unit:1},
+        {w:'doll', m:'인형', ex:'The little girl has a doll.', em:'그 어린 소녀는 인형을 가지고 있다.', unit:1},
+        {w:'home', m:'집, 집으로', ex:'We go home after the school.', em:'우리는 학교 후에 집으로 간다.', unit:1},
+        {w:'boy', m:'소년, 남자 아이', ex:'The boy plays with his friend.', em:'그 소년은 그의 친구와 논다.', unit:1},
+        {w:'good', m:'좋은', ex:'You are a very good student.', em:'당신은 아주 좋은 학생이다.', unit:1},
+        {w:'milk', m:'우유', ex:'I drink a glass of milk.', em:'나는 우유 한 잔을 마신다.', unit:2},
+        {w:'little', m:'작은, 적은', ex:'Look at the little yellow bird.', em:'저 작은 노란 새를 보세요.', unit:2},
+        {w:'ear', m:'귀', ex:'The rabbit has a long ear.', em:'토끼는 긴 귀를 가지고 있다.', unit:2},
+        {w:'fish', m:'물고기, 생선', ex:'The fish swims in the water.', em:'물고기가 물속에서 수영한다.', unit:2},
+        {w:'arm', m:'팔', ex:'I have a watch on arm.', em:'나는 팔에 시계를 차고 있다.', unit:2},
+        {w:'baby', m:'아기', ex:'The baby sleeps in the bed.', em:'아기가 침대에서 잠을 자고 있다.', unit:2},
+        {w:'see', m:'~을 보다', ex:'I see many flowers in garden.', em:'나는 정원에서 많은 꽃을 본다.', unit:2},
+        {w:'play', m:'놀다', ex:'We play soccer in the park.', em:'우리는 공원에서 축구를 하며 논다.', unit:2},
+        {w:'happy', m:'행복한', ex:'I am very happy today now.', em:'나는 지금 오늘 매우 행복하다.', unit:3},
+        {w:'egg', m:'달걀, 알', ex:'I eat an egg for breakfast.', em:'나는 아침으로 달걀 한 개를 먹는다.', unit:3},
+        {w:'leg', m:'(신체) 다리', ex:'The table has four short legs.', em:'그 식탁은 네 개의 짧은 다리가 있다.', unit:3},
+        {w:'cake', m:'케이크', ex:'This chocolate cake is very sweet.', em:'이 초콜릿 케이크는 매우 달콤하다.', unit:3},
+        {w:'ball', m:'공', ex:'The boy kicks the soccer ball.', em:'그 소년이 축구공을 발로 찬다.', unit:3},
+        {w:'go', m:'(다른 곳으로) 가다', ex:'We go to the zoo together.', em:'우리는 함께 동물원에 간다.', unit:3},
+        {w:'nose', m:'코', ex:'I have a small cute nose.', em:'나는 작고 귀여운 코를 가지고 있다.', unit:3},
+        {w:'flower', m:'꽃', ex:'The red flower smells very good.', em:'그 빨간 꽃은 냄새가 아주 좋다.', unit:3},
+        {w:'chair', m:'의자', ex:'I sit on the wooden chair.', em:'나는 나무 의자에 앉아 있다.', unit:4},
+        {w:'say', m:'말하다', ex:'Please say your name very clearly.', em:'당신의 이름을 아주 명확하게 말해주세요.', unit:4},
+        {w:'name', m:'이름', ex:'My name is Heeseok, nice friend.', em:'내 이름은 희석입니다, 좋은 친구야.', unit:4},
+        {w:'book', m:'책', ex:'I read a fun story book.', em:'나는 재미있는 이야기 책을 읽는다.', unit:4},
+        {w:'eye', m:'눈', ex:'I close my eyes and sleep.', em:'나는 눈을 감고 잠을 잔다.', unit:4},
+        {w:'bad', m:'나쁜, 안 좋은', ex:'That is a very bad habit.', em:'그것은 아주 나쁜 습관이다.', unit:4},
+        {w:'dish', m:'접시', ex:'Put the apple on the dish.', em:'접시 위에 사과를 놓으세요.', unit:4},
+        {w:'girl', m:'소녀, 여자 아이', ex:'The girl wears a pretty dress.', em:'그 소녀는 예쁜 드레스를 입고 있다.', unit:4},
+        {w:'kite', m:'연', ex:'The kite flies in the sky.', em:'연이 하늘에서 날고 있다.', unit:5},
+        {w:'boat', m:'(작은) 배', ex:'The small boat is on sea.', em:'작은 배가 바다 위에 있다.', unit:5},
+        {w:'cup', m:'컵, 잔', ex:'Give me a cup of water.', em:'나에게 물 한 컵을 주세요.', unit:5},
+        {w:'ant', m:'개미', ex:'The little ant is on leaf.', em:'작은 개미가 나뭇잎 위에 있다.', unit:5},
+        {w:'hair', m:'머리카락', ex:'She has long brown hair now.', em:'그녀는 지금 긴 갈색 머리카락을 가졌다.', unit:5},
+        {w:'smell', m:'냄새가 나다', ex:'I smell the fresh bread here.', em:'나는 여기에서 신선한 빵 냄새를 맡는다.', unit:5},
+        {w:'dress', m:'드레스, 옷을 입다', ex:'This pink dress is very pretty.', em:'이 분홍색 드레스는 매우 예쁘다.', unit:5},
+        {w:'read', m:'읽다', ex:'I read a book every day.', em:'나는 매일 책을 읽는다.', unit:5},
+        {w:'water', m:'물, 물을 주다', ex:'Please give some water to flowers.', em:'꽃들에게 물을 좀 주세요.', unit:6},
+        {w:'bread', m:'빵', ex:'I eat bread with some jam.', em:'나는 잼과 함께 빵을 먹는다.', unit:6},
+        {w:'apple', m:'사과', ex:'The red apple is very sweet.', em:'그 빨간 사과는 매우 달콤하다.', unit:6},
+        {w:'car', m:'승용차', ex:'My father drives a white car.', em:'나의 아버지는 흰색 차를 운전하신다.', unit:6},
+        {w:'make', m:'만들다', ex:'I make a card for mom.', em:'나는 엄마를 위해 카드를 만든다.', unit:6},
+        {w:'hot', m:'뜨거운, 더운', ex:'The soup is very hot today.', em:'오늘 수프가 매우 뜨겁다.', unit:6},
+        {w:'desk', m:'책상', ex:'Put your book on the desk.', em:'당신의 책을 책상 위에 놓으세요.', unit:6},
+        {w:'bird', m:'새', ex:'The bird sings in the tree.', em:'새가 나무에서 노래를 부른다.', unit:6},
+        {w:'bag', m:'가방', ex:'I carry a heavy school bag.', em:'나는 무거운 책가방을 메고 다닌다.', unit:7},
+        {w:'bee', m:'(곤충) 벌', ex:'The bee flies to the flower.', em:'벌이 꽃으로 날아간다.', unit:7},
+        {w:'look', m:'보다', ex:'Look at the beautiful blue sky.', em:'아름다운 파란 하늘을 보세요.', unit:7},
+        {w:'face', m:'얼굴', ex:'Wash your face in the morning.', em:'아침에 세수를 하세요.', unit:7},
+        {w:'small', m:'작은, 적은', ex:'I found a small green leaf.', em:'나는 작은 초록색 잎을 발견했다.', unit:7},
+        {w:'father', m:'아버지', ex:'My father is a very kind.', em:'나의 아버지는 매우 친절하시다.', unit:7},
+        {w:'sock', m:'양말 한 짝', ex:'I wear a pair of socks.', em:'나는 양말 한 켤레를 신는다.', unit:7},
+        {w:'hand', m:'손', ex:'Wash your hands before the meal.', em:'식사 전에 손을 씻으세요.', unit:7},
+        {w:'meet', m:'만나다', ex:'I meet my friend at school.', em:'나는 학교에서 내 친구를 만난다.', unit:8},
+        {w:'fly', m:'날다', ex:'Birds can fly high in sky.', em:'새들은 하늘 높이 날 수 있다.', unit:8},
+        {w:'leaf', m:'나뭇잎', ex:'The green leaf falls on ground.', em:'초록색 잎이 땅에 떨어진다.', unit:8},
+        {w:'bed', m:'침대', ex:'I go to bed at ten.', em:'나는 열 시에 잠자리에 든다.', unit:8},
+        {w:'mother', m:'어머니', ex:'My mother cooks a delicious dinner.', em:'나의 어머니는 맛있는 저녁을 요리하신다.', unit:8},
+        {w:'time', m:'시간', ex:'What time is it right now?', em:'지금 몇 시입니까?', unit:8},
+        {w:'glove', m:'장갑 한 짝', ex:'Wear your gloves in the winter.', em:'겨울에는 장갑을 끼세요.', unit:8},
+        {w:'tall', m:'키가 큰, 높은', ex:'My brother is very tall now.', em:'내 남동생은 이제 키가 매우 크다.', unit:8},
+        {w:'eat', m:'먹다', ex:'I eat a sandwich for lunch.', em:'나는 점심으로 샌드위치를 먹는다.', unit:9},
+        {w:'hungry', m:'배고픈', ex:'I am very hungry right now.', em:'나는 지금 매우 배가 고프다.', unit:9},
+        {w:'fork', m:'포크', ex:'Use a fork for the cake.', em:'케이크를 먹을 때 포크를 사용하세요.', unit:9},
+        {w:'wait', m:'기다리다', ex:'Please wait for me at gate.', em:'교문에서 나를 기다려 주세요.', unit:9},
+        {w:'give', m:'주다', ex:'Please give me a pencil now.', em:'지금 나에게 연필을 주세요.', unit:9},
+        {w:'door', m:'문', ex:'Please close the door very quietly.', em:'문을 아주 조용히 닫아 주세요.', unit:9},
+        {w:'knee', m:'무릎', ex:'I hurt my left knee today.', em:'나는 오늘 왼쪽 무릎을 다쳤다.', unit:9},
+        {w:'brother', m:'형, 오빠, 남동생', ex:'My brother plays a computer game.', em:'나의 형은 컴퓨터 게임을 한다.', unit:9},
+        {w:'cute', m:'귀여운', ex:'The small puppy is very cute.', em:'그 작은 강아지는 매우 귀엽다.', unit:10},
+        {w:'work', m:'일하다', ex:'My father works in an office.', em:'나의 아버지는 사무실에서 일하신다.', unit:10},
+        {w:'neck', m:'목', ex:'The giraffe has a long neck.', em:'기린은 긴 목을 가지고 있다.', unit:10},
+        {w:'help', m:'돕다', ex:'I help my mom every day.', em:'나는 매일 엄마를 돕는다.', unit:10},
+        {w:'song', m:'노래', ex:'We sing a happy song together.', em:'우리는 함께 행복한 노래를 부른다.', unit:10},
+        {w:'tree', m:'나무', ex:'The apple tree is very big.', em:'그 사과나무는 매우 크다.', unit:10},
+        {w:'sad', m:'슬픈', ex:'Do not feel sad today, friend.', em:'친구야, 오늘 슬퍼하지 마.', unit:10},
+        {w:'friend', m:'친구', ex:'You are my best friend ever.', em:'당신은 나의 가장 친한 친구이다.', unit:10},
+        {w:'snowy', m:'눈이 내리는', ex:'It is a very snowy day.', em:'오늘은 눈이 많이 오는 날이다.', unit:11},
+        {w:'hive', m:'벌집', ex:'The bees live in a hive.', em:'벌들은 벌집에 산다.', unit:11},
+        {w:'bus', m:'버스', ex:'I go to school by bus.', em:'나는 버스를 타고 학교에 간다.', unit:11},
+        {w:'bowl', m:'(우묵한) 그릇', ex:'Put the fruit in the bowl.', em:'그릇에 과일을 담으세요.', unit:11},
+        {w:'find', m:'~을 찾다', ex:'I find a coin on street.', em:'나는 거리에서 동전을 찾는다.', unit:11},
+        {w:'sing', m:'노래하다', ex:'She can sing very beautiful songs.', em:'그녀는 매우 아름다운 노래를 부를 수 있다.', unit:11},
+        {w:'house', m:'집', ex:'We live in a small house.', em:'우리는 작은 집에 산다.', unit:11},
+        {w:'white', m:'흰색의, 흰색', ex:'The snow is very white today.', em:'오늘 눈이 매우 하얗다.', unit:11},
+        {w:'cry', m:'울다', ex:'Do not cry like a baby.', em:'아기처럼 울지 마세요.', unit:12},
+        {w:'funny', m:'웃기는', ex:'That is a very funny story.', em:'그것은 매우 재미있는 이야기이다.', unit:12},
+        {w:'green', m:'녹색의, 녹색', ex:'I like the green grass here.', em:'나는 여기의 초록색 풀을 좋아한다.', unit:12},
+        {w:'hat', m:'모자', ex:'He wears a big brown hat.', em:'그는 큰 갈색 모자를 쓰고 있다.', unit:12},
+        {w:'teeth', m:'이, 치아', ex:'Brush your teeth after the meal.', em:'식사 후에 이를 닦으세요.', unit:12},
+        {w:'watch', m:'시계, 보다', ex:'I have a new gold watch.', em:'나는 새 금시계를 가지고 있다.', unit:12},
+        {w:'sister', m:'언니, 누나, 여동생', ex:'My sister is a cute girl.', em:'나의 여동생은 귀여운 소녀이다.', unit:12},
+        {w:'ride', m:'~을 타다', ex:'I ride my bike in park.', em:'나는 공원에서 자전거를 탄다.', unit:12},
+        {w:'big', m:'큰', ex:'This is a very big box.', em:'이것은 매우 큰 상자이다.', unit:13},
+        {w:'zoo', m:'동물원', ex:'We see lions at the zoo.', em:'우리는 동물원에서 사자들을 본다.', unit:13},
+        {w:'mouth', m:'입', ex:'Open your mouth very wide now.', em:'이제 입을 아주 크게 벌리세요.', unit:13},
+        {w:'run', m:'달리다', ex:'I can run very fast today.', em:'나는 오늘 아주 빨리 달릴 수 있다.', unit:13},
+        {w:'rainy', m:'비가 오는', ex:'I like the rainy days much.', em:'나는 비 오는 날을 많이 좋아한다.', unit:13},
+        {w:'card', m:'카드', ex:'I send a card to mom.', em:'나는 엄마에게 카드를 보낸다.', unit:13},
+        {w:'tiger', m:'호랑이', ex:'The tiger is a strong animal.', em:'호랑이는 힘이 센 동물이다.', unit:13},
+        {w:'write', m:'(글자, 숫자를) 쓰다', ex:'Please write your name on paper.', em:'종이에 당신의 이름을 쓰세요.', unit:13},
+        {w:'ship', m:'(큰) 배', ex:'The big ship is on sea.', em:'큰 배가 바다 위에 있다.', unit:14},
+        {w:'sit', m:'앉다', ex:'Please sit on the blue chair.', em:'파란 의자에 앉아 주세요.', unit:14},
+        {w:'letter', m:'편지', ex:'I write a letter to friend.', em:'나는 친구에게 편지를 쓴다.', unit:14},
+        {w:'love', m:'사랑, 사랑하다', ex:'I love my family very much.', em:'나는 나의 가족을 매우 사랑한다.', unit:14},
+        {w:'short', m:'짧은, 키가 작은', ex:'He has a very short hair.', em:'그는 아주 짧은 머리카락을 가졌다.', unit:14},
+        {w:'cold', m:'추운, 차가운', ex:'The water is very cold now.', em:'지금 물이 매우 차갑다.', unit:14},
+        {w:'towel', m:'수건', ex:'Use a soft white towel now.', em:'이제 부드러운 흰 수건을 사용하세요.', unit:14},
+        {w:'hug', m:'껴안다', ex:'Give your mom a big hug.', em:'엄마를 크게 안아 드리세요.', unit:14},
+        {w:'foot', m:'발', ex:'I have a small left foot.', em:'나는 작은 왼쪽 발을 가졌다.', unit:15},
+        {w:'sun', m:'해, 태양', ex:'The sun is very bright today.', em:'오늘 해가 매우 밝다.', unit:15},
+        {w:'duck', m:'오리', ex:'The duck swims in the pond.', em:'오리가 연못에서 수영한다.', unit:15},
+        {w:'table', m:'식탁', ex:'Put the bread on the table.', em:'식탁 위에 빵을 놓으세요.', unit:15},
+        {w:'garden', m:'정원', ex:'There are flowers in the garden.', em:'정원에 꽃들이 있다.', unit:15},
+        {w:'walk', m:'걷다', ex:'I walk to school every morning.', em:'나는 매일 아침 학교에 걸어간다.', unit:15},
+        {w:'elephant', m:'코끼리', ex:'The elephant is a huge animal.', em:'코끼리는 거대한 동물이다.', unit:15},
+        {w:'like', m:'좋아하다', ex:'I like to eat sweet apples.', em:'나는 단 사과 먹는 것을 좋아한다.', unit:15},
+        {w:'come', m:'오다', ex:'Please come to my house now.', em:'지금 우리 집으로 오세요.', unit:16},
+        {w:'shoe', m:'신발 한 짝', ex:'I lost my left shoe today.', em:'나는 오늘 왼쪽 신발을 잃어버렸다.', unit:16},
+        {w:'full', m:'가득한', ex:'The glass is full of milk.', em:'컵에 우유가 가득 차 있다.', unit:16},
+        {w:'map', m:'지도', ex:'Look at the world map now.', em:'이제 세계 지도를 보세요.', unit:16},
+        {w:'bean', m:'콩', ex:'I like to eat green beans.', em:'나는 초록색 콩 먹는 것을 좋아한다.', unit:16},
+        {w:'pencil', m:'연필', ex:'I have a long yellow pencil.', em:'나는 긴 노란 연필을 가지고 있다.', unit:16},
+        {w:'park', m:'공원', ex:'We play together in the park.', em:'우리는 공원에서 함께 논다.', unit:16},
+        {w:'train', m:'기차', ex:'The train arrives at the station.', em:'기차가 역에 도착한다.', unit:16},
+        {w:'feed', m:'먹이다, 먹이를 주다', ex:'Please feed the hungry dog now.', em:'이제 배고픈 개에게 먹이를 주세요.', unit:17},
+        {w:'fast', m:'빠른, 빨리', ex:'He can run very fast today.', em:'그는 오늘 아주 빨리 달릴 수 있다.', unit:17},
+        {w:'spoon', m:'숟가락', ex:'Give me a small silver spoon.', em:'나에게 작은 은숟가락을 주세요.', unit:17},
+        {w:'bicycle', m:'자전거', ex:'I ride my new bicycle now.', em:'나는 지금 나의 새 자전거를 탄다.', unit:17},
+        {w:'lip', m:'입술', ex:'Put some cream on your lips.', em:'입술에 크림을 좀 바르세요.', unit:17},
+        {w:'tail', m:'꼬리', ex:'The cat has a long tail.', em:'그 고양이는 긴 꼬리를 가졌다.', unit:17},
+        {w:'shop', m:'가게, 물건을 사다', ex:'I go to the toy shop.', em:'나는 장난감 가게에 간다.', unit:17},
+        {w:'wear', m:'(옷 등을) 입다', ex:'I wear a blue shirt today.', em:'나는 오늘 파란 셔츠를 입는다.', unit:17},
+        {w:'umbrella', m:'우산', ex:'Take your umbrella on rainy days.', em:'비 오는 날에는 우산을 챙기세요.', unit:18},
+        {w:'nice', m:'좋은, 멋진', ex:'You are a very nice friend.', em:'당신은 매우 좋은 친구이다.', unit:18},
+        {w:'wash', m:'씻다', ex:'Wash your face with warm water.', em:'따뜻한 물로 세수를 하세요.', unit:18},
+        {w:'man', m:'남자', ex:'He is a very kind man.', em:'그는 매우 친절한 남자이다.', unit:18},
+        {w:'banana', m:'바나나', ex:'I eat a yellow banana now.', em:'나는 지금 노란 바나나를 먹는다.', unit:18},
+        {w:'slow', m:'느린', ex:'The turtle is very slow today.', em:'거북이는 오늘 매우 느리다.', unit:18},
+        {w:'school', m:'학교', ex:'I go to school every day.', em:'나는 매일 학교에 간다.', unit:18},
+        {w:'mouse', m:'쥐', ex:'The small mouse likes the cheese.', em:'작은 쥐는 치즈를 좋아한다.', unit:18},
+        {w:'wake', m:'잠에서 깨다', ex:'I wake up early every morning.', em:'나는 매일 아침 일찍 일어난다.', unit:19},
+        {w:'horse', m:'(동물) 말', ex:'He can ride a big horse.', em:'그는 큰 말을 탈 수 있다.', unit:19},
+        {w:'night', m:'밤, 야간', ex:'I see stars at the night.', em:'나는 밤에 별들을 본다.', unit:19},
+        {w:'star', m:'별', ex:'The stars are very bright today.', em:'오늘 별들이 매우 밝다.', unit:19},
+        {w:'sea', m:'바다', ex:'The sea water is very blue.', em:'바닷물은 매우 파랗다.', unit:19},
+        {w:'cook', m:'요리하다, 요리사', ex:'My dad can cook tasty pasta.', em:'나의 아빠는 맛있는 파스타를 요리하신다.', unit:19},
+        {w:'long', m:'(길이, 거리) 긴', ex:'She has a very long hair.', em:'그녀는 아주 긴 머리카락을 가졌다.', unit:19},
+        {w:'truck', m:'트럭', ex:'Look at that big red truck.', em:'저 큰 빨간 트럭을 보세요.', unit:19},
+        {w:'buy', m:'사다', ex:'I want to buy a toy.', em:'나는 장난감을 사고 싶다.', unit:20},
+        {w:'moon', m:'달', ex:'The moon is round and yellow.', em:'달은 둥글고 노랗다.', unit:20},
+        {w:'new', m:'새로운', ex:'I have a new school bag.', em:'나는 새 책가방을 가지고 있다.', unit:20},
+        {w:'farm', m:'농장', ex:'There are cows on the farm.', em:'농장에 소들이 있다.', unit:20},
+        {w:'live', m:'살다', ex:'We live in a big city.', em:'우리는 큰 도시에 산다.', unit:20},
+        {w:'toy', m:'장난감', ex:'I have many cute toys now.', em:'나는 이제 많은 귀여운 장난감을 가졌다.', unit:20},
+        {w:'glasses', m:'안경', ex:'He wears a pair of glasses.', em:'그는 안경을 쓰고 있다.', unit:20},
+        {w:'people', m:'사람들', ex:'There are many people in park.', em:'공원에 사람들이 많이 있다.', unit:20},
+        {w:'soap', m:'비누', ex:'Wash your hands with the soap.', em:'비누로 손을 씻으세요.', unit:21},
+        {w:'airplane', m:'비행기', ex:'The airplane flies very high now.', em:'비행기가 지금 아주 높이 난다.', unit:21},
+        {w:'large', m:'큰', ex:'This is a very large box.', em:'이것은 매우 큰 상자이다.', unit:21},
+        {w:'gift', m:'선물', ex:'I bought a gift for you.', em:'나는 당신을 위해 선물을 샀다.', unit:21},
+        {w:'use', m:'사용하다', ex:'Can I use your pencil now?', em:'지금 당신의 연필을 써도 될까요?', unit:21},
+        {w:'finger', m:'손가락', ex:'I have ten long fingers now.', em:'나는 지금 열 개의 긴 손가락을 가졌다.', unit:21},
+        {w:'cloud', m:'구름', ex:'Look at the white cloud today.', em:'오늘 흰 구름을 보세요.', unit:21},
+        {w:'cut', m:'자르다', ex:'Cut the paper with the scissors.', em:'가위로 종이를 자르세요.', unit:21},
+        {w:'lion', m:'사자', ex:'The lion is the king now.', em:'사자는 이제 왕이다.', unit:22},
+        {w:'pillow', m:'베개', ex:'My pillow is very soft today.', em:'내 베개는 오늘 매우 폭신하다.', unit:22},
+        {w:'pen', m:'펜', ex:'Write with a blue ink pen.', em:'파란 잉크 펜으로 쓰세요.', unit:22},
+        {w:'can', m:'캔, 통조림', ex:'I drink a can of soda.', em:'나는 탄산음료 한 캔을 마신다.', unit:22},
+        {w:'sleep', m:'(잠을) 자다', ex:'I sleep in my cozy room.', em:'나는 나의 아늑한 방에서 잔다.', unit:22},
+        {w:'old', m:'나이 많은', ex:'My grandfather is very old now.', em:'나의 할아버지는 이제 매우 연세가 많으시다.', unit:22},
+        {w:'bedroom', m:'침실', ex:'Clean your bedroom every weekend now.', em:'이제 주말마다 침실을 청소하세요.', unit:22},
+        {w:'tomato', m:'토마토', ex:'I like to eat red tomatoes.', em:'나는 빨간 토마토 먹는 것을 좋아한다.', unit:22},
+        {w:'onion', m:'양파', ex:'Do not put onion in soup.', em:'수프에 양파를 넣지 마세요.', unit:23},
+        {w:'sheep', m:'양', ex:'The sheep has a white wool.', em:'양은 흰 양털을 가지고 있다.', unit:23},
+        {w:'balloon', m:'풍선', ex:'I have a red round balloon.', em:'나는 빨간 둥근 풍선을 가지고 있다.', unit:23},
+        {w:'shirt', m:'셔츠', ex:'Put on your clean white shirt.', em:'깨끗한 흰 셔츠를 입으세요.', unit:23},
+        {w:'plant', m:'식물, (씨앗 등을) 심다', ex:'I plant a flower in garden.', em:'나는 정원에 꽃을 심는다.', unit:23},
+        {w:'swim', m:'수영하다', ex:'I can swim in the pool.', em:'나는 수영장에서 수영할 수 있다.', unit:23},
+        {w:'party', m:'파티', ex:'We have a fun birthday party.', em:'우리는 즐거운 생일 파티를 한다.', unit:23},
+        {w:'boot', m:'부츠 한 짝', ex:'Wear your black boots today now.', em:'이제 오늘 당신의 검은 부츠를 신으세요.', unit:23},
+        {w:'class', m:'학급, 수업', ex:'I have an English class now.', em:'나는 지금 영어 수업이 있다.', unit:24},
+        {w:'jump', m:'뛰다, 점프하다', ex:'I can jump very high today.', em:'나는 오늘 아주 높이 점프할 수 있다.', unit:24},
+        {w:'fire', m:'불', ex:'Do not play with the fire.', em:'불을 가지고 놀지 마세요.', unit:24},
+        {w:'beetle', m:'딱정벌레', ex:'I found a small black beetle.', em:'나는 작은 검은 딱정벌레를 발견했다.', unit:24},
+        {w:'black', m:'검은, 검은색', ex:'He wears a black leather jacket.', em:'그는 검은 가죽 재킷을 입고 있다.', unit:24},
+        {w:'roll', m:'구르다, 굴리다', ex:'Roll the ball to me now.', em:'이제 나에게 공을 굴리세요.', unit:24},
+        {w:'floor', m:'바닥', ex:'Clean the floor with a cloth.', em:'걸레로 바닥을 청소하세요.', unit:24},
+        {w:'pretty', m:'예쁜', ex:'You are a very pretty girl.', em:'당신은 매우 예쁜 소녀이다.', unit:24},
+        {w:'pizza', m:'피자', ex:'Let\'s eat a cheese pizza together.', em:'함께 치즈 피자를 먹자.', unit:25},
+        {w:'lunch', m:'점심', ex:'I have lunch at the school.', em:'나는 학교에서 점심을 먹는다.', unit:25},
+        {w:'get', m:'받다, 얻다', ex:'I get a gift from dad.', em:'나는 아빠로부터 선물을 받는다.', unit:25},
+        {w:'bounce', m:'튀다, 튀기다', ex:'The ball can bounce very high.', em:'공은 아주 높이 튈 수 있다.', unit:25},
+        {w:'angry', m:'화난', ex:'Do not be angry at me.', em:'나에게 화내지 마세요.', unit:25},
+        {w:'dry', m:'마른, 말리다', ex:'Dry your hands with a towel.', em:'수건으로 손을 말리세요.', unit:25},
+        {w:'sand', m:'모래', ex:'I play with the yellow sand.', em:'나는 노란 모래를 가지고 논다.', unit:25},
+        {w:'beach', m:'해변', ex:'We go to the beach together.', em:'우리는 함께 해변에 간다.', unit:25},
+        {w:'pool', m:'수영장', ex:'The water in pool is cold.', em:'수영장의 물이 차갑다.', unit:26},
+        {w:'zebra', m:'얼룩말', ex:'The zebra has black white stripes.', em:'얼룩말은 검고 흰 줄무늬가 있다.', unit:26},
+        {w:'glass', m:'유리잔, 유리', ex:'I drink a glass of juice.', em:'나는 주스 한 잔을 마신다.', unit:26},
+        {w:'catch', m:'~을 잡다', ex:'Catch the ball with your hands.', em:'손으로 공을 잡으세요.', unit:26},
+        {w:'candy', m:'사탕', ex:'I like to eat sweet candy.', em:'나는 단 사탕 먹는 것을 좋아한다.', unit:26},
+        {w:'mask', m:'마스크, 가면', ex:'Wear a mask in the hospital.', em:'병원에서는 마스크를 쓰세요.', unit:26},
+        {w:'taste', m:'맛, 맛이 나다', ex:'The soup tastes very good today.', em:'오늘 수프 맛이 아주 좋다.', unit:26},
+        {w:'sofa', m:'소파', ex:'Sit on the comfortable brown sofa.', em:'편안한 갈색 소파에 앉으세요.', unit:26},
+        {w:'lamp', m:'램프, 등', ex:'Turn on the lamp in room.', em:'방의 램프를 켜세요.', unit:27},
+        {w:'dinner', m:'(잘 차린) 식사, 정식', ex:'We eat dinner at seven now.', em:'우리는 이제 일곱 시에 저녁을 먹는다.', unit:27},
+        {w:'mirror', m:'거울', ex:'Look at yourself in the mirror.', em:'거울 속의 당신 자신을 보세요.', unit:27},
+        {w:'hit', m:'때리다, 치다', ex:'Do not hit your little brother.', em:'당신의 남동생을 때리지 마세요.', unit:27},
+        {w:'meat', m:'고기', ex:'I like to eat delicious meat.', em:'나는 맛있는 고기 먹는 것을 좋아한다.', unit:27},
+        {w:'dance', m:'춤, 춤을 추다', ex:'We dance to the happy music.', em:'우리는 행복한 음악에 맞춰 춤을 춘다.', unit:27},
+        {w:'down', m:'아래로', ex:'Sit down on the green grass.', em:'초록색 풀 위에 앉으세요.', unit:27},
+        {w:'blow', m:'(입으로) 불다', ex:'Blow out the birthday candles now.', em:'이제 생일 촛불을 끄세요.', unit:27},
+        {w:'throw', m:'던지다', ex:'Throw the ball to your friend.', em:'당신의 친구에게 공을 던지세요.', unit:28},
+        {w:'close', m:'닫다, 가까운', ex:'Please close the window right now.', em:'당장 창문을 닫아 주세요.', unit:28},
+        {w:'ice', m:'얼음', ex:'Put some ice in my drink.', em:'내 음료에 얼음을 좀 넣으세요.', unit:28},
+        {w:'clock', m:'시계', ex:'The clock is on the wall.', em:'시계가 벽에 걸려 있다.', unit:28},
+        {w:'helmet', m:'헬멧', ex:'Wear a helmet for your safety.', em:'당신의 안전을 위해 헬멧을 쓰세요.', unit:28},
+        {w:'chin', m:'턱', ex:'I have a small cute chin.', em:'나는 작고 귀여운 턱을 가졌다.', unit:28},
+        {w:'fox', m:'여우', ex:'The fox has a long tail.', em:'여우는 긴 꼬리를 가졌다.', unit:28},
+        {w:'kick', m:'(발로) 차다', ex:'Kick the soccer ball very hard.', em:'축구공을 아주 세게 차세요.', unit:28},
+        {w:'drink', m:'음료, 마시다', ex:'I drink a glass of water.', em:'나는 물 한 잔을 마신다.', unit:29},
+        {w:'pet', m:'애완동물', ex:'I have a small pet dog.', em:'나는 작은 애완견을 가지고 있다.', unit:29},
+        {w:'juice', m:'주스', ex:'I like to drink orange juice.', em:'나는 오렌지 주스 마시는 것을 좋아한다.', unit:29},
+        {w:'farmer', m:'농부', ex:'The farmer works on the farm.', em:'농부가 농장에서 일한다.', unit:29},
+        {w:'carrot', m:'당근', ex:'Rabbits like to eat orange carrots.', em:'토끼들은 주황색 당근 먹는 것을 좋아한다.', unit:29},
+        {w:'pull', m:'당기다', ex:'Pull the door to open it.', em:'문을 열기 위해 당기세요.', unit:29},
+        {w:'monster', m:'괴물', ex:'I am not afraid of monster.', em:'나는 괴물이 무섭지 않다.', unit:29},
+        {w:'skirt', m:'치마', ex:'She wears a long blue skirt.', em:'그녀는 긴 파란 치마를 입고 있다.', unit:29},
+        {w:'box', m:'상자', ex:'Put the toys in the box.', em:'상자에 장난감들을 넣으세요.', unit:30},
+        {w:'roof', m:'지붕', ex:'The cat is on the roof.', em:'고양이가 지붕 위에 있다.', unit:30},
+        {w:'monkey', m:'원숭이', ex:'The monkey eats a yellow banana.', em:'원숭이가 노란 바나나를 먹는다.', unit:30},
+        {w:'pants', m:'바지', ex:'I wear a pair of pants.', em:'나는 바지 한 벌을 입는다.', unit:30},
+        {w:'blanket', m:'담요', ex:'I use a warm blue blanket.', em:'나는 따뜻한 파란 담요를 사용한다.', unit:30},
+        {w:'draw', m:'그리다', ex:'I draw a picture of flower.', em:'나는 꽃 그림을 그린다.', unit:30},
+        {w:'red', m:'빨간, 빨간색', ex:'I have a bright red car.', em:'나는 밝은 빨간색 차를 가지고 있다.', unit:30},
+        {w:'closet', m:'옷장', ex:'Put your clothes in the closet.', em:'당신의 옷을 옷장에 넣으세요.', unit:30},
+        {w:'yellow', m:'노란, 노란색', ex:'The sun is bright and yellow.', em:'해는 밝고 노랗다.', unit:31},
+        {w:'shark', m:'상어', ex:'The shark lives in the sea.', em:'상어는 바다에 산다.', unit:31},
+        {w:'sell', m:'(돈을 받고) 팔다', ex:'They sell fresh fruit in shop.', em:'그들은 가게에서 신선한 과일을 판다.', unit:31},
+        {w:'spider', m:'거미', ex:'The spider has eight long legs.', em:'거미는 여덟 개의 긴 다리를 가졌다.', unit:31},
+        {w:'picture', m:'그림, 사진', ex:'I take a picture of you.', em:'나는 당신의 사진을 찍는다.', unit:31},
+        {w:'drum', m:'북, 드럼', ex:'He can play the drum well.', em:'그는 드럼을 잘 칠 수 있다.', unit:31},
+        {w:'corn', m:'옥수수', ex:'I like to eat yellow corn.', em:'나는 노란 옥수수 먹는 것을 좋아한다.', unit:31},
+        {w:'wet', m:'젖은', ex:'My hair is very wet now.', em:'내 머리카락은 지금 매우 젖어 있다.', unit:31},
+        {w:'movie', m:'영화', ex:'We watch a fun movie together.', em:'우리는 함께 재미있는 영화를 본다.', unit:32},
+        {w:'bubble', m:'거품', ex:'I like to make soap bubbles.', em:'나는 비눗방울 만드는 것을 좋아한다.', unit:32},
+        {w:'soft', m:'부드러운, 푹신한', ex:'This pillow is very soft now.', em:'이 베개는 지금 매우 폭신하다.', unit:32},
+        {w:'pot', m:'냄비', ex:'Put the soup in the pot.', em:'냄비에 수프를 담으세요.', unit:32},
+        {w:'listen', m:'듣다', ex:'Listen to the music very carefully.', em:'음악을 아주 주의 깊게 들으세요.', unit:32},
+        {w:'baseball', m:'야구', ex:'We play baseball after the school.', em:'우리는 학교 후에 야구를 한다.', unit:32},
+        {w:'rock', m:'바위', ex:'I found a small grey rock.', em:'나는 작은 회색 바위를 발견했다.', unit:32},
+        {w:'up', m:'위로', ex:'Look up at the bright stars.', em:'밝은 별들을 올려다보세요.', unit:32},
+        {w:'open', m:'열려 있는, 열다', ex:'Open the door for your mom.', em:'엄마를 위해 문을 열어 드리세요.', unit:33},
+        {w:'rabbit', m:'토끼', ex:'The white rabbit is very cute.', em:'흰 토끼는 매우 귀엽다.', unit:33},
+        {w:'put', m:'(장소에) 놓다', ex:'Put your books in the bag.', em:'당신의 책들을 가방에 넣으세요.', unit:33},
+        {w:'messy', m:'지저분한', ex:'My room is very messy today.', em:'내 방은 오늘 매우 지저분하다.', unit:33},
+        {w:'bat', m:'배트, 방망이', ex:'I use a long wooden bat.', em:'나는 긴 나무 배트를 사용한다.', unit:33},
+        {w:'doctor', m:'의사', ex:'I want to be a doctor.', em:'나는 의사가 되고 싶다.', unit:33},
+        {w:'street', m:'거리', ex:'Do not run on the street.', em:'거리에서 달리지 마세요.', unit:33},
+        {w:'left', m:'왼쪽의, 왼쪽', ex:'Turn left at the corner now.', em:'이제 모퉁이에서 왼쪽으로 도세요.', unit:33},
+        {w:'toe', m:'발가락', ex:'I have ten small pink toes.', em:'나는 열 개의 작은 분홍색 발가락을 가졌다.', unit:34},
+        {w:'way', m:'길, 방법', ex:'This is the way to school.', em:'이것이 학교로 가는 길이다.', unit:34},
+        {w:'bathroom', m:'욕실, 화장실', ex:'Go to the bathroom and wash.', em:'화장실에 가서 씻으세요.', unit:34},
+        {w:'share', m:'나누다, 함께 쓰다', ex:'Please share your toys with friends.', em:'친구들과 장난감을 함께 쓰세요.', unit:34},
+        {w:'paper', m:'종이', ex:'I need a piece of paper.', em:'나는 종이 한 장이 필요하다.', unit:34},
+        {w:'right', m:'오른쪽의, 오른쪽', ex:'Turn right at the next corner.', em:'다음 모퉁이에서 오른쪽으로 도세요.', unit:34},
+        {w:'hide', m:'감추다, 숨다', ex:'Let\'s hide behind the big tree.', em:'큰 나무 뒤에 숨자.', unit:34},
+        {w:'game', m:'게임', ex:'We play a fun board game.', em:'우리는 재미있는 보드 게임을 한다.', unit:34},
+        {w:'snake', m:'뱀', ex:'I am very afraid of snakes.', em:'나는 뱀이 매우 무섭다.', unit:35},
+        {w:'heart', m:'심장, 마음', ex:'My heart beats very fast today.', em:'내 심장이 오늘 아주 빨리 뛴다.', unit:35},
+        {w:'wink', m:'윙크, 윙크하다', ex:'He can wink with one eye.', em:'그는 한쪽 눈으로 윙크할 수 있다.', unit:35},
+        {w:'violin', m:'바이올린', ex:'She plays the violin very well.', em:'그녀는 바이올린을 매우 잘 켠다.', unit:35},
+        {w:'move', m:'움직이다', ex:'Do not move your body now.', em:'이제 당신의 몸을 움직이지 마세요.', unit:35},
+        {w:'soup', m:'수프', ex:'I eat a bowl of soup.', em:'나는 수프 한 그릇을 먹는다.', unit:35},
+        {w:'poor', m:'가난한, 불쌍한', ex:'We help the poor people today.', em:'우리는 오늘 가난한 사람들을 돕는다.', unit:35},
+        {w:'push', m:'밀다', ex:'Push the button to start it.', em:'그것을 시작하기 위해 버튼을 누르세요.', unit:35},
+        {w:'wall', m:'벽', ex:'I paint the white wall blue.', em:'나는 하얀 벽을 파랗게 칠한다.', unit:36},
+        {w:'money', m:'돈', ex:'I have some money in pocket.', em:'내 주머니에 돈이 좀 있다.', unit:36},
+        {w:'brush', m:'붓', ex:'Clean the shoes with a brush.', em:'솔로 신발을 닦으세요.', unit:36},
+        {w:'grapes', m:'포도', ex:'I like to eat purple grapes.', em:'나는 보라색 포도 먹는 것을 좋아한다.', unit:36},
+        {w:'sunny', m:'화창한', ex:'It is a very sunny day.', em:'오늘은 매우 화창한 날이다.', unit:36},
+        {w:'children', m:'어린이들', ex:'The children play in the park.', em:'어린이들이 공원에서 논다.', unit:36},
+        {w:'drive', m:'운전하다', ex:'My dad can drive a car.', em:'나의 아빠는 차를 운전하실 수 있다.', unit:36},
+        {w:'eraser', m:'지우개', ex:'Give me a small white eraser.', em:'나에게 작은 흰 지우개를 주세요.', unit:36},
+        {w:'windy', m:'바람이 부는', ex:'It is a very windy afternoon.', em:'매우 바람 부는 오후이다.', unit:37},
+        {w:'blue', m:'파란, 파란색', ex:'The sea is very blue today.', em:'오늘 바다가 매우 파랗다.', unit:37},
+        {w:'sick', m:'아픈', ex:'I feel a little sick today.', em:'나는 오늘 몸이 좀 아프다.', unit:37},
+        {w:'ice cream', m:'아이스크림', ex:'I like cold chocolate ice cream.', em:'나는 차가운 초콜릿 아이스크림을 좋아한다.', unit:37},
+        {w:'store', m:'가게, 상점', ex:'I buy bread at the store.', em:'나는 가게에서 빵을 산다.', unit:37},
+        {w:'paint', m:'(그림 물감으로) 그리다', ex:'I paint a picture for you.', em:'나는 당신을 위해 그림을 그린다.', unit:37},
+        {w:'basketball', m:'농구', ex:'We play basketball in the gym.', em:'우리는 체육관에서 농구를 한다.', unit:37},
+        {w:'sweet', m:'달콤한', ex:'This candy is very sweet now.', em:'이 사탕은 지금 매우 달콤하다.', unit:37},
+        {w:'birthday', m:'생일', ex:'Today is my tenth birthday now.', em:'오늘은 이제 나의 열 번째 생일이다.', unit:38},
+        {w:'owl', m:'올빼미', ex:'The owl flies at the night.', em:'올빼미는 밤에 날아다닌다.', unit:38},
+        {w:'piano', m:'피아노', ex:'She plays the piano very well.', em:'그녀는 피아노를 매우 잘 친다.', unit:38},
+        {w:'music', m:'음악', ex:'I listen to the happy music.', em:'나는 행복한 음악을 듣는다.', unit:38},
+        {w:'hear', m:'(소리를) 듣다', ex:'I hear a loud bird song.', em:'나는 큰 새 노랫소리를 듣는다.', unit:38},
+        {w:'bench', m:'벤치', ex:'Sit on the wooden park bench.', em:'공원 나무 벤치에 앉으세요.', unit:38},
+        {w:'clean', m:'깨끗한, 청소하다', ex:'Please clean your room every day.', em:'매일 당신의 방을 청소하세요.', unit:38},
+        {w:'comb', m:'빗, 빗질하다', ex:'I comb my hair every morning.', em:'나는 매일 아침 머리를 빗는다.', unit:38},
+        {w:'window', m:'창문', ex:'Look out of the window now.', em:'이제 창밖을 내다보세요.', unit:39},
+        {w:'grow', m:'자라다, 기르다', ex:'The small plants grow very fast.', em:'작은 식물들이 아주 빨리 자란다.', unit:39},
+        {w:'heavy', m:'무거운', ex:'This big box is very heavy.', em:'이 큰 상자는 매우 무겁다.', unit:39},
+        {w:'coat', m:'외투', ex:'Wear a warm coat in winter.', em:'겨울에는 따뜻한 외투를 입으세요.', unit:39},
+        {w:'cool', m:'시원한, 식히다', ex:'The morning air is very cool.', em:'아침 공기가 매우 시원하다.', unit:39},
+        {w:'rice', m:'쌀, 밥', ex:'I eat white rice for dinner.', em:'나는 저녁으로 흰밥을 먹는다.', unit:39},
+        {w:'potato', m:'감자', ex:'I like to eat fried potatoes.', em:'나는 감자튀김 먹는 것을 좋아한다.', unit:39},
+        {w:'basket', m:'바구니', ex:'Put the fruit in the basket.', em:'바구니에 과일을 담으세요.', unit:39},
+        {w:'pie', m:'파이', ex:'I eat a piece of pie.', em:'나는 파이 한 조각을 먹는다.', unit:40},
+        {w:'sky', m:'하늘', ex:'The sky is very blue today.', em:'오늘 하늘이 매우 파랗다.', unit:40},
+        {w:'pick', m:'(과일 등을) 따다, 고르다', ex:'Pick up the trash on ground.', em:'땅 위의 쓰레기를 주우세요.', unit:40},
+        {w:'warm', m:'따뜻한', ex:'The sun feels very warm today.', em:'오늘 햇볕이 매우 따뜻하게 느껴진다.', unit:40},
+        {w:'xylophone', m:'실로폰', ex:'I can play the small xylophone.', em:'나는 작은 실로폰을 칠 수 있다.', unit:40},
+        {w:'nurse', m:'간호사', ex:'The nurse helps the sick people.', em:'간호사는 아픈 사람들을 돕는다.', unit:40},
+        {w:'dirty', m:'더러운', ex:'Your hands are very dirty now.', em:'당신의 손이 지금 매우 더럽다.', unit:40},
+        {w:'stand', m:'서다', ex:'Stand up and speak your name.', em:'일어나서 당신의 이름을 말하세요.', unit:40}
+    ];
+
+    // ===================== TTS =====================
+    function playTTS(text) {
+        if (!text) return;
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        msg.rate = 0.85;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function playSound(type) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            if (type === 'correct') { osc.frequency.value = 880; gain.gain.value = 0.3; }
+            else { osc.frequency.value = 200; gain.gain.value = 0.3; }
+            osc.start(); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+            setTimeout(() => ctx.close(), 500);
+        } catch(e) {}
+    }
+
+    // ===================== 유닛 선택 시스템 =====================
+    const TOTAL_UNITS = 40;
+    const WORDS_PER_UNIT = 8;
+    let selectedWordUnit = 0;
+
+    function toggleUnitPanel() {
+        const panel = document.getElementById('word-unit-panel');
+        const labelEl = document.getElementById('word-unit-label');
+        const isOpen = panel.style.display !== 'none';
+        panel.style.display = isOpen ? 'none' : 'block';
+        const name = selectedWordUnit === 0 ? '전체' : 'Unit' + String(selectedWordUnit).padStart(2, '0');
+        labelEl.textContent = name + (isOpen ? ' ▼' : ' ▲');
+    }
+
+    function updateUnitLabel() {
+        const name = selectedWordUnit === 0 ? '전체' : 'Unit' + String(selectedWordUnit).padStart(2, '0');
+        const labelEl = document.getElementById('word-unit-label');
+        if (labelEl) labelEl.textContent = name + ' ▼';
+    }
+
+    function buildUnitButtons() {
+        const container = document.getElementById('word-unit-buttons');
+        container.innerHTML = '';
+
+        const allBtn = document.createElement('button');
+        allBtn.className = 'btn-unit btn-unit-all' + (selectedWordUnit === 0 ? ' active' : '');
+        allBtn.textContent = '전체';
+        allBtn.onclick = () => selectUnit(0);
+        container.appendChild(allBtn);
+
+        for (let i = 1; i <= TOTAL_UNITS; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'btn-unit' + (selectedWordUnit === i ? ' active' : '');
+            btn.textContent = 'U' + String(i).padStart(2, '0');
+            btn.id = 'wunit-' + i;
+            btn.onclick = () => selectUnit(i);
+            container.appendChild(btn);
+        }
+    }
+
+    function selectUnit(unitNum) {
+        selectedWordUnit = unitNum;
+        buildUnitButtons();
+        document.getElementById('word-unit-panel').style.display = 'none';
+        updateUnitLabel();
+        wordResetUI();
+    }
+
+    function getActiveWordData() {
+        if (selectedWordUnit === 0) return enWordData;
+        return enWordData.filter(d => d.unit === selectedWordUnit);
+    }
+
+    // ===================== 영어단어 파트 =====================
+    let wordCurrentText = '';
+    let wordIsRevealed = false;
+    let wordQuizOptions = [];
+
+    function wordResetUI() {
+        document.getElementById('word-display').innerHTML = '지오야 준비됐니?';
+        document.getElementById('feedback').innerText = '';
+        wordCurrentText = '';
+        wordIsRevealed = false;
+        document.getElementById('word-btn-area').innerHTML =
+            '<button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>';
+    }
+
+    function wordStartFirst() { wordNextQuiz(); }
+
+    function wordNextQuiz() {
+        const data = getActiveWordData();
+        if (!data || data.length === 0) return;
+        const item = data[Math.floor(Math.random() * data.length)];
+        wordCurrentText = item.w;
+        document.getElementById('word-display').innerHTML = '<span style="font-size:60px;">🤔</span><div style="font-size:18px; color:#888; margin-top:8px;">따라해봐!</div>';
+        document.getElementById('feedback').innerText = '';
+        wordIsRevealed = false;
+        document.getElementById('word-btn-area').innerHTML =
+            '<div class="btn-main">' +
+            '<button class="action btn-start" onclick="playTTS(wordCurrentText)">다시 듣기 🔊</button>' +
+            '<button class="action btn-show" id="word-answer-btn" onclick="wordShowAnswerAndChange()">정답 확인 ✅</button>' +
+            '</div>';
+        playTTS(wordCurrentText);
+    }
+
+    function wordShowAnswerAndChange() {
+        if (!wordCurrentText) return;
+        wordIsRevealed = true;
+        document.getElementById('word-display').innerHTML = `
+            <div style="font-size:26px; color:#333; margin-bottom:10px;">${wordCurrentText}</div>
+            <button class="btn-meaning" onclick="wordRevealMeaningAndQuiz()">🤔 무슨 뜻? 🤔</button>
+            <div id="quizArea"></div>
+        `;
+        document.getElementById('word-btn-area').innerHTML =
+            '<div class="btn-main">' +
+            '<button class="action btn-start" onclick="playTTS(wordCurrentText)">다시 듣기 🔊</button>' +
+            '<button class="action btn-show" style="background:#2ECC71;" onclick="wordNextQuiz()">다음 문제 ➡️</button>' +
+            '</div>';
+    }
+
+    function highlightWord(sentence, word) {
+        if (!sentence || !word) return sentence;
+        const regex = new RegExp(`(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return sentence.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    // ── 각 단어의 품사를 직접 명시한 사전 ──────────────────────────────
+    // noun/verb/adj/adv  (교재 뜻 기준)
+    const wordPOS = {
+        bear:'noun',have:'verb',cap:'noun',frog:'noun',doll:'noun',home:'noun',boy:'noun',good:'adj',
+        milk:'noun',little:'adj',ear:'noun',fish:'noun',arm:'noun',baby:'noun',see:'verb',play:'verb',
+        happy:'adj',egg:'noun',leg:'noun',cake:'noun',ball:'noun',go:'verb',nose:'noun',flower:'noun',
+        chair:'noun',say:'verb',name:'noun',book:'noun',eye:'noun',bad:'adj',dish:'noun',girl:'noun',
+        kite:'noun',boat:'noun',cup:'noun',ant:'noun',hair:'noun',smell:'verb',dress:'noun',read:'verb',
+        water:'noun',bread:'noun',apple:'noun',car:'noun',make:'verb',hot:'adj',desk:'noun',bird:'noun',
+        bag:'noun',bee:'noun',look:'verb',face:'noun',small:'adj',father:'noun',sock:'noun',hand:'noun',
+        meet:'verb',fly:'verb',leaf:'noun',bed:'noun',mother:'noun',time:'noun',glove:'noun',tall:'adj',
+        eat:'verb',hungry:'adj',fork:'noun',wait:'verb',give:'verb',door:'noun',knee:'noun',brother:'noun',
+        cute:'adj',work:'verb',neck:'noun',help:'verb',song:'noun',tree:'noun',sad:'adj',friend:'noun',
+        snowy:'adj',hive:'noun',bus:'noun',bowl:'noun',find:'verb',sing:'verb',house:'noun',white:'adj',
+        cry:'verb',funny:'adj',green:'adj',hat:'noun',teeth:'noun',watch:'noun',sister:'noun',ride:'verb',
+        big:'adj',zoo:'noun',mouth:'noun',run:'verb',rainy:'adj',card:'noun',tiger:'noun',write:'verb',
+        ship:'noun',sit:'verb',letter:'noun',love:'verb',short:'adj',cold:'adj',towel:'noun',hug:'verb',
+        foot:'noun',sun:'noun',duck:'noun',table:'noun',garden:'noun',walk:'verb',elephant:'noun',like:'verb',
+        come:'verb',shoe:'noun',full:'adj',map:'noun',bean:'noun',pencil:'noun',park:'noun',train:'noun',
+        feed:'verb',fast:'adj',spoon:'noun',bicycle:'noun',lip:'noun',tail:'noun',shop:'noun',wear:'verb',
+        umbrella:'noun',nice:'adj',wash:'verb',man:'noun',banana:'noun',slow:'adj',school:'noun',mouse:'noun',
+        wake:'verb',horse:'noun',night:'noun',star:'noun',sea:'noun',cook:'verb',long:'adj',truck:'noun',
+        buy:'verb',moon:'noun',new:'adj',farm:'noun',live:'verb',toy:'noun',glasses:'noun',people:'noun',
+        soap:'noun',airplane:'noun',large:'adj',gift:'noun',use:'verb',finger:'noun',cloud:'noun',cut:'verb',
+        lion:'noun',pillow:'noun',pen:'noun',can:'noun',sleep:'verb',old:'adj',bedroom:'noun',tomato:'noun',
+        onion:'noun',sheep:'noun',balloon:'noun',shirt:'noun',plant:'verb',swim:'verb',party:'noun',boot:'noun',
+        class:'noun',jump:'verb',fire:'noun',beetle:'noun',black:'adj',roll:'verb',floor:'noun',pretty:'adj',
+        pizza:'noun',lunch:'noun',get:'verb',bounce:'verb',angry:'adj',dry:'adj',sand:'noun',beach:'noun',
+        pool:'noun',zebra:'noun',glass:'noun',catch:'verb',candy:'noun',mask:'noun',taste:'verb',sofa:'noun',
+        lamp:'noun',dinner:'noun',mirror:'noun',hit:'verb',meat:'noun',dance:'verb',down:'adv',blow:'verb',
+        throw:'verb',close:'verb',ice:'noun',clock:'noun',helmet:'noun',chin:'noun',fox:'noun',kick:'verb',
+        drink:'verb',pet:'noun',juice:'noun',farmer:'noun',carrot:'noun',pull:'verb',monster:'noun',skirt:'noun',
+        box:'noun',roof:'noun',monkey:'noun',pants:'noun',blanket:'noun',draw:'verb',red:'adj',closet:'noun',
+        yellow:'adj',shark:'noun',sell:'verb',spider:'noun',picture:'noun',drum:'noun',corn:'noun',wet:'adj',
+        movie:'noun',bubble:'noun',soft:'adj',pot:'noun',listen:'verb',baseball:'noun',rock:'noun',up:'adv',
+        open:'verb',rabbit:'noun',put:'verb',messy:'adj',bat:'noun',doctor:'noun',street:'noun',left:'adj',
+        toe:'noun',way:'noun',bathroom:'noun',share:'verb',paper:'noun',right:'adj',hide:'verb',game:'noun',
+        snake:'noun',heart:'noun',wink:'verb',violin:'noun',move:'verb',soup:'noun',poor:'adj',push:'verb',
+        wall:'noun',money:'noun',brush:'noun',grapes:'noun',sunny:'adj',children:'noun',drive:'verb',eraser:'noun',
+        windy:'adj',blue:'adj',sick:'adj','ice cream':'noun',store:'noun',paint:'verb',basketball:'noun',sweet:'adj',
+        birthday:'noun',owl:'noun',piano:'noun',music:'noun',hear:'verb',bench:'noun',clean:'verb',comb:'noun',
+        window:'noun',grow:'verb',heavy:'adj',coat:'noun',cool:'adj',rice:'noun',potato:'noun',basket:'noun',
+        pie:'noun',sky:'noun',pick:'verb',warm:'adj',xylophone:'noun',nurse:'noun',dirty:'adj',stand:'verb'
+    };
+
+    /*
+     * 오답 생성 원칙 (슬롯 기반, 품사 충돌 보장)
+     * ────────────────────────────────────────
+     * VERB_SLOT : modal(can/will/do 등) 바로 다음 단어
+     *   → 이 자리는 반드시 동사원형이어야 함
+     *   → noun/adj 를 넣으면 100% 비문   예) "I can milk today."
+     *
+     * NOUN_SLOT : 관사/소유격(a/the/my 등) 바로 다음 명사
+     *   → 이 자리는 반드시 명사이어야 함
+     *   → verb/adj 단독으로 넣으면 100% 비문   예) "I drink a swim of water."
+     *
+     * VERY_SLOT : very/so/too 바로 다음 단어
+     *   → 이 자리는 반드시 형용사/부사이어야 함
+     *   → noun 을 넣으면 100% 비문   예) "I am very milk today."
+     *
+     * 교체 규칙:
+     *   targetWord가 noun  → VERB_SLOT 의 동사원형을 targetWord로 교체
+     *   targetWord가 verb  → NOUN_SLOT 의 명사를 targetWord로 교체
+     *   targetWord가 adj   → VERB_SLOT 의 동사원형을 targetWord로 교체
+     *   targetWord가 adv   → NOUN_SLOT 의 명사를 targetWord로 교체
+     *
+     * 추가 안전장치: 교체된 단어(pick)가 실제로 교재 wordPOS 사전에 존재하면
+     *   그 품사도 확인해서 진짜 품사 충돌인지 검증
+     */
+    function makeWrongSentence(targetWord, usedSentences) {
+        const posClass = wordPOS[targetWord] || 'noun';
+        const reTarget = new RegExp('\\b' + targetWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+
+        const modals   = new Set(['will','can','should','would','could','must','may','might','did','does','do','shall']);
+        const articles = new Set(['the','a','an','my','his','her','its','our','their','your','this','that','these','those','no','some']);
+        const veryWords= new Set(['very','so','too','quite','really']);
+
+        // targetWord가 없는 문장만 후보로
+        const pool = enWordData.filter(d =>
+            !reTarget.test(d.ex) && !usedSentences.includes(d.ex)
+        );
+        if (pool.length === 0) return null;
+
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+
+        for (const sentItem of shuffled) {
+            const sentence = sentItem.ex;
+            // 마침표/쉼표 제거 후 토크나이즈
+            const raw = sentence.replace(/[.,!?'"]/g, '');
+            const tokens = raw.split(/\s+/);
+
+            let candidates = []; // { idx, word } — 교체 가능한 슬롯
+
+            for (let i = 1; i < tokens.length; i++) {
+                const prev    = tokens[i - 1].toLowerCase();
+                const cur     = tokens[i];
+                const curLow  = cur.toLowerCase();
+
+                if (!cur || cur.length < 3) continue;
+                // 문장 중간 대문자 → 고유명사, 건너뜀
+                if (/^[A-Z]/.test(cur) && i > 0) continue;
+                if (curLow === targetWord.toLowerCase()) continue;
+                // 'not' 뒤는 부사이므로 동사/명사 슬롯으로 잡지 않음
+                if (prev === 'not' || prev === 'never') continue;
+
+                const pickPOS = wordPOS[curLow];
+
+                if (posClass === 'noun' || posClass === 'adj') {
+                    // VERB_SLOT: modal 직후 동사 자리 → noun/adj 삽입 시 100% 비문
+                    if (modals.has(prev)) {
+                        // pick이 실제 교재 단어이면 verb여야만 교체 대상
+                        if (!pickPOS || pickPOS === 'verb') {
+                            candidates.push({ idx: i, word: cur });
+                        }
+                    }
+                } else if (posClass === 'verb') {
+                    // NOUN_SLOT: 관사/소유격 직후 명사 자리 → verb 삽입 시 100% 비문
+                    if (articles.has(prev)) {
+                        // pick이 실제 교재 단어이면 noun이어야만 교체 대상
+                        // 단, 형용사(big/small 등)가 관사 뒤에 오는 경우(a big box)에서
+                        // 관사 바로 뒤 형용사는 제외 — 관사 뒤 단어가 adj이면 그 다음 명사를 찾음
+                        if (!pickPOS || pickPOS === 'noun') {
+                            candidates.push({ idx: i, word: cur });
+                        }
+                    }
+                } else {
+                    // adv → NOUN_SLOT에 삽입
+                    if (articles.has(prev) && (!pickPOS || pickPOS === 'noun')) {
+                        candidates.push({ idx: i, word: cur });
+                    }
+                }
+            }
+
+            if (candidates.length === 0) continue;
+
+            const pick = candidates[Math.floor(Math.random() * candidates.length)].word;
+            const wrongSent = sentence.replace(
+                new RegExp('\\b' + pick.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i'),
+                targetWord
+            );
+            if (wrongSent !== sentence) return wrongSent;
+        }
+        return null;
+    }
+
+    function wordRevealMeaningAndQuiz() {
+        const quizArea = document.getElementById('quizArea');
+        const item = enWordData.find(d => d.w === wordCurrentText);
+        if (!item) return;
+
+        const html_meaning = `<div class="meaning-text">${item.m}</div>`;
+
+        const correctSentence = item.ex;
+        const correctMeaning  = item.em;
+
+        const usedSentences = [correctSentence];
+        let wrong1 = makeWrongSentence(wordCurrentText, usedSentences);
+        if (wrong1) usedSentences.push(wrong1);
+        let wrong2 = makeWrongSentence(wordCurrentText, usedSentences);
+
+        // fallback: 같은 유닛 다른 단어의 문장에서 랜덤 선택
+        if (!wrong1 || !wrong2) {
+            const fallbacks = enWordData
+                .filter(d => d.w !== wordCurrentText && !usedSentences.includes(d.ex))
+                .sort(() => Math.random() - 0.5);
+            if (!wrong1 && fallbacks.length > 0) { wrong1 = fallbacks[0].ex; usedSentences.push(wrong1); }
+            if (!wrong2 && fallbacks.length > 1) { wrong2 = fallbacks[1].ex; }
+        }
+
+        wordQuizOptions = [];
+        wordQuizOptions.push({ text: correctSentence, meaning: correctMeaning, correct: true });
+        wordQuizOptions.push({ text: wrong1 || '', correct: false });
+        wordQuizOptions.push({ text: wrong2 || '', correct: false });
+        wordQuizOptions.sort(() => Math.random() - 0.5);
+
+        let html = html_meaning + `<div class="quiz-container"><div class="quiz-title">단어의 쓰임이 올바른 것은?</div>`;
+        wordQuizOptions.forEach((opt, idx) => {
+            if (!opt.text) return;
+            let displayText = highlightWord(opt.text, wordCurrentText);
+            html += `<button class="quiz-option" id="wopt-${idx}" onclick="wordCheckAnswer(${opt.correct}, ${idx})">${idx+1}. ${displayText}</button>`;
+        });
+        html += `</div>`;
+        quizArea.innerHTML = html;
+        document.querySelector('.btn-meaning').style.display = 'none';
+    }
+
+    function wordCheckAnswer(isCorrect, idx) {
+        const feedback = document.getElementById('feedback');
+        const alreadyAnswered = !!document.querySelector('.quiz-option[data-answered]');
+
+        if (isCorrect) {
+            playTTS(wordQuizOptions[idx].text);
+            feedback.innerText = '잘했어 지오야! 👍';
+            feedback.style.color = '#007AFF';
+            if (!alreadyAnswered) {
+                playSound('correct');
+                const targetBtn = document.getElementById(`wopt-${idx}`);
+                if (targetBtn) {
+                    targetBtn.dataset.answered = 'true';
+                    targetBtn.style.background = '#e8f8f5';
+                    targetBtn.style.borderColor = '#27ae60';
+                    document.querySelectorAll('.quiz-option').forEach(b => {
+                        if (!b.dataset.answered) { b.disabled = true; b.onclick = null; }
+                    });
+                    // 정답 보기에 한글 해석 추가
+                    const meaning = wordQuizOptions[idx].meaning;
+                    if (meaning) {
+                        targetBtn.innerHTML = targetBtn.innerHTML + ` <span class="option-meaning">(${meaning})</span>`;
+                    }
+                }
+            }
+        } else {
+            if (alreadyAnswered) return;
+            playSound('wrong');
+            feedback.innerText = '다시 생각해보세요! ❌';
+            feedback.style.color = '#e74c3c';
+            const btn = document.getElementById(`wopt-${idx}`);
+            if (btn) btn.style.background = '#fdedec';
+        }
+    }
+
+    // ===================== 초기화 =====================
+    buildUnitButtons();
+
+</script>
+</body>
+</html>
