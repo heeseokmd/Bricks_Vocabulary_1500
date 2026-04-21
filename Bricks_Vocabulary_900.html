@@ -1180,7 +1180,11 @@ const enSentData = [
         wordQuizOptions.push({ text: correctSentence, correct: true });
         wordQuizOptions.push({ text: wrong1, correct: false });
         wordQuizOptions.push({ text: wrong2, correct: false });
-        wordQuizOptions.sort(() => Math.random() - 0.5);
+        // Fisher-Yates 셔플 — sort() 방식은 편향이 생겨 정답이 1번에 몰리는 문제가 있음
+        for (let i = wordQuizOptions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [wordQuizOptions[i], wordQuizOptions[j]] = [wordQuizOptions[j], wordQuizOptions[i]];
+        }
 
         html += `<div class="quiz-container">
             <div class="quiz-title">단어의 쓰임이 올바른 것은?</div>`;
