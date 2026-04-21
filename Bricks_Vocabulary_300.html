@@ -517,6 +517,79 @@
         return sentence.replace(regex, '<span class="highlight">$1</span>');
     }
 
+    // ── 다품사 단어의 금지 슬롯 사전 ───────────────────────────────────
+    // 값: 금지된 슬롯 이름의 Set. 슬롯 종류:
+    //   'verb_slot' : modal 직후 (can/will + ___) — 동사 자리
+    //   'noun_slot' : 관사/소유격 직후 (a/the/my + ___) — 명사 자리
+    //   'adv_slot'  : very/so/too 직후 — 형용사/부사 자리
+    //
+    // 삽입 전략 (우선순위):
+    //   noun/adj  → verb_slot 우선 (금지 시 adv_slot)
+    //   verb      → noun_slot 우선 (금지 시 adv_slot)
+    //   adv       → noun_slot 우선
+    //
+    // 형용사는 adv_slot에 들어가도 정문이므로 → adv_slot도 금지
+    const forbiddenSlots = {
+        // ── PRIMARY=VERB, also NOUN → noun_slot 금지 ──
+        see:new Set(['noun_slot']),play:new Set(['noun_slot']),go:new Set(['noun_slot']),
+        say:new Set(['noun_slot']),smell:new Set(['noun_slot']),read:new Set(['noun_slot']),
+        make:new Set(['noun_slot']),look:new Set(['noun_slot']),meet:new Set(['noun_slot']),
+        fly:new Set(['noun_slot']),eat:new Set(['noun_slot']),wait:new Set(['noun_slot']),
+        give:new Set(['noun_slot']),work:new Set(['noun_slot']),help:new Set(['noun_slot']),
+        find:new Set(['noun_slot']),sing:new Set(['noun_slot']),cry:new Set(['noun_slot']),
+        ride:new Set(['noun_slot']),run:new Set(['noun_slot']),write:new Set(['noun_slot']),
+        sit:new Set(['noun_slot']),love:new Set(['noun_slot']),hug:new Set(['noun_slot']),
+        walk:new Set(['noun_slot']),like:new Set(['noun_slot']),come:new Set(['noun_slot']),
+        feed:new Set(['noun_slot']),wash:new Set(['noun_slot']),cook:new Set(['noun_slot']),
+        use:new Set(['noun_slot']),cut:new Set(['noun_slot']),sleep:new Set(['noun_slot']),
+        plant:new Set(['noun_slot']),jump:new Set(['noun_slot']),roll:new Set(['noun_slot']),
+        get:new Set(['noun_slot']),bounce:new Set(['noun_slot']),catch:new Set(['noun_slot']),
+        taste:new Set(['noun_slot']),hit:new Set(['noun_slot']),dance:new Set(['noun_slot']),
+        blow:new Set(['noun_slot']),throw:new Set(['noun_slot']),close:new Set(['noun_slot']),
+        kick:new Set(['noun_slot']),drink:new Set(['noun_slot']),pull:new Set(['noun_slot']),
+        draw:new Set(['noun_slot']),open:new Set(['noun_slot']),put:new Set(['noun_slot']),
+        share:new Set(['noun_slot']),hide:new Set(['noun_slot']),wink:new Set(['noun_slot']),
+        move:new Set(['noun_slot']),push:new Set(['noun_slot']),drive:new Set(['noun_slot']),
+        paint:new Set(['noun_slot']),clean:new Set(['noun_slot']),pick:new Set(['noun_slot']),
+        stand:new Set(['noun_slot']),
+        // ── PRIMARY=NOUN, also VERB → verb_slot 금지 ──
+        bear:new Set(['verb_slot']),cap:new Set(['verb_slot']),milk:new Set(['verb_slot']),
+        ear:new Set(['verb_slot']),fish:new Set(['verb_slot']),arm:new Set(['verb_slot']),
+        nose:new Set(['verb_slot']),name:new Set(['verb_slot']),book:new Set(['verb_slot']),
+        eye:new Set(['verb_slot']),cup:new Set(['verb_slot']),water:new Set(['verb_slot']),
+        bag:new Set(['verb_slot']),face:new Set(['verb_slot']),hand:new Set(['verb_slot']),
+        leaf:new Set(['verb_slot']),bus:new Set(['verb_slot']),watch:new Set(['verb_slot']),
+        mouth:new Set(['verb_slot']),card:new Set(['verb_slot']),ship:new Set(['verb_slot']),
+        foot:new Set(['verb_slot']),table:new Set(['verb_slot']),map:new Set(['verb_slot']),
+        park:new Set(['verb_slot']),train:new Set(['verb_slot']),shop:new Set(['verb_slot']),
+        star:new Set(['verb_slot']),can:new Set(['verb_slot']),fire:new Set(['verb_slot']),
+        sand:new Set(['verb_slot']),mask:new Set(['verb_slot']),box:new Set(['verb_slot']),
+        picture:new Set(['verb_slot']),drum:new Set(['verb_slot']),rock:new Set(['verb_slot']),
+        bat:new Set(['verb_slot']),brush:new Set(['verb_slot']),
+        // ── PRIMARY=ADJ, also NOUN → noun_slot 금지; also ADV → adv_slot도 금지 ──
+        good:new Set(['adv_slot']),
+        hot:new Set(['noun_slot','adv_slot']),white:new Set(['noun_slot','adv_slot']),
+        green:new Set(['noun_slot','adv_slot']),short:new Set(['noun_slot','adv_slot']),
+        cold:new Set(['noun_slot','adv_slot']),fast:new Set(['noun_slot','adv_slot']),
+        long:new Set(['noun_slot','adv_slot']),black:new Set(['noun_slot','adv_slot']),
+        dry:new Set(['noun_slot','adv_slot']),red:new Set(['noun_slot','adv_slot']),
+        yellow:new Set(['noun_slot','adv_slot']),left:new Set(['noun_slot','adv_slot']),
+        right:new Set(['noun_slot','adv_slot']),blue:new Set(['noun_slot','adv_slot']),
+        cool:new Set(['noun_slot','adv_slot']),warm:new Set(['noun_slot','adv_slot']),
+        // adj (순수 형용사) → adv_slot 금지 (very happy = 정문)
+        happy:new Set(['adv_slot']),bad:new Set(['adv_slot']),tall:new Set(['adv_slot']),
+        hungry:new Set(['adv_slot']),cute:new Set(['adv_slot']),sad:new Set(['adv_slot']),
+        snowy:new Set(['adv_slot']),funny:new Set(['adv_slot']),big:new Set(['adv_slot']),
+        rainy:new Set(['adv_slot']),full:new Set(['adv_slot']),nice:new Set(['adv_slot']),
+        slow:new Set(['adv_slot']),new:new Set(['adv_slot']),large:new Set(['adv_slot']),
+        old:new Set(['adv_slot']),black:new Set(['noun_slot','adv_slot']),pretty:new Set(['adv_slot']),
+        angry:new Set(['adv_slot']),wet:new Set(['adv_slot']),soft:new Set(['adv_slot']),
+        messy:new Set(['adv_slot']),poor:new Set(['adv_slot']),sunny:new Set(['adv_slot']),
+        windy:new Set(['adv_slot']),sick:new Set(['adv_slot']),sweet:new Set(['adv_slot']),
+        heavy:new Set(['adv_slot']),dirty:new Set(['adv_slot']),small:new Set(['adv_slot']),
+        little:new Set(['adv_slot']),
+    };
+
     // ── 각 단어의 품사를 직접 명시한 사전 ──────────────────────────────
     // noun/verb/adj/adv  (교재 뜻 기준)
     const wordPOS = {
@@ -589,12 +662,12 @@
     function makeWrongSentence(targetWord, usedSentences) {
         const posClass = wordPOS[targetWord] || 'noun';
         const reTarget = new RegExp('\\b' + targetWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+        const myForbidden = forbiddenSlots[targetWord] || new Set();
 
         const modals   = new Set(['will','can','should','would','could','must','may','might','did','does','do','shall']);
         const articles = new Set(['the','a','an','my','his','her','its','our','their','your','this','that','these','those','no','some']);
-        const veryWords= new Set(['very','so','too','quite','really']);
+        const veryW    = new Set(['very','so','too','quite','really']);
 
-        // targetWord가 없는 문장만 후보로
         const pool = enWordData.filter(d =>
             !reTarget.test(d.ex) && !usedSentences.includes(d.ex)
         );
@@ -602,56 +675,67 @@
 
         const shuffled = [...pool].sort(() => Math.random() - 0.5);
 
+        // ── 1차 패스: verb_slot / noun_slot 만 사용 (adv_slot 제외) ──
+        // → "very + 단어" 패턴 최대한 억제
         for (const sentItem of shuffled) {
             const sentence = sentItem.ex;
-            // 마침표/쉼표 제거 후 토크나이즈
             const raw = sentence.replace(/[.,!?'"]/g, '');
             const tokens = raw.split(/\s+/);
-
-            let candidates = []; // { idx, word } — 교체 가능한 슬롯
+            const candidates = [];
 
             for (let i = 1; i < tokens.length; i++) {
-                const prev    = tokens[i - 1].toLowerCase();
-                const cur     = tokens[i];
-                const curLow  = cur.toLowerCase();
-
+                const prev   = tokens[i - 1].toLowerCase();
+                const cur    = tokens[i];
+                const curLow = cur.toLowerCase();
                 if (!cur || cur.length < 3) continue;
-                // 문장 중간 대문자 → 고유명사, 건너뜀
                 if (/^[A-Z]/.test(cur) && i > 0) continue;
                 if (curLow === targetWord.toLowerCase()) continue;
-                // 'not' 뒤는 부사이므로 동사/명사 슬롯으로 잡지 않음
                 if (prev === 'not' || prev === 'never') continue;
-
                 const pickPOS = wordPOS[curLow];
 
-                if (posClass === 'noun' || posClass === 'adj') {
-                    // VERB_SLOT: modal 직후 동사 자리 → noun/adj 삽입 시 100% 비문
-                    if (modals.has(prev)) {
-                        // pick이 실제 교재 단어이면 verb여야만 교체 대상
-                        if (!pickPOS || pickPOS === 'verb') {
-                            candidates.push({ idx: i, word: cur });
-                        }
-                    }
-                } else if (posClass === 'verb') {
-                    // NOUN_SLOT: 관사/소유격 직후 명사 자리 → verb 삽입 시 100% 비문
-                    if (articles.has(prev)) {
-                        // pick이 실제 교재 단어이면 noun이어야만 교체 대상
-                        // 단, 형용사(big/small 등)가 관사 뒤에 오는 경우(a big box)에서
-                        // 관사 바로 뒤 형용사는 제외 — 관사 뒤 단어가 adj이면 그 다음 명사를 찾음
-                        if (!pickPOS || pickPOS === 'noun') {
-                            candidates.push({ idx: i, word: cur });
-                        }
-                    }
-                } else {
-                    // adv → NOUN_SLOT에 삽입
-                    if (articles.has(prev) && (!pickPOS || pickPOS === 'noun')) {
-                        candidates.push({ idx: i, word: cur });
-                    }
+                if (!myForbidden.has('verb_slot') && modals.has(prev)) {
+                    if ((posClass === 'noun' || posClass === 'adj') && (!pickPOS || pickPOS === 'verb'))
+                        candidates.push({ slot: 'verb_slot', word: cur });
+                }
+                if (!myForbidden.has('noun_slot') && articles.has(prev)) {
+                    if ((posClass === 'verb' || posClass === 'adv') && (!pickPOS || pickPOS === 'noun'))
+                        candidates.push({ slot: 'noun_slot', word: cur });
                 }
             }
 
             if (candidates.length === 0) continue;
+            const pick = candidates[Math.floor(Math.random() * candidates.length)].word;
+            const wrongSent = sentence.replace(
+                new RegExp('\\b' + pick.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i'),
+                targetWord
+            );
+            if (wrongSent !== sentence) return wrongSent;
+        }
 
+        // ── 2차 패스: adv_slot 허용 (최후 수단 — dance처럼 1차에서 슬롯을 못 찾은 경우) ──
+        if (myForbidden.has('adv_slot')) return null; // adv_slot도 금지면 포기
+        for (const sentItem of shuffled) {
+            const sentence = sentItem.ex;
+            const raw = sentence.replace(/[.,!?'"]/g, '');
+            const tokens = raw.split(/\s+/);
+            const candidates = [];
+
+            for (let i = 1; i < tokens.length; i++) {
+                const prev   = tokens[i - 1].toLowerCase();
+                const cur    = tokens[i];
+                const curLow = cur.toLowerCase();
+                if (!cur || cur.length < 3) continue;
+                if (/^[A-Z]/.test(cur) && i > 0) continue;
+                if (curLow === targetWord.toLowerCase()) continue;
+                if (prev === 'not' || prev === 'never') continue;
+                if (!veryW.has(prev)) continue;
+                if (!(posClass === 'noun' || posClass === 'verb')) continue;
+                const origPOS = wordPOS[curLow];
+                if (!origPOS || origPOS === 'adj' || origPOS === 'adv')
+                    candidates.push({ slot: 'adv_slot', word: cur });
+            }
+
+            if (candidates.length === 0) continue;
             const pick = candidates[Math.floor(Math.random() * candidates.length)].word;
             const wrongSent = sentence.replace(
                 new RegExp('\\b' + pick.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i'),
