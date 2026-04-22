@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BricksVocabulary 3900</title>
+    <style>
+        :root { --p: #333333; --s: #FFD384; --bg: #F0F4F8; --txt: #2D3436; }
+        body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: var(--bg); color: var(--txt); text-align: center; padding: 20px; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .container { width: 95%; max-width: 650px; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        h1 { color: #000000; font-size: 20px; margin-bottom: 25px; font-weight: bold; }
+        .mode-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px; }
+        .btn-mode { padding: 10px 8px; border: 2px solid var(--s); background: white; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 13px; flex: 1 1 45%; min-width: 80px; color: #333; }
+        .btn-mode.active { background: var(--s); color: #855b1b; }
+        #word-display { font-size: 22px; font-weight: bold; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #000000; margin: 20px 0; border: 2px solid #EEEEEE; border-radius: 20px; background: #F9F9F9; padding: 20px; word-break: keep-all; line-height: 1.5; }
+        .btn-main { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button.action { padding: 20px 10px; font-size: 18px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
+        .btn-start { background: #4CB9E7; }
+        .btn-show { background: #FF5F5F; }
+        .btn-meaning { margin-top: 15px; padding: 10px 15px; font-size: 16px; font-weight: bold; background: #f0f0f0; border: 2px dashed #bbb; border-radius: 12px; cursor: pointer; color: #555; }
+        .meaning-text { color: #E74C3C; font-size: 22px; font-weight: bold; margin: 15px 0; }
+        .quiz-container { margin-top: 10px; text-align: left; width: 100%; border-top: 1px dashed #ccc; padding-top: 15px; }
+        .quiz-title { font-size: 16px; color: #555; margin-bottom: 12px; font-weight: bold; text-align: center; }
+        .quiz-option { display: block; width: 100%; padding: 12px; margin-bottom: 8px; background: white; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; font-size: 16px; transition: 0.2s; color: #333; text-align: left; line-height: 1.4; box-sizing: border-box; }
+        .quiz-option:hover { border-color: #4CB9E7; background: #f0faff; }
+        .highlight { color: #007AFF; font-weight: bold; }
+        .option-meaning { font-size: 14px; color: #666; font-weight: normal; margin-left: 5px; }
+        #sent-display-container { min-height: 160px; margin: 10px 0 5px; border: 2px solid #EEEEEE; border-radius: 20px; background: #F9F9F9; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+        #sent-display { font-size: 20px; font-weight: bold; color: #000000; word-break: keep-all; line-height: 1.5; }
+        #sent-meaning-display { font-size: 17px; color: #666; font-weight: normal; min-height: 22px; }
+        #next-btn-wrapper { margin-top: 5px; }
+        .btn-scramble { background: #6C5CE7; color: white; border-radius: 12px; padding: 15px 25px; font-weight: bold; font-size: 18px; border: none; cursor: pointer; margin-bottom: 10px; width: 100%; box-shadow: 0 4px 0 #4834d4; }
+        #scramble-area { margin-top: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 50px; }
+        .word-chip { padding: 10px 18px; background: white; border-radius: 15px; cursor: pointer; font-weight: bold; border: 2px solid #ddd; font-size: 18px; transition: 0.2s; }
+        .word-chip.selected { background: #a29bfe; color: white; border-color: #6C5CE7; }
+        .btn-next-inline { background: #2ECC71; color: white; border-radius: 15px; padding: 10px 20px; font-weight: bold; font-size: 16px; border: none; cursor: pointer; box-shadow: 0 3px 0 #27ae60; }
+        #feedback { margin-top: 5px; font-weight: bold; font-size: 20px; text-align: center; min-height: 30px; }
+        .btn-unit { padding: 5px 8px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; color: #555; transition: 0.15s; min-width: 48px; }
+        .btn-unit.active { background: #4CB9E7; color: white; border-color: #4CB9E7; }
+        .btn-unit-all { background: #FFD384; border-color: #e6b800; color: #855b1b; }
+        .btn-unit-all.active { background: #e6b800; color: #5a3e00; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>✨ 사랑스럽고 멋진 지오의 영어공부 ✨<br><span style="font-size:14px; font-weight:normal; color:#888;">(Bricks Vocabulary 3900)</span></h1>
+    <div class="mode-group">
+        <button class="btn-mode active" onclick="setMode('enWord', this)">영어단어</button>
+        <button class="btn-mode" onclick="setMode('enSent', this)">영어문장</button>
+    </div>
+
+    <!-- 영어단어 모드 UI -->
+    <div id="word-mode-ui">
+        <div id="word-unit-selector" style="margin-bottom:15px;">
+            <button onclick="toggleUnitPanel('word')" id="word-unit-toggle" style="width:100%;padding:10px 16px;background:#f8f8f8;border:2px solid #ddd;border-radius:14px;cursor:pointer;font-size:14px;font-weight:bold;color:#555;display:flex;align-items:center;justify-content:space-between;">
+                <span>📚 유닛 선택</span>
+                <span id="word-unit-label" style="color:#4CB9E7;font-size:13px;">전체 ▼</span>
+            </button>
+            <div id="word-unit-panel" style="display:none;margin-top:8px;padding:12px;background:#f8f8f8;border-radius:14px;border:2px solid #eee;">
+                <div id="word-unit-buttons" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div id="word-display">지오야 준비됐니?</div>
+        <div id="word-btn-area">
+            <button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>
+        </div>
+    </div>
+
+    <!-- 영어문장 모드 UI -->
+    <div id="sent-mode-ui" style="display:none;">
+        <div id="sent-unit-selector" style="margin-bottom:15px;">
+            <button onclick="toggleUnitPanel('sent')" id="sent-unit-toggle" style="width:100%;padding:10px 16px;background:#f8f8f8;border:2px solid #ddd;border-radius:14px;cursor:pointer;font-size:14px;font-weight:bold;color:#555;display:flex;align-items:center;justify-content:space-between;">
+                <span>📚 유닛 선택</span>
+                <span id="sent-unit-label" style="color:#6C5CE7;font-size:13px;">전체 ▼</span>
+            </button>
+            <div id="sent-unit-panel" style="display:none;margin-top:8px;padding:12px;background:#f8f8f8;border-radius:14px;border:2px solid #eee;">
+                <div id="sent-unit-buttons" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
+            </div>
+        </div>
+        <div id="sent-display-container">
+            <div id="sent-display">지오야 준비됐니?</div>
+            <div id="sent-meaning-display"></div>
+            <div id="next-btn-wrapper"></div>
+        </div>
+        <div id="scramble-wrapper">
+            <button class="btn-scramble" onclick="startScramble()">문제시작 🧩</button>
+        </div>
+        <div id="scramble-area"></div>
+    </div>
+
+    <div id="feedback"></div>
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="index.html" style="display: inline-block; padding: 14px 30px; background: #AAAAAA; color: white; border-radius: 20px; font-size: 16px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 0 rgba(0,0,0,0.15);">메인화면으로 🏠</a>
+    </div>
+</div>
+
+<script>
+const enWordData = [
+  {w:'college', m:'n. 대학', ex:'I go to college every day.', em:'나는 매일 대학에 갑니다.', unit:1},
+  {w:'pity', m:'n. 동정(심), 불쌍히 여김', ex:'I feel pity for the dog.', em:'나는 그 개가 불쌍합니다.', unit:1},
+  {w:'spirit', m:'n. 정신', ex:'Keep a strong team spirit.', em:'강한 팀 정신을 유지하세요.', unit:1},
+  {w:'aircraft', m:'n. 항공기', ex:'The aircraft is in the sky.', em:'항공기가 하늘에 있습니다.', unit:1},
+  {w:'fiction', m:'n. 소설, 꾸며낸 이야기', ex:'I like reading science fiction.', em:'나는 과학 소설 읽는 것을 좋아합니다.', unit:1},
+  {w:'advice', m:'n. 조언, 충고', ex:'He gave me some good advice.', em:'그는 나에게 좋은 조언을 해주었습니다.', unit:1},
+  {w:'telescope', m:'n. 망원경', ex:'Look at stars through a telescope.', em:'망원경을 통해 별을 보세요.', unit:1},
+  {w:'realize', m:'v. 깨닫다, 실현하다, 이루다', ex:'I realize my dream at last.', em:'나는 마침내 나의 꿈을 이룹니다.', unit:1},
+  {w:'compete', m:'v. 경쟁하다', ex:'Students compete for the first prize.', em:'학생들이 1등 상을 위해 경쟁합니다.', unit:1},
+  {w:'challenge', m:'n. 도전(과제)', ex:'This task is a great challenge.', em:'이 일은 큰 도전 과제입니다.', unit:1},
+  {w:'ability', m:'n. 능력, 재능', ex:'She has a great musical ability.', em:'그녀는 훌륭한 음악적 능력을 가지고 있습니다.', unit:1},
+  {w:'behave', m:'v. 행동하다, 처신하다', ex:'Please behave well at school.', em:'학교에서 바르게 처신하세요.', unit:1},
+  {w:'steam', m:'n. 증기, 김, 스팀', ex:'Steam comes from the hot tea.', em:'뜨거운 차에서 김이 납니다.', unit:1},
+  {w:'porch', m:'n. 현관', ex:'We sat on the front porch.', em:'우리는 앞쪽 현관에 앉았습니다.', unit:1},
+  {w:'slit', m:'n. (좁고 기다란) 틈, 구멍', ex:'There is a slit in paper.', em:'종이에 좁고 기다란 틈이 있습니다.', unit:1},
+  {w:'vanish', m:'v. (갑자기) 사라지다', ex:'The birds vanish into the clouds.', em:'새들이 구름 속으로 사라집니다.', unit:1},
+  {w:'tender', m:'adj. 연한, 부드러운', ex:'The meat is very tender.', em:'그 고기는 매우 부드럽습니다.', unit:1},
+  {w:'subtract', m:'v. (수·양을) 빼다', ex:'Subtract five from ten now.', em:'지금 10에서 5를 빼세요.', unit:1},
+  {w:'consider', m:'v. 고려하다, 생각하다', ex:'Please consider my new idea.', em:'나의 새로운 아이디어를 고려해 주세요.', unit:1},
+  {w:'act', m:'n. (연극·영화 등의) 연기, v. 행동하다', ex:'He can act very well.', em:'그는 연기를 매우 잘할 수 있습니다.', unit:1},
+  {w:'condition', m:'n. 상태, 상황', ex:'The car is in good condition.', em:'그 차는 상태가 좋습니다.', unit:1},
+  {w:'architect', m:'n. 건축가', ex:'The architect built this house.', em:'그 건축가가 이 집을 지었습니다.', unit:1},
+  {w:'curriculum', m:'n. 교육 과정', ex:'The school changed its curriculum.', em:'학교가 교육 과정을 바꿨습니다.', unit:1},
+  {w:'terrified', m:'adj. 두려워하는', ex:'I am terrified of the dark.', em:'나는 어둠을 두려워합니다.', unit:1},
+  {w:'shortage', m:'n. 부족, 모자람', ex:'There is a shortage of food.', em:'음식이 부족합니다.', unit:1},
+  {w:'fantasy', m:'n. 공상, 상상', ex:'She lives in a world of fantasy.', em:'그녀는 공상의 세계에 삽니다.', unit:1},
+  {w:'additional', m:'adj. 추가적인', ex:'We need some additional help.', em:'우리는 추가적인 도움이 필요합니다.', unit:1},
+  {w:'consist', m:'v. 이루어지다, 구성되다', ex:'Groups consist of five people.', em:'그룹은 5명으로 구성됩니다.', unit:1},
+  {w:'injured', m:'adj. 다친, 부상을 입은', ex:'The injured player left the field.', em:'다친 선수가 경기장을 떠났습니다.', unit:1},
+  {w:'major', m:'adj. 주요한, 중대한, v. 전공하다', ex:'Math is my major subject.', em:'수학은 나의 주요한 과목입니다.', unit:1},
+  {w:'army', m:'n. 군대, 육군', ex:'He joined the army last year.', em:'그는 작년에 군대에 갔습니다.', unit:2},
+  {w:'task', m:'n. 일, 과업', ex:'Finish the task by noon.', em:'정오까지 그 과업을 끝내세요.', unit:2},
+  {w:'counsel', m:'v. 조언하다, 충고하다', ex:'Teachers counsel students about jobs.', em:'선생님들이 학생들에게 직업에 대해 조언합니다.', unit:2},
+  {w:'symbol', m:'n. 상징, 기호', ex:'The dove is a symbol of peace.', em:'비둘기는 평화의 상징입니다.', unit:2},
+  {w:'global', m:'adj. 세계적인', ex:'We face a global warming problem.', em:'우리는 세계적인 온난화 문제에 직면해 있습니다.', unit:2},
+  {w:'explore', m:'v. 탐험하다', ex:'We want to explore the cave.', em:'우리는 그 동굴을 탐험하고 싶습니다.', unit:2},
+  {w:'violent', m:'adj. 폭력적인, 난폭한', ex:'Do not watch violent movies.', em:'폭력적인 영화를 보지 마세요.', unit:2},
+  {w:'slope', m:'n. 경사, 비탈', ex:'The ski slope is very steep.', em:'스키 경사가 매우 가파릅니다.', unit:2},
+  {w:'regulate', m:'v. 규제하다', ex:'The law will regulate this industry.', em:'법이 이 산업을 규제할 것입니다.', unit:2},
+  {w:'touch', m:'v. (손을) 대다, 만지다, 감동시키다', ex:'Do not touch the wet paint.', em:'젖은 페인트를 만지지 마세요.', unit:2},
+  {w:'goods', m:'n. 상품, 제품', ex:'This shop sells quality goods.', em:'이 가게는 질 좋은 상품을 팝니다.', unit:2},
+  {w:'guideline', m:'n. 지침, 가이드라인', ex:'Follow the safety guideline carefully.', em:'안전 지침을 주의 깊게 따르세요.', unit:2},
+  {w:'automobile', m:'n. 자동차', ex:'My father bought a new automobile.', em:'나의 아버지는 새 자동차를 샀습니다.', unit:2},
+  {w:'poison', m:'n. 독, 독약', ex:'This plant has strong poison.', em:'이 식물은 강한 독을 가지고 있습니다.', unit:2},
+  {w:'beyond', m:'prep. ~ 너머, ~ 지나', ex:'The sea is beyond the hill.', em:'바다는 언덕 너머에 있습니다.', unit:2},
+  {w:'biography', m:'n. 전기, 일대기', ex:'I read a biography of Lincoln.', em:'나는 링컨의 전기를 읽었습니다.', unit:2},
+  {w:'government', m:'n. 정부', ex:'The government makes new laws.', em:'정부가 새로운 법을 만듭니다.', unit:2},
+  {w:'fashionable', m:'adj. 유행하는', ex:'These shoes are very fashionable.', em:'이 신발은 매우 유행합니다.', unit:2},
+  {w:'bark', m:'v. (개·여우 등이) 짖다, n. 나무껍질', ex:'Dogs bark at the stranger.', em:'개들이 낯선 사람을 보고 짖습니다.', unit:2},
+  {w:'increase', m:'n. 증가, v. 증가하다, 증가시키다', ex:'Prices increase every single year.', em:'물가가 매년 증가합니다.', unit:2},
+  {w:'spokesman', m:'n. 대변인', ex:'The spokesman told the news.', em:'대변인이 소식을 전했습니다.', unit:2},
+  {w:'industry', m:'n. 산업, 공업', ex:'The car industry is growing.', em:'자동차 산업이 성장하고 있습니다.', unit:2},
+  {w:'intelligent', m:'adj. 총명한, 똑똑한', ex:'She is a very intelligent girl.', em:'그녀는 매우 똑똑한 소녀입니다.', unit:2},
+  {w:'athlete', m:'n. 운동선수, 육상 선수', ex:'He is a famous star athlete.', em:'그는 유명한 스타 운동선수입니다.', unit:2},
+  {w:'delighted', m:'adj. 아주 기뻐하는', ex:'I am delighted to meet you.', em:'당신을 만나서 아주 기쁩니다.', unit:2},
+  {w:'unbelievable', m:'adj. 믿을 수 없는', ex:'That is an unbelievable story.', em:'그것은 믿을 수 없는 이야기입니다.', unit:2},
+  {w:'grain', m:'n. 곡물, 곡류', ex:'Farmers grow grain in summer.', em:'농부들은 여름에 곡물을 기릅니다.', unit:2},
+  {w:'snap', m:'v. 딱 하고 소리 내다', ex:'The dry branches snap easily.', em:'마른 나뭇가지들이 딱 하고 쉽게 부러집니다.', unit:2},
+  {w:'public', m:'n. 대중, 일반 사람들, adj. 공공의', ex:'This is a public park.', em:'이곳은 공공의 공원입니다.', unit:2},
+  {w:'contact', m:'n. 접촉, v. 연락하다', ex:'Please contact me by email.', em:'이메일로 저에게 연락해 주세요.', unit:2},
+  {w:'volume', m:'n. (전집류 등의) 권', ex:'This is the first volume.', em:'이것이 첫 번째 권입니다.', unit:3},
+  {w:'bitter', m:'adj. 맛이 쓴', ex:'The medicine has a bitter taste.', em:'그 약은 쓴 맛이 납니다.', unit:3},
+  {w:'kernel', m:'n. 알맹이, 낟알', ex:'The corn kernel is small.', em:'옥수수 알맹이는 작습니다.', unit:3},
+  {w:'aware', m:'adj. 알고 있는', ex:'I am aware of the problem.', em:'나는 그 문제를 알고 있습니다.', unit:3},
+  {w:'shift', m:'v. 이동하다, 움직이다', ex:'Please shift the chair left.', em:'의자를 왼쪽으로 이동시켜 주세요.', unit:3},
+  {w:'respect', m:'v. 존중하다, 존경하다', ex:'We must respect our parents.', em:'우리는 부모님을 존중해야 합니다.', unit:3},
+  {w:'thrill', m:'v. 흥분시키다', ex:'Scary movies thrill the audience.', em:'무서운 영화는 관객을 흥분시킵니다.', unit:3},
+  {w:'exact', m:'adj. 정확한', ex:'Give me the exact time.', em:'나에게 정확한 시간을 알려주세요.', unit:3},
+  {w:'composition', m:'n. 구성 (요소), (음악·미술) 작품', ex:'This is his new composition.', em:'이것은 그의 새로운 작품입니다.', unit:3},
+  {w:'fake', m:'adj. 가짜의, 거짓된, v. ~인 척하다, 꾸미다', ex:'This is a fake diamond.', em:'이것은 가짜 다이아몬드입니다.', unit:3},
+  {w:'physics', m:'n. 물리학', ex:'Physics is a hard subject.', em:'물리학은 어려운 과목입니다.', unit:3},
+  {w:'confusing', m:'adj. 혼란스러운', ex:'The map is very confusing.', em:'지도가 매우 혼란스럽습니다.', unit:3},
+  {w:'license', m:'n. 면허, 면허증', ex:'I got my driving license.', em:'나는 운전 면허증을 땄습니다.', unit:3},
+  {w:'cancel', m:'v. 취소하다', ex:'We have to cancel the trip.', em:'우리는 여행을 취소해야 합니다.', unit:3},
+  {w:'portrait', m:'n. 초상화, 인물 사진', ex:'He painted a beautiful portrait.', em:'그는 아름다운 초상화를 그렸습니다.', unit:3},
+  {w:'inform', m:'v. 알리다, 통지하다', ex:'Please inform us of the result.', em:'우리에게 결과를 알려주세요.', unit:3},
+  {w:'suggest', m:'v. 제안하다, 제의하다', ex:'I suggest a new plan.', em:'나는 새로운 계획을 제안합니다.', unit:3},
+  {w:'medical', m:'adj. 의학의, 의료의', ex:'He needs some medical care.', em:'그는 의료의 도움이 필요합니다.', unit:3},
+  {w:'faith', m:'n. 믿음, 신뢰', ex:'I have faith in you.', em:'나는 당신에 대한 믿음이 있습니다.', unit:3},
+  {w:'issue', m:'n. 주제, 문제, v. 발급하다, 발행하다', ex:'This is a serious issue.', em:'이것은 심각한 주제입니다.', unit:3},
+  {w:'responsible', m:'adj. 책임이 있는', ex:'You are responsible for this.', em:'당신이 이것에 대해 책임이 있습니다.', unit:3},
+  {w:'professional', m:'adj. 직업의, 전문적인', ex:'He is a professional golfer.', em:'그는 전문적인 골프 선수입니다.', unit:3},
+  {w:'impolite', m:'adj. 무례한, 버릇없는', ex:'It is impolite to shout.', em:'소리 지르는 것은 무례한 행동입니다.', unit:3},
+  {w:'support', m:'v. 지지하다, 지원하다', ex:'My friends support my dream.', em:'친구들이 나의 꿈을 지원합니다.', unit:3},
+  {w:'category', m:'n. 범주, 부문', ex:'This book fits this category.', em:'이 책은 이 범주에 맞습니다.', unit:3},
+  {w:'worldwide', m:'adj. 전 세계적인', ex:'The singer has worldwide fans.', em:'그 가수는 전 세계적인 팬이 있습니다.', unit:3},
+  {w:'impress', m:'v. 깊은 인상(감명)을 주다', ex:'His speech will impress people.', em:'그의 연설은 사람들에게 깊은 감명을 줄 것입니다.', unit:3},
+  {w:'informal', m:'adj. 비공식의, 격식 없는', ex:'We had an informal meeting.', em:'우리는 격식 없는 회의를 했습니다.', unit:3},
+  {w:'mathematician', m:'n. 수학자', ex:'The mathematician solved the puzzle.', em:'수학자가 수수께끼를 풀었습니다.', unit:3},
+  {w:'sort', m:'n. 종류, 유형, v. 분류하다', ex:'What sort of food do you like?', em:'어떤 종류의 음식을 좋아하세요?', unit:3},
+  {w:'wool', m:'n. 털, 양털', ex:'This sweater is made of wool.', em:'이 스웨터는 털로 만들어졌습니다.', unit:4},
+  {w:'section', m:'n. 부분, 구획', ex:'Go to the book section.', em:'도서 구획으로 가세요.', unit:4},
+  {w:'balance', m:'n. 균형', ex:'Keep your balance on ice.', em:'얼음 위에서 균형을 잡으세요.', unit:4},
+  {w:'hire', m:'v. 고용하다, 채용하다', ex:'The company will hire workers.', em:'회사는 노동자들을 고용할 것입니다.', unit:4},
+  {w:'youth', m:'n. 젊음, 젊은이', ex:'He spent his youth here.', em:'그는 이곳에서 젊음을 보냈습니다.', unit:4},
+  {w:'climate', m:'n. 기후', ex:'I like the warm climate.', em:'나는 따뜻한 기후를 좋아합니다.', unit:4},
+  {w:'nightmare', m:'n. 악몽', ex:'I had a bad nightmare.', em:'나는 나쁜 악몽을 꾸었습니다.', unit:4},
+  {w:'wisdom', m:'n. 지혜, 현명함', ex:'Listen to the old man\'s wisdom.', em:'노인의 지혜를 들으세요.', unit:4},
+  {w:'accept', m:'v. 받아들이다, 받다', ex:'I accept your kind apology.', em:'나는 당신의 친절한 사과를 받아들입니다.', unit:4},
+  {w:'confidence', m:'n. 신뢰, 자신감', ex:'She has confidence in herself.', em:'그녀는 자신에 대한 자신감이 있습니다.', unit:4},
+  {w:'posture', m:'n. 자세', ex:'Good posture is very important.', em:'좋은 자세는 매우 중요합니다.', unit:4},
+  {w:'pleasant', m:'adj. 즐거운, 유쾌한', ex:'We had a pleasant day.', em:'우리는 즐거운 하루를 보냈습니다.', unit:4},
+  {w:'biology', m:'n. 생물학', ex:'I study biology at school.', em:'나는 학교에서 생물학을 공부합니다.', unit:4},
+  {w:'bleed', m:'v. 피를 흘리다', ex:'Your nose started to bleed.', em:'당신의 코에서 피가 나기 시작했습니다.', unit:4},
+  {w:'fasten', m:'v. 매다, 묶다, 채우다', ex:'Please fasten your seat belt.', em:'안전벨트를 매 주세요.', unit:4},
+  {w:'react', m:'v. 반응하다', ex:'How did he react then?', em:'그때 그는 어떻게 반응했나요?', unit:4},
+  {w:'conversation', m:'n. 대화', ex:'We had a long conversation.', em:'우리는 긴 대화를 나누었습니다.', unit:4},
+  {w:'opinion', m:'n. 의견', ex:'What is your honest opinion?', em:'당신의 솔직한 의견은 무엇입니까?', unit:4},
+  {w:'marine', m:'adj. 바다의, 해양의', ex:'They study the marine life.', em:'그들은 해양의 생물을 공부합니다.', unit:4},
+  {w:'caution', m:'v. 경고하다, n. 조심, 경계', ex:'The sign gave a caution.', em:'표지판이 주의를 주었습니다.', unit:4},
+  {w:'fatal', m:'adj. 치명적인', ex:'It was a fatal accident.', em:'그것은 치명적인 사고였습니다.', unit:4},
+  {w:'kneel', m:'v. 무릎을 꿇다', ex:'People kneel in the church.', em:'사람들이 교회에서 무릎을 꿇습니다.', unit:4},
+  {w:'option', m:'n. 선택, 선택권', ex:'You have only one option.', em:'당신에게는 단 하나의 선택권이 있습니다.', unit:4},
+  {w:'ancient', m:'adj. 고대의', ex:'We visited an ancient city.', em:'우리는 고대의 도시를 방문했습니다.', unit:4},
+  {w:'counter', m:'n. 계산대, 카운터', ex:'Put money on the counter.', em:'계산대 위에 돈을 놓으세요.', unit:4},
+  {w:'opportunity', m:'n. 기회', ex:'This is a great opportunity.', em:'이것은 아주 좋은 기회입니다.', unit:4},
+  {w:'sculpture', m:'n. 조각, 조각품', ex:'I saw a large sculpture.', em:'나는 커다란 조각품을 보았습니다.', unit:4},
+  {w:'demand', m:'n. 요구, 수요', ex:'There is a high demand.', em:'수요가 높습니다.', unit:4},
+  {w:'miserable', m:'adj. 비참한', ex:'The cold weather makes me miserable.', em:'추운 날씨는 나를 비참하게 만듭니다.', unit:4},
+  {w:'admire', m:'v. 존경하다, 감탄하다', ex:'I admire his great work.', em:'나는 그의 위대한 작품을 존경합니다.', unit:4},
+  {w:'plot', m:'n. (소설·영화·연극 등의) 구성, 줄거리', ex:'The movie has a simple plot.', em:'그 영화는 간단한 줄거리를 가집니다.', unit:5},
+  {w:'minor', m:'adj. 작은, 중요하지 않은', ex:'It was a minor mistake.', em:'그것은 작은 실수였습니다.', unit:5},
+  {w:'mate', m:'n. 짝(한 쌍)의 한쪽', ex:'A bird found its mate.', em:'새 한 마리가 자신의 짝을 찾았습니다.', unit:5},
+  {w:'trust', m:'v. 믿다, 신뢰하다', ex:'You can trust my word.', em:'당신은 내 말을 믿어도 됩니다.', unit:5},
+  {w:'laundry', m:'n. 세탁물, 빨랫감', ex:'I have to do laundry.', em:'나는 세탁물을 빨아야 합니다.', unit:5},
+  {w:'pray', m:'v. 기도하다, 기원하다', ex:'I pray for your health.', em:'나는 당신의 건강을 위해 기도합니다.', unit:5},
+  {w:'sore', m:'adj. 아픈', ex:'My legs are very sore.', em:'내 다리가 매우 아픕니다.', unit:5},
+  {w:'element', m:'n. 요소, 성분', ex:'Water is a basic element.', em:'물은 기본적인 요소입니다.', unit:5},
+  {w:'settle', m:'v. 자리잡다, 정착하다', ex:'They want to settle here.', em:'그들은 이곳에 정착하고 싶어 합니다.', unit:5},
+  {w:'organ', m:'n. (인체의) 장기, 기관', ex:'The heart is an organ.', em:'심장은 장기입니다.', unit:5},
+  {w:'debate', m:'n. 토론', ex:'We had a school debate.', em:'우리는 학교 토론을 했습니다.', unit:5},
+  {w:'awful', m:'adj. 끔찍한, 지독한', ex:'The food had an awful smell.', em:'그 음식은 끔찍한 냄새가 났습니다.', unit:5},
+  {w:'decade', m:'n. 10년', ex:'I lived here for a decade.', em:'나는 이곳에서 10년 동안 살았습니다.', unit:5},
+  {w:'carbon', m:'n. 탄소', ex:'Trees take in some carbon.', em:'나무들은 탄소를 흡수합니다.', unit:5},
+  {w:'pillar', m:'n. 기둥', ex:'The stone pillar is strong.', em:'돌기둥이 튼튼합니다.', unit:5},
+  {w:'pleasure', m:'n. 기쁨, 즐거움', ex:'It is a pleasure to help.', em:'돕는 것은 즐거움입니다.', unit:5},
+  {w:'scout', m:'v. 스카우트(발굴)하다', ex:'They scout for new players.', em:'그들은 새로운 선수들을 발굴합니다.', unit:5},
+  {w:'reject', m:'v. 거절하다', ex:'Do not reject my offer.', em:'나의 제안을 거절하지 마세요.', unit:5},
+  {w:'fluffy', m:'adj. 솜털 같은, 폭신폭신한', ex:'The cat is very fluffy.', em:'그 고양이는 매우 폭신폭신합니다.', unit:5},
+  {w:'sniff', m:'v. 코를 훌쩍이다, 냄새를 맡다', ex:'The dog began to sniff.', em:'개가 냄새를 맡기 시작했습니다.', unit:5},
+  {w:'command', m:'v. 명령하다', ex:'Soldiers must follow the command.', em:'군인들은 명령을 따라야 합니다.', unit:5},
+  {w:'multiple', m:'adj. 많은, 복수의', ex:'I have multiple choices today.', em:'나는 오늘 많은 선택지가 있습니다.', unit:5},
+  {w:'preview', m:'n. 시사회', ex:'We went to the preview.', em:'우리는 시사회에 갔습니다.', unit:5},
+  {w:'patience', m:'n. 인내심, 참을성', ex:'You need patience to fish.', em:'낚시를 하려면 인내심이 필요합니다.', unit:5},
+  {w:'attitude', m:'n. 태도, 사고방식', ex:'Change your bad attitude now.', em:'지금 당신의 나쁜 태도를 바꾸세요.', unit:5},
+  {w:'politician', m:'n. 정치인', ex:'He is a famous politician.', em:'그는 유명한 정치인입니다.', unit:5},
+  {w:'philosophy', m:'n. 철학', ex:'I like his life philosophy.', em:'나는 그의 인생 철학을 좋아합니다.', unit:5},
+  {w:'development', m:'n. 발달, 발전', ex:'City development is very fast.', em:'도시 발달이 매우 빠릅니다.', unit:5},
+  {w:'embarrassed', m:'adj. 당황스러운', ex:'I felt embarrassed by him.', em:'나는 그로 인해 당황스러웠습니다.', unit:5},
+  {w:'besides', m:'prep. ~ 외에, adv. 더욱이, 게다가', ex:'I have no friends besides you.', em:'너 외에는 친구가 없어.', unit:5},
+  {w:'prey', m:'n. 먹이, 사냥감', ex:'The lion hunts its prey.', em:'사자가 먹이를 사냥합니다.', unit:6},
+  {w:'ideal', m:'adj. 이상적인, 가장 알맞은', ex:'This is an ideal place.', em:'이곳은 이상적인 장소입니다.', unit:6},
+  {w:'process', m:'n. 과정, 절차', ex:'The process takes much time.', em:'그 과정은 많은 시간이 걸립니다.', unit:6},
+  {w:'drug', m:'n. 약, 약품', ex:'This drug cures the cold.', em:'이 약은 감기를 치료합니다.', unit:6},
+  {w:'request', m:'n. 요청', ex:'I accept your special request.', em:'나는 당신의 특별한 요청을 받아들입니다.', unit:6},
+  {w:'whether', m:'conj. ~인지 아닌지', ex:'I wonder whether he comes.', em:'그가 올지 안 올지 궁금합니다.', unit:6},
+  {w:'bond', m:'n. 유대, 결속', ex:'There is a strong bond.', em:'강한 유대가 있습니다.', unit:6},
+  {w:'lean', m:'v. 기울이다, 기대다', ex:'Do not lean on walls.', em:'벽에 기대지 마세요.', unit:6},
+  {w:'spear', m:'n. 창, 작살', ex:'The hunter used a spear.', em:'사냥꾼이 창을 사용했습니다.', unit:6},
+  {w:'rough', m:'adj. 거친, 고르지 않은', ex:'The sea is very rough.', em:'바다가 매우 거칩니다.', unit:6},
+  {w:'reality', m:'n. 현실, 실제', ex:'Dreams can become reality now.', em:'꿈이 이제 현실이 될 수 있습니다.', unit:6},
+  {w:'charm', m:'n. 매력', ex:'She has a natural charm.', em:'그녀는 타고난 매력을 가지고 있습니다.', unit:6},
+  {w:'progress', m:'n. 진전, 발전', ex:'We made a lot of progress.', em:'우리는 많은 진전을 이뤘습니다.', unit:6},
+  {w:'attend', m:'v. 참석하다, 출석하다', ex:'I will attend the meeting.', em:'나는 회의에 참석할 것입니다.', unit:6},
+  {w:'fragile', m:'adj. 취약한, 부서지기 쉬운', ex:'Glass is very fragile material.', em:'유리는 매우 부서지기 쉬운 재료입니다.', unit:6},
+  {w:'private', m:'adj. 개인적인, 사적인', ex:'This is my private room.', em:'이곳은 나의 개인적인 방입니다.', unit:6},
+  {w:'purpose', m:'n. 목적', ex:'What is your main purpose?', em:'당신의 주요 목적은 무엇입니까?', unit:6},
+  {w:'appeal', m:'n. 호소, v. 흥미를 일으키다', ex:'Her songs appeal to many.', em:'그녀의 노래는 많은 이들에게 흥미를 일으킵니다.', unit:6},
+  {w:'leap', m:'v. 뛰다, 도약하다', ex:'Cats can leap very high.', em:'고양이는 매우 높이 뛸 수 있습니다.', unit:6},
+  {w:'defeat', m:'v. 패배시키다', ex:'We can defeat the enemy.', em:'우리는 적을 패배시킬 수 있습니다.', unit:6},
+  {w:'maintain', m:'v. 유지하다, 보존하다', ex:'Maintain a healthy body weight.', em:'건강한 몸무게를 유지하세요.', unit:6},
+  {w:'complex', m:'adj. 복잡한, 복합의', ex:'The math problem is complex.', em:'수학 문제가 복잡합니다.', unit:6},
+  {w:'discussion', m:'n. 토론, 논의', ex:'We had a deep discussion.', em:'우리는 깊은 토론을 했습니다.', unit:6},
+  {w:'effect', m:'n. 영향, 효과', ex:'The medicine has an effect.', em:'그 약은 효과가 있습니다.', unit:6},
+  {w:'regular', m:'adj. 규칙적인, 정기적인', ex:'I take a regular exercise.', em:'나는 정기적인 운동을 합니다.', unit:6},
+  {w:'devil', m:'n. 악마', ex:'He is like a devil.', em:'그는 악마 같습니다.', unit:6},
+  {w:'manage', m:'v. 관리하다, 운영하다; 간신히 ~하다', ex:'I can manage this alone.', em:'나는 이것을 혼자 관리할 수 있습니다.', unit:6},
+  {w:'flush', m:'v. (얼굴이) 붉어지다; 물을 내리다', ex:'Please flush the toilet now.', em:'지금 변기 물을 내려 주세요.', unit:6},
+  {w:'link', m:'v. 연결하다', ex:'Link the two computers together.', em:'두 컴퓨터를 서로 연결하세요.', unit:7},
+  {w:'pace', m:'n. 속도', ex:'He walked at a fast pace.', em:'그는 빠른 속도로 걸었습니다.', unit:7},
+  {w:'index', m:'n. 색인, 목록', ex:'Check the index of books.', em:'책의 색인을 확인하세요.', unit:7},
+  {w:'shore', m:'n. 해안, 해변', ex:'We walked along the shore.', em:'우리는 해변을 따라 걸었습니다.', unit:7},
+  {w:'borrow', m:'v. 빌리다', ex:'Can I borrow your pen?', em:'펜 좀 빌릴 수 있을까요?', unit:7},
+  {w:'afraid', m:'adj. 두려워하는, 겁내는', ex:'Do not be afraid now.', em:'지금 두려워하지 마세요.', unit:7},
+  {w:'resort', m:'n. 휴양지, 리조트', ex:'We stayed at a resort.', em:'우리는 리조트에 머물렀습니다.', unit:7},
+  {w:'publish', m:'v. 출판하다, 발행하다', ex:'They publish books every month.', em:'그들은 매달 책을 출판합니다.', unit:7},
+  {w:'chief', m:'n. 최고위자; adj. 주된, 최고의', ex:'He is the chief engineer.', em:'그는 최고위 엔지니어입니다.', unit:7},
+  {w:'serious', m:'adj. 심각한, 진지한', ex:'He has a serious face.', em:'그는 진지한 얼굴을 하고 있습니다.', unit:7},
+  {w:'series', m:'n. 연속, 시리즈', ex:'I watched a TV series.', em:'나는 TV 시리즈를 보았습니다.', unit:7},
+  {w:'diligent', m:'adj. 부지런한', ex:'The student is very diligent.', em:'그 학생은 매우 부 부지런합니다.', unit:7},
+  {w:'prove', m:'v. 증명하다', ex:'I will prove my innocence.', em:'나는 나의 결백을 증명할 것입니다.', unit:7},
+  {w:'shame', m:'n. 부끄러움, 수치심', ex:'I felt shame for lying.', em:'거짓말한 것이 부끄러웠습니다.', unit:7},
+  {w:'delay', m:'v. 미루다, 연기하다', ex:'Do not delay your work.', em:'당신의 일을 미루지 마세요.', unit:7},
+  {w:'lessen', m:'v. 줄이다, 완화하다', ex:'This medicine will lessen pain.', em:'이 약은 통증을 완화할 것입니다.', unit:7},
+  {w:'supervise', m:'v. 감독하다', ex:'He will supervise the project.', em:'그가 프로젝트를 감독할 것입니다.', unit:7},
+  {w:'disguise', m:'v. 변장하다', ex:'He wore a clever disguise.', em:'그는 영리한 변장을 했습니다.', unit:7},
+  {w:'aged', m:'adj. 나이 든, 오래된; ~세의', ex:'The aged wine tastes good.', em:'오래된 와인은 맛이 좋습니다.', unit:7},
+  {w:'educate', m:'v. 교육하다', ex:'We must educate our children.', em:'우리는 아이들을 교육해야 합니다.', unit:7},
+  {w:'wilderness', m:'n. 황무지, 황야', ex:'They lost in the wilderness.', em:'그들은 황무지에서 길을 잃었습니다.', unit:7},
+  {w:'episode', m:'n. 사건, 에피소드', ex:'This is a funny episode.', em:'이것은 재미있는 에피소드입니다.', unit:7},
+  {w:'provide', m:'v. 제공하다', ex:'Trees provide us with wood.', em:'나무는 우리에게 목재를 제공합니다.', unit:7},
+  {w:'persuade', m:'v. 설득하다', ex:'I will persuade him today.', em:'나는 오늘 그를 설득할 것입니다.', unit:7},
+  {w:'secretary', m:'n. 비서', ex:'The secretary answered the phone.', em:'비서가 전화를 받았습니다.', unit:7},
+  {w:'although', m:'conj. 비록 ~일지라도', ex:'Although it rained, I went.', em:'비록 비가 왔지만, 나는 갔습니다.', unit:7},
+  {w:'encyclopedia', m:'n. 백과사전', ex:'Check the facts in encyclopedia.', em:'백과사전에서 사실을 확인하세요.', unit:7},
+  {w:'embassy', m:'n. 대사관', ex:'Go to the Korean embassy.', em:'한국 대사관으로 가세요.', unit:7},
+  {w:'crowded', m:'adj. 붐비는', ex:'The bus is very crowded.', em:'버스가 매우 붐빕니다.', unit:8},
+  {w:'supply', m:'n. (수요에 대한) 공급', ex:'We have a fresh supply.', em:'우리는 신선한 공급품이 있습니다.', unit:8},
+  {w:'decision', m:'n. 결정, 판단', ex:'Make a quick decision now.', em:'지금 빠른 결정을 내리세요.', unit:8},
+  {w:'lunar', m:'adj. 달의, 음력의', ex:'We celebrate the lunar year.', em:'우리는 음력을 기념합니다.', unit:8},
+  {w:'loss', m:'n. 손실, 상실', ex:'The company had a loss.', em:'회사가 손실을 입었습니다.', unit:8},
+  {w:'advance', m:'n. 전진, 진보', ex:'Technology made a great advance.', em:'기술이 큰 진보를 이뤘습니다.', unit:8},
+  {w:'amazed', m:'adj. 놀란', ex:'I was amazed by him.', em:'나는 그를 보고 놀랐습니다.', unit:8},
+  {w:'salary', m:'n. 월급, 급여', ex:'My salary is quite high.', em:'내 월급은 꽤 높습니다.', unit:8},
+  {w:'fume', m:'n. 연기, 가스', ex:'The car produced dark fume.', em:'자동차가 검은 연기를 내뿜었습니다.', unit:8},
+  {w:'postpone', m:'v. 연기하다, 미루다', ex:'We must postpone the meeting.', em:'우리는 회의를 연기해야 합니다.', unit:8},
+  {w:'exclude', m:'v. 제외하다, 배제하다', ex:'Do not exclude anyone here.', em:'여기서 아무도 제외하지 마세요.', unit:8},
+  {w:'access', m:'v. 입장하다, 접근하다', ex:'You can access the file.', em:'당신은 파일에 접근할 수 있습니다.', unit:8},
+  {w:'suspect', m:'v. 의심하다; n. 용의자', ex:'The police found a suspect.', em:'경찰이 용의자를 찾았습니다.', unit:8},
+  {w:'tend', m:'v. 경향이 있다', ex:'I tend to wake early.', em:'나는 일찍 일어나는 경향이 있습니다.', unit:8},
+  {w:'assist', m:'v. 돕다', ex:'I will assist your work.', em:'내가 당신의 일을 도울 것입니다.', unit:8},
+  {w:'delightful', m:'adj. 매우 기쁜, 즐거운', ex:'We had a delightful meal.', em:'우리는 즐거운 식사를 했습니다.', unit:8},
+  {w:'method', m:'n. 방법', ex:'Use a simple study method.', em:'간단한 공부 방법을 사용하세요.', unit:8},
+  {w:'playwright', m:'n. 극작가, 희곡 작가', ex:'Shakespeare was a great playwright.', em:'셰익스피어는 위대한 극작가였습니다.', unit:8},
+  {w:'therefore', m:'adv. 그러므로, 따라서', ex:'Therefore, I stay at home.', em:'그러므로, 나는 집에 머뭅니다.', unit:8},
+  {w:'aspect', m:'n. 측면, 양상', ex:'Consider every aspect of it.', em:'그것의 모든 측면을 고려하세요.', unit:8},
+  {w:'function', m:'n. 기능', ex:'This machine has many function.', em:'이 기계는 많은 기능이 있습니다.', unit:8},
+  {w:'mention', m:'v. 언급하다, 말하다', ex:'Do not mention his name.', em:'그의 이름을 언급하지 마세요.', unit:8},
+  {w:'pregnant', m:'adj. 임신한', ex:'My sister is now pregnant.', em:'내 여동생은 지금 임신 중입니다.', unit:8},
+  {w:'hardship', m:'n. 어려움, 곤란', ex:'They overcame a long hardship.', em:'그들은 오랜 곤란을 극복했습니다.', unit:8},
+  {w:'legend', m:'n. 전설, 전설적 인물', ex:'He is a living legend.', em:'그는 살아있는 전설입니다.', unit:8},
+  {w:'mechanic', m:'n. 정비공', ex:'The mechanic fixed my car.', em:'정비공이 내 차를 고쳤습니다.', unit:8},
+  {w:'right', m:'n. 권리, 권한; adj. 옳은', ex:'You have the right here.', em:'당신은 여기서 권리가 있습니다.', unit:8},
+  {w:'blade', m:'n. (칼의) 날', ex:'The knife has a sharp blade.', em:'그 칼은 날카로운 날을 가지고 있습니다.', unit:9},
+  {w:'pretend', m:'v. (~하는) 척하다', ex:'Do not pretend to know.', em:'아는 척하지 마세요.', unit:9},
+  {w:'fright', m:'n. 놀람, 두려움', ex:'He shook with great fright.', em:'그는 큰 두려움으로 떨었습니다.', unit:9},
+  {w:'voluntary', m:'adj. 자발적인, 자원봉사의', ex:'This is a voluntary work.', em:'이것은 자발적인 일입니다.', unit:9},
+  {w:'offend', m:'v. 불쾌하게 하다', ex:'I did not mean to offend.', em:'불쾌하게 하려던 것은 아니었습니다.', unit:9},
+  {w:'occur', m:'v. 일어나다, 발생하다', ex:'Mistakes occur in every work.', em:'모든 일에서 실수가 일어납니다.', unit:9},
+  {w:'strip', m:'n. 긴 조각', ex:'Cut the cloth into strip.', em:'천을 가느다란 조각으로 자르세요.', unit:9},
+  {w:'universal', m:'adj. 보편적인, 전 세계의', ex:'Peace is a universal goal.', em:'평화는 보편적인 목표입니다.', unit:9},
+  {w:'lyric', m:'n. 서정시; (노래) 가사', ex:'I like the song lyric.', em:'나는 노래 가사를 좋아합니다.', unit:9},
+  {w:'degree', m:'n. (각도·온도 등의) 도; 학위', ex:'I have a college degree.', em:'나는 대학 학위가 있습니다.', unit:9},
+  {w:'cancer', m:'n. 암', ex:'He is fighting against cancer.', em:'그는 암과 싸우고 있습니다.', unit:9},
+  {w:'mature', m:'adj. 성숙한', ex:'He is a mature boy.', em:'그는 성숙한 소년입니다.', unit:9},
+  {w:'depart', m:'v. 떠나다, 출발하다', ex:'The bus will depart soon.', em:'버스가 곧 출발할 것입니다.', unit:9},
+  {w:'sensible', m:'adj. 분별 있는, 합리적인', ex:'She made a sensible choice.', em:'그녀는 합리적인 선택을 했습니다.', unit:9},
+  {w:'transfer', m:'v. 옮기다, 이동하다', ex:'I will transfer the money.', em:'내가 돈을 옮길 것입니다.', unit:9},
+  {w:'oppose', m:'v. 반대하다', ex:'Many people oppose the plan.', em:'많은 사람이 그 계획에 반대합니다.', unit:9},
+  {w:'border', m:'v. (경계를) 접하다', ex:'Two countries border each other.', em:'두 나라는 서로 경계를 접하고 있습니다.', unit:9},
+  {w:'owe', m:'v. (돈 등을) 빚지다', ex:'I owe you ten dollars.', em:'나는 당신에게 10달러를 빚졌습니다.', unit:9},
+  {w:'herd', m:'n. (동물의) 떼, 무리', ex:'Look at the cow herd.', em:'소 떼를 보세요.', unit:9},
+  {w:'observe', m:'v. 관찰하다; 준수하다', ex:'Observe the stars tonight carefully.', em:'오늘 밤 별을 주의 깊게 관찰하세요.', unit:9},
+  {w:'population', m:'n. 인구', ex:'Seoul has a large population.', em:'서울은 인구가 많습니다.', unit:9},
+  {w:'ordinary', m:'adj. 보통의, 평범한', ex:'He is an ordinary person.', em:'그는 평범한 사람입니다.', unit:9},
+  {w:'journalist', m:'n. (신문·방송) 기자', ex:'The journalist wrote the story.', em:'기자가 그 기사를 썼습니다.', unit:9},
+  {w:'incident', m:'n. 사건, 일어난 일', ex:'The police reported the incident.', em:'경찰이 그 사건을 보고했습니다.', unit:9},
+  {w:'backward', m:'adv. 뒤로, 거꾸로', ex:'He took a step backward.', em:'그는 뒤로 한 걸음 물러났습니다.', unit:9},
+  {w:'preparation', m:'n. 준비', ex:'We finished the food preparation.', em:'우리는 음식 준비를 마쳤습니다.', unit:9},
+  {w:'astronomer', m:'n. 천문학자', ex:'The astronomer studied the planets.', em:'천문학자가 행성들을 연구했습니다.', unit:9},
+  {w:'bundle', m:'n. 묶음, 꾸러미', ex:'He carried a large bundle.', em:'그는 큰 꾸러미를 날랐습니다.', unit:9},
+  {w:'cabin', m:'n. 객실, 선실; 오두막집', ex:'We lived in a cabin.', em:'우리는 오두막집에 살았습니다.', unit:9},
+  {w:'approach', m:'v. 다가가다; n. 접근(법)', ex:'A storm is starting to approach.', em:'폭풍이 다가오기 시작합니다.', unit:9},
+  {w:'pride', m:'n. 자부심, 긍지', ex:'I take pride in work.', em:'나는 일에 자부심을 느낍니다.', unit:10},
+  {w:'proof', m:'n. 증거, 증명', ex:'Do you have any proof?', em:'증거가 있나요?', unit:10},
+  {w:'flood', m:'n. 홍수, 범람', ex:'The rain caused a flood.', em:'비 때문에 홍수가 났습니다.', unit:10},
+  {w:'law', m:'n. 법, 법률', ex:'We must obey the law.', em:'우리는 법을 지켜야 합니다.', unit:10},
+  {w:'rural', m:'adj. 시골의, 지방의', ex:'I like the rural life.', em:'나는 시골의 삶을 좋아합니다.', unit:10},
+  {w:'spoil', m:'v. 망치다', ex:'Do not spoil your lunch.', em:'점심을 망치지 마세요.', unit:10},
+  {w:'boil', m:'v. 끓다, 끓이다', ex:'Boil the water for tea.', em:'차를 마시기 위해 물을 끓이세요.', unit:10},
+  {w:'axis', m:'n. (중심) 축', ex:'The Earth turns on axis.', em:'지구는 축을 중심으로 돕니다.', unit:10},
+  {w:'arouse', m:'v. (느낌을) 불러일으키다', ex:'His words arouse my interest.', em:'그의 말이 내 관심을 불러일으킵니다.', unit:10},
+  {w:'mean', m:'v. 의미하다; adj. 심술궂은, 못된', ex:'Do not be so mean.', em:'너무 못되게 굴지 마세요.', unit:10},
+  {w:'invest', m:'v. 투자하다', ex:'Invest your time in study.', em:'공부에 시간을 투자하세요.', unit:10},
+  {w:'professor', m:'n. 교수', ex:'He is a history professor.', em:'그는 역사 교수입니다.', unit:10},
+  {w:'justice', m:'n. 정의, 공정', ex:'We want peace and justice.', em:'우리는 평화와 정의를 원합니다.', unit:10},
+  {w:'possess', m:'v. 소유하다, 지니다', ex:'They possess a huge land.', em:'그들은 넓은 땅을 소유하고 있습니다.', unit:10},
+  {w:'sparkling', m:'adj. 반짝거리는', ex:'I like the sparkling water.', em:'나는 반짝거리는 물을 좋아합니다.', unit:10},
+  {w:'fearless', m:'adj. 겁 없는, 용감한', ex:'The soldier is very fearless.', em:'그 군인은 매우 용감합니다.', unit:10},
+  {w:'prevent', m:'v. 막다, 예방하다', ex:'Wash hands to prevent illness.', em:'병을 막기 위해 손을 씻으세요.', unit:10},
+  {w:'tendency', m:'n. 경향, 성향', ex:'He has a lazy tendency.', em:'그는 게으른 성향이 있습니다.', unit:10},
+  {w:'threat', m:'n. 협박, 위협', ex:'He made a serious threat.', em:'그는 심각한 협박을 했습니다.', unit:10},
+  {w:'concern', m:'n. 관심사; v. 걱정하다', ex:'Health is my main concern.', em:'건강이 나의 주요 관심사입니다.', unit:10},
+  {w:'anxious', m:'adj. 불안해하는', ex:'I am anxious about exams.', em:'나는 시험 때문에 불안해합니다.', unit:10},
+  {w:'knowledge', m:'n. 지식', ex:'Books give us much knowledge.', em:'책은 우리에게 많은 지식을 줍니다.', unit:10},
+  {w:'signature', m:'n. 서명', ex:'Please put your signature here.', em:'여기에 당신의 서명을 해주세요.', unit:10},
+  {w:'necessary', m:'adj. 필요한', ex:'Sleep is necessary for health.', em:'잠은 건강에 필요합니다.', unit:10},
+  {w:'luxurious', m:'adj. 호화로운, 사치스러운', ex:'They live in luxurious house.', em:'그들은 호화로운 집에 삽니다.', unit:10},
+  {w:'landscape', m:'n. 풍경', ex:'I painted the beautiful landscape.', em:'나는 아름다운 풍경을 그렸습니다.', unit:10},
+  {w:'especially', m:'adv. 특히, 특별히', ex:'I like fruit, especially apples.', em:'나는 과일을 좋아하는데, 특히 사과를 좋아합니다.', unit:10},
+  {w:'characteristic', m:'n. 특징, 특질', ex:'This is his main characteristic.', em:'이것이 그의 주요 특징입니다.', unit:10},
+  {w:'version', m:'n. 버전, 판', ex:'Try the new software version.', em:'새로운 소프트웨어 버전을 써보세요.', unit:11},
+  {w:'logical', m:'adj. 논리적인', ex:'Give me a logical reason.', em:'나에게 논리적인 이유를 대세요.', unit:11},
+  {w:'flu', m:'n. 독감', ex:'I stayed home with flu.', em:'나는 독감 때문에 집에 머물렀습니다.', unit:11},
+  {w:'detect', m:'v. 알아내다, 발견하다, 감지하다', ex:'Cats detect move very quickly.', em:'고양이는 움직임을 아주 빨리 감지합니다.', unit:11},
+  {w:'gaze', m:'v. 응시하다', ex:'They gaze at the moon.', em:'그들이 달을 응시합니다.', unit:11},
+  {w:'content', m:'n. 내용', ex:'The content is very interesting.', em:'그 내용은 매우 흥미롭습니다.', unit:11},
+  {w:'wound', m:'n. 상처, 부상', ex:'Clean the wound with water.', em:'물로 상처를 닦으세요.', unit:11},
+  {w:'reuse', m:'v. 다시 사용하다', ex:'Reuse paper to save trees.', em:'나무를 구하기 위해 종이를 다시 사용하세요.', unit:11},
+  {w:'priest', m:'n. 성직자, 사제', ex:'The priest is in church.', em:'성직자가 교회에 있습니다.', unit:11},
+  {w:'physical', m:'adj. 육체(신체)의; 물리적인', ex:'Physical exercise is very good.', em:'육체적인 운동은 매우 좋습니다.', unit:11},
+  {w:'feature', m:'n. 특징', ex:'This phone has a new feature.', em:'이 전화기에는 새로운 특징이 있습니다.', unit:11},
+  {w:'meteor', m:'n. 별똥별, 유성', ex:'I saw a bright meteor.', em:'나는 밝은 별똥별을 보았습니다.', unit:11},
+  {w:'determine', m:'v. 결정하다', ex:'We must determine the date.', em:'우리는 날짜를 결정해야 합니다.', unit:11},
+  {w:'sprinkle', m:'v. 뿌리다', ex:'Sprinkle salt on the meat.', em:'고기에 소금을 뿌리세요.', unit:11},
+  {w:'rover', m:'n. 탐사선', ex:'The rover moved on Mars.', em:'탐사선이 화성 위를 움직였습니다.', unit:11},
+  {w:'attach', m:'v. 붙이다, 첨부하다', ex:'Attach a photo to email.', em:'이메일에 사진을 첨부하세요.', unit:11},
+  {w:'distant', m:'adj. 먼, 떨어져 있는', ex:'I heard a distant sound.', em:'멀리서 나는 소리를 들었습니다.', unit:11},
+  {w:'property', m:'n. 재산, 소유물', ex:'This land is my property.', em:'이 땅은 내 재산입니다.', unit:11},
+  {w:'possible', m:'adj. 가능한', ex:'Everything is possible for you.', em:'당신에게는 모든 것이 가능합니다.', unit:11},
+  {w:'emergency', m:'n. 비상 (상황), 긴급', ex:'Call 911 in an emergency.', em:'비상 상황에는 911에 전화하세요.', unit:11},
+  {w:'relief', m:'n. 안도, 안심', ex:'I felt relief after exams.', em:'시험 후에 안도감을 느꼈습니다.', unit:11},
+  {w:'viewpoint', m:'n. (어떤 주제에 대한) 관점', ex:'Share your own unique viewpoint.', em:'당신만의 독특한 관점을 공유하세요.', unit:11},
+  {w:'sphere', m:'n. 구, 구형', ex:'The ball is a sphere.', em:'그 공은 구 모양입니다.', unit:11},
+  {w:'instruction', m:'n. 지시, 명령', ex:'Read the instruction manual first.', em:'사용 지침서를 먼저 읽으세요.', unit:11},
+  {w:'strait', m:'n. (-s) 해협', ex:'Ships pass through the strait.', em:'배들이 해협을 통과합니다.', unit:11},
+  {w:'responsibility', m:'n. 책임, 의무', ex:'Take responsibility for your actions.', em:'당신의 행동에 책임을 지세요.', unit:11},
+  {w:'clarify', m:'v. 명확하게 하다', ex:'Please clarify your last answer.', em:'마지막 답변을 명확하게 해주세요.', unit:11},
+  {w:'literature', m:'n. 문학', ex:'I enjoy reading English literature.', em:'나는 영국 문학 읽는 것을 즐깁니다.', unit:11},
+  {w:'witness', m:'n. 목격자; v. 목격하다', ex:'He was a crime witness.', em:'그는 범죄 목격자였습니다.', unit:11},
+  {w:'rumor', m:'n. 소문', ex:'Do not believe the rumor.', em:'그 소문을 믿지 마세요.', unit:12},
+  {w:'remind', m:'v. 생각나게 하다', ex:'Please remind me to call.', em:'전화하라고 나에게 생각나게 해주세요.', unit:12},
+  {w:'royalty', m:'n. 왕족', ex:'They treated him like royalty.', em:'그들은 그를 왕족처럼 대접했습니다.', unit:12},
+  {w:'rely', m:'v. 의지하다, 믿다', ex:'You can rely on me.', em:'당신은 나를 믿어도 됩니다.', unit:12},
+  {w:'defense', m:'n. 방어', ex:'The army leads the defense.', em:'군대가 방어를 이끕니다.', unit:12},
+  {w:'previous', m:'adj. 이전의', ex:'See the previous page now.', em:'지금 이전 페이지를 보세요.', unit:12},
+  {w:'context', m:'n. 맥락, 전후 관계', ex:'Understand words in their context.', em:'맥락 속에서 단어를 이해하세요.', unit:12},
+  {w:'calculator', m:'n. 계산기', ex:'Use a calculator for math.', em:'수학을 위해 계산기를 사용하세요.', unit:12},
+  {w:'cabinet', m:'n. 보관함, 캐비닛', ex:'Put plates in the cabinet.', em:'캐비닛에 접시를 넣으세요.', unit:12},
+  {w:'iron', m:'n. 철; v. 다리미질하다', ex:'I iron my shirts daily.', em:'나는 매일 내 셔츠를 다리미질합니다.', unit:12},
+  {w:'stall', m:'n. 가판대', ex:'I bought fruit at stall.', em:'나는 가판대에서 과일을 샀습니다.', unit:12},
+  {w:'pest', m:'n. 해충', ex:'This bug is a pest.', em:'이 벌레는 해충입니다.', unit:12},
+  {w:'navy', m:'n. 해군', ex:'My uncle joined the navy.', em:'나의 삼촌은 해군에 입대했습니다.', unit:12},
+  {w:'deny', m:'v. 부인하다, 부정하다', ex:'He did not deny it.', em:'그는 그것을 부인하지 않았습니다.', unit:12},
+  {w:'proper', m:'adj. 적절한', ex:'Wear proper clothes for party.', em:'파티에 적절한 옷을 입으세요.', unit:12},
+  {w:'recall', m:'v. 기억해 내다', ex:'I cannot recall his name.', em:'그의 이름이 기억나지 않습니다.', unit:12},
+  {w:'material', m:'n. 재료, 물질', ex:'Cotton is a natural material.', em:'면은 천연 재료입니다.', unit:12},
+  {w:'primary', m:'adj. 주된, 주요한', ex:'Health is our primary concern.', em:'건강이 우리의 주된 관심사입니다.', unit:12},
+  {w:'mimic', m:'v. 흉내 내다', ex:'Parrots mimic human voices well.', em:'앵무새는 사람 목소리를 잘 흉내 냅니다.', unit:12},
+  {w:'contrary', m:'adj. 다른, 반대의', ex:'The result was quite contrary.', em:'결과가 아주 반대였습니다.', unit:12},
+  {w:'protective', m:'adj. 보호하는', ex:'Wear protective gear for safety.', em:'안전을 위해 보호하는 장비를 착용하세요.', unit:12},
+  {w:'reservation', m:'n. 예약', ex:'I made a hotel reservation.', em:'나는 호텔 예약을 했습니다.', unit:12},
+  {w:'relaxation', m:'n. 휴식', ex:'Reading is a good relaxation.', em:'독서는 좋은 휴식입니다.', unit:12},
+  {w:'except', m:'prep. ~을 제외하고는', ex:'Everyone went home except me.', em:'나를 제외하고 모두 집에 갔습니다.', unit:12},
+  {w:'crucial', m:'adj. 중대한, 결정적인', ex:'Water is crucial for life.', em:'물은 생명에 중대한 요소입니다.', unit:12},
+  {w:'economy', m:'n. 경제, 경기', ex:'The world economy is changing.', em:'세계 경제가 변하고 있습니다.', unit:12},
+  {w:'satellite', m:'n. 인공위성', ex:'The satellite is in space.', em:'인공위성이 우주에 있습니다.', unit:12},
+  {w:'electric', m:'adj. 전기의', ex:'He bought an electric car.', em:'그는 전기 자동차를 샀습니다.', unit:12},
+  {w:'appreciate', m:'v. 고마워하다; 가치를 알아보다', ex:'I appreciate your kind help.', em:'당신의 친절한 도움에 고마워합니다.', unit:12},
+  {w:'value', m:'n. 가치', ex:'Health has a great value.', em:'건강은 큰 가치가 있습니다.', unit:13},
+  {w:'soul', m:'n. 영혼', ex:'Music touches the human soul.', em:'음악은 인간의 영혼을 울립니다.', unit:13},
+  {w:'nearly', m:'adv. 거의', ex:'It is nearly lunch time.', em:'거의 점심시간입니다.', unit:13},
+  {w:'narrow', m:'adj. 좁은', ex:'The road is very narrow.', em:'길이 매우 좁습니다.', unit:13},
+  {w:'protein', m:'n. 단백질', ex:'Eggs are high in protein.', em:'달걀은 단백질 함량이 높습니다.', unit:13},
+  {w:'stare', m:'v. 응시하다, 빤히 보다', ex:'Do not stare at people.', em:'사람들을 빤히 보지 마세요.', unit:13},
+  {w:'society', m:'n. 사회, 집단', ex:'We live in a modern society.', em:'우리는 현대 사회에 삽니다.', unit:13},
+  {w:'standard', m:'n. 표준, 기준', ex:'Follow the high quality standard.', em:'높은 품질 표준을 따르세요.', unit:13},
+  {w:'mine', m:'n. 나의 것; 광산', ex:'That blue bag is mine.', em:'저 파란 가방은 나의 것입니다.', unit:13},
+  {w:'blank', m:'adj. 빈, 공백의', ex:'Leave the answer space blank.', em:'답변 공간을 빈 상태로 두세요.', unit:13},
+  {w:'era', m:'n. 시대, 시기', ex:'This is a digital era.', em:'지금은 디지털 시대입니다.', unit:13},
+  {w:'odor', m:'n. 냄새', ex:'The flower has sweet odor.', em:'꽃에서 달콤한 냄새가 납니다.', unit:13},
+  {w:'satisfy', m:'v. 만족시키다', ex:'Good food will satisfy you.', em:'좋은 음식은 당신을 만족시킬 것입니다.', unit:13},
+  {w:'fabric', m:'n. 천, 옷감', ex:'The fabric is very soft.', em:'그 옷감은 매우 부드럽습니다.', unit:13},
+  {w:'drown', m:'v. 익사하다, 물에 빠지다', ex:'Be careful not to drown.', em:'익사하지 않도록 조심하세요.', unit:13},
+  {w:'simmer', m:'v. (은근히) 끓이다', ex:'Let the soup simmer slowly.', em:'수프를 은근히 끓게 두세요.', unit:13},
+  {w:'forehead', m:'n. 이마', ex:'He has a wide forehead.', em:'그는 이마가 넓습니다.', unit:13},
+  {w:'remarkable', m:'adj. 놀라운, 주목할 만한', ex:'She has a remarkable talent.', em:'그녀는 놀라운 재능을 가지고 있습니다.', unit:13},
+  {w:'reliable', m:'adj. 믿을 만한', ex:'He is a reliable friend.', em:'그는 믿을 만한 친구입니다.', unit:13},
+  {w:'livelihood', m:'n. 생계(살아 나갈 방도)', ex:'Fishing is their main livelihood.', em:'낚시는 그들의 주된 생계입니다.', unit:13},
+  {w:'elegance', m:'n. 우아함', ex:'The dress has simple elegance.', em:'그 드레스는 단순한 우아함이 있습니다.', unit:13},
+  {w:'obstacle', m:'n. 장애물', ex:'Overcome every obstacle in life.', em:'인생의 모든 장애물을 극복하세요.', unit:13},
+  {w:'occasion', m:'n. 행사, 의식; 경우, 때', ex:'This is a special occasion.', em:'이것은 특별한 행사입니다.', unit:13},
+  {w:'situation', m:'n. 상황', ex:'The situation is very serious.', em:'상황이 매우 심각합니다.', unit:13},
+  {w:'selfish', m:'adj. 이기적인', ex:'Do not be so selfish.', em:'너무 이기적으로 굴지 마세요.', unit:13},
+  {w:'celebration', m:'n. 기념, 축하 행사', ex:'Join the big birthday celebration.', em:'성대한 생일 축하 행사에 참여하세요.', unit:13},
+  {w:'civilian', m:'n. 민간인, 일반인', ex:'The bomb injured a civilian.', em:'폭탄이 민간인을 다치게 했습니다.', unit:13},
+  {w:'acid', m:'n. 산, 산성 물질; adj. 신맛이 나는', ex:'Lemons contain a natural acid.', em:'레몬은 천연 산성 물질을 포함합니다.', unit:13},
+  {w:'union', m:'n. 조합, 연합', ex:'Workers formed a labor union.', em:'노동자들이 노동조합을 결성했습니다.', unit:14},
+  {w:'particle', m:'n. 입자, 작은 조각', ex:'Dust is a small particle.', em:'먼지는 작은 입자입니다.', unit:14},
+  {w:'tax', m:'n. 세금', ex:'We must pay our tax.', em:'우리는 세금을 내야 합니다.', unit:14},
+  {w:'native', m:'adj. 원산의, 토착의', ex:'Kangaroo is a native animal.', em:'캥거루는 토착 동물입니다.', unit:14},
+  {w:'harmony', m:'n. 화음; 조화, 화합', ex:'They live together in harmony.', em:'그들은 조화롭게 함께 삽니다.', unit:14},
+  {w:'decay', m:'v. 부패하다, 썩다', ex:'Sugar makes your teeth decay.', em:'설탕은 당신의 치아를 부패하게 합니다.', unit:14},
+  {w:'grip', m:'n. 꽉 붙잡음', ex:'He has a strong grip.', em:'그는 꽉 붙잡는 힘이 강합니다.', unit:14},
+  {w:'mist', m:'n. 안개', ex:'The mountain was in mist.', em:'산이 안개에 싸여 있었습니다.', unit:14},
+  {w:'starve', m:'v. 굶주리다, 굶어 죽다', ex:'Many animals starve in winter.', em:'많은 동물이 겨울에 굶주립니다.', unit:14},
+  {w:'purchase', m:'v. 사다, 구입하다', ex:'I want to purchase books.', em:'나는 책을 사고 싶습니다.', unit:14},
+  {w:'spit', m:'v. 침을 뱉다', ex:'Do not spit on floor.', em:'바닥에 침을 뱉지 마세요.', unit:14},
+  {w:'certainly', m:'adv. 분명히, 틀림없이', ex:'I will certainly go there.', em:'나는 분명히 그곳에 갈 것입니다.', unit:14},
+  {w:'sociable', m:'adj. 사교적인', ex:'He is a very sociable person.', em:'그는 매우 사교적인 사람입니다.', unit:14},
+  {w:'achieve', m:'v. 달성하다, 이루다', ex:'You can achieve your goal.', em:'당신은 목표를 달성할 수 있습니다.', unit:14},
+  {w:'advantage', m:'n. 유리한 점, 이점', ex:'Speed is his main advantage.', em:'속도가 그의 주요 이점입니다.', unit:14},
+  {w:'purify', m:'v. 정화하다', ex:'Filters purify the dirty water.', em:'필터가 더러운 물을 정화합니다.', unit:14},
+  {w:'impossible', m:'adj. 불가능한', ex:'Nothing is impossible for us.', em:'우리에게 불가능한 것은 없습니다.', unit:14},
+  {w:'volunteer', m:'n. 자원봉사자; v. 자원하다', ex:'I work as a volunteer.', em:'나는 자원봉사자로 일합니다.', unit:14},
+  {w:'export', m:'v. 수출하다', ex:'They export cars to China.', em:'그들은 중국으로 자동차를 수출합니다.', unit:14},
+  {w:'kettle', m:'n. 주전자', ex:'The kettle is boiling now.', em:'주전자가 지금 끓고 있습니다.', unit:14},
+  {w:'flake', m:'n. 얇은 조각', ex:'Snow falls in white flake.', em:'눈이 하얀 조각으로 내립니다.', unit:14},
+  {w:'negative', m:'adj. 부정적인, 나쁜', ex:'Do not have negative thoughts.', em:'부정적인 생각을 하지 마세요.', unit:14},
+  {w:'transform', m:'v. 변형시키다', ex:'Heat can transform the ice.', em:'열은 얼음을 변형시킬 수 있습니다.', unit:14},
+  {w:'expedition', m:'n. 탐험, 원정', ex:'They went on an expedition.', em:'그들은 탐험을 떠났습니다.', unit:14},
+  {w:'irritate', m:'v. 짜증나게 하다', ex:'Loud noises irritate me now.', em:'시끄러운 소음이 지금 나를 짜증 나게 합니다.', unit:14},
+  {w:'criticize', m:'v. 비난하다, 비판하다', ex:'Do not criticize others\' work.', em:'다른 사람의 일을 비난하지 마세요.', unit:14},
+  {w:'scatter', m:'v. 흩어지다', ex:'Scatter seeds on the ground.', em:'땅에 씨앗을 흩뿌리세요.', unit:14},
+  {w:'adjust', m:'v. 맞추다, 조절하다; 적응하다', ex:'Adjust your seat for comfort.', em:'편안함을 위해 좌석을 조절하세요.', unit:14},
+  {w:'lap', m:'n. 무릎', ex:'The baby sat on lap.', em:'아기가 무릎 위에 앉았습니다.', unit:15},
+  {w:'independent', m:'adj. 독립의', ex:'Be an independent person now.', em:'이제 독립적인 사람이 되세요.', unit:15},
+  {w:'bullet', m:'n. 총알', ex:'The bullet hit the wall.', em:'총알이 벽을 맞혔습니다.', unit:15},
+  {w:'puzzled', m:'adj. 어리둥절한', ex:'He had a puzzled look.', em:'그는 어리둥절한 표정을 지었습니다.', unit:15},
+  {w:'steep', m:'adj. 가파른, 경사가 급한', ex:'The hill is very steep.', em:'그 언덕은 매우 가파릅니다.', unit:15},
+  {w:'cruise', m:'n. 유람선 여행', ex:'We went on a cruise.', em:'우리는 유람선 여행을 갔습니다.', unit:15},
+  {w:'factor', m:'n. 요인, 요소', ex:'Luck is a main factor.', em:'운은 주요 요인입니다.', unit:15},
+  {w:'greeting', m:'n. 인사, 환영의 말', ex:'They shared a warm greeting.', em:'그들은 따뜻한 인사를 나누었습니다.', unit:15},
+  {w:'entire', m:'adj. 전체의', ex:'I ate the entire pizza.', em:'나는 피자 전체를 먹었습니다.', unit:15},
+  {w:'span', m:'n. 기간, 시간', ex:'Life has a short span.', em:'인생은 짧은 기간을 가집니다.', unit:15},
+  {w:'fare', m:'n. (교통) 요금, 운임', ex:'Pay the bus fare now.', em:'지금 버스 요금을 내세요.', unit:15},
+  {w:'asset', m:'n. 자산, 재산', ex:'Knowledge is a great asset.', em:'지식은 큰 자산입니다.', unit:15},
+  {w:'terribly', m:'adv. 몹시, 너무', ex:'I am terribly sorry now.', em:'지금 몹시 미안합니다.', unit:15},
+  {w:'interrupt', m:'v. 방해하다', ex:'Do not interrupt my speech.', em:'내 말을 방해하지 마세요.', unit:15},
+  {w:'narrator', m:'n. 서술자, 내레이터', ex:'The narrator told the story.', em:'서술자가 이야기를 들려주었습니다.', unit:15},
+  {w:'literally', m:'adv. 말 그대로, 그야말로', ex:'It was literally a miracle.', em:'그것은 그야말로 기적이었습니다.', unit:15},
+  {w:'ancestor', m:'n. 조상, 선조', ex:'Respect your ancestor and family.', em:'당신의 조상과 가족을 존중하세요.', unit:15},
+  {w:'disorder', m:'n. 엉망, 무질서; 장애, 이상', ex:'He has a sleep disorder.', em:'그는 수면 장애가 있습니다.', unit:15},
+  {w:'immigrant', m:'n. (다른 나라로 온) 이민자', ex:'He is a new immigrant.', em:'그는 새로운 이민자입니다.', unit:15},
+  {w:'distinct', m:'adj. 뚜렷한, 분명한', ex:'I heard a distinct sound.', em:'나는 뚜렷한 소리를 들었습니다.', unit:15},
+  {w:'predator', m:'n. 포식자, 육식 동물', ex:'The wolf is a predator.', em:'늑대는 포식자입니다.', unit:15},
+  {w:'demonstrate', m:'v. 증명하다, 입증하다', ex:'Demonstrate how to use this.', em:'이것을 어떻게 사용하는지 입증해 보세요.', unit:15},
+  {w:'desperate', m:'adj. 간절히 필요로 하는', ex:'They were desperate for help.', em:'그들은 도움이 간절히 필요했습니다.', unit:15},
+  {w:'procedure', m:'n. 절차, 과정', ex:'Follow the standard medical procedure.', em:'표준 의료 절차를 따르세요.', unit:15},
+  {w:'deserve', m:'v. 받을 만하다, 누릴 자격이 있다', ex:'You deserve a good rest.', em:'당신은 휴식을 누릴 자격이 있습니다.', unit:15},
+  {w:'organize', m:'v. 조직하다, 준비하다', ex:'Organize your desk every day.', em:'매일 책상을 정리하세요.', unit:15},
+  {w:'fundamental', m:'adj. 기본적인, 근본적인', ex:'Learn the fundamental math rules.', em:'기본적인 수학 규칙을 배우세요.', unit:15},
+  {w:'numeral', m:'n. 숫자', ex:'Write the Roman numeral here.', em:'여기에 로마 숫자를 쓰세요.', unit:15},
+  {w:'origin', m:'n. 기원, 근원', ex:'What is the word origin?', em:'그 단어의 기원은 무엇입니까?', unit:16},
+  {w:'forbidden', m:'adj. 금지된', ex:'Smoking is forbidden in here.', em:'이곳에서 흡연은 금지되어 있습니다.', unit:16},
+  {w:'kinetic', m:'adj. 운동의', ex:'Energy can be kinetic too.', em:'에너지 역시 운동에너지일 수 있습니다.', unit:16},
+  {w:'lastly', m:'adv. 마지막으로', ex:'Lastly, I thank you all.', em:'마지막으로, 여러분 모두에게 감사합니다.', unit:16},
+  {w:'inject', m:'v. 주사하다, 주입하다', ex:'Doctors inject medicine into patients.', em:'의사들이 환자들에게 약을 주입합니다.', unit:16},
+  {w:'bacteria', m:'n. 박테리아, 세균', ex:'Yogurt has good bacteria in it.', em:'요구르트에는 좋은 박테리아가 들어 있습니다.', unit:16},
+  {w:'cozy', m:'adj. 아늑한', ex:'The small room is cozy.', em:'작은 방이 아늑합니다.', unit:16},
+  {w:'fitness', m:'n. 건강, 신체 단련', ex:'Physical fitness is very important.', em:'신체 단련은 매우 중요합니다.', unit:16},
+  {w:'predict', m:'v. 예측하다', ex:'We cannot predict the future.', em:'우리는 미래를 예측할 수 없습니다.', unit:16},
+  {w:'political', m:'adj. 정치의', ex:'He has strong political views.', em:'그는 강한 정치적 견해를 가지고 있습니다.', unit:16},
+  {w:'affection', m:'n. 애정, 애착', ex:'Children need love and affection.', em:'아이들은 사랑과 애정이 필요합니다.', unit:16},
+  {w:'relieve', m:'v. (고통 등을) 덜다, 풀다', ex:'This will relieve your pain.', em:'이것이 당신의 통증을 덜어줄 것입니다.', unit:16},
+  {w:'continent', m:'n. 대륙', ex:'Asia is a large continent.', em:'아시아는 거대한 대륙입니다.', unit:16},
+  {w:'conflict', m:'n. 갈등, 충돌', ex:'They had a small conflict.', em:'그들은 작은 갈등이 있었습니다.', unit:16},
+  {w:'grave', m:'n. 무덤, 산소', ex:'They visited the family grave.', em:'그들은 가족 무덤을 방문했습니다.', unit:16},
+  {w:'sting', m:'v. 찌르다, 쏘다', ex:'Bees can sting you twice.', em:'벌은 당신을 두 번 쏠 수 있습니다.', unit:16},
+  {w:'ethnic', m:'adj. 민족의', ex:'I like diverse ethnic foods.', em:'나는 다양한 민족의 음식을 좋아합니다.', unit:16},
+  {w:'agriculture', m:'n. 농업, 농사', ex:'They work in the agriculture.', em:'그들은 농업에 종사합니다.', unit:16},
+  {w:'gymnasium', m:'n. 체육관, 실내 경기장', ex:'Let\'s meet at the gymnasium.', em:'체육관에서 만납시다.', unit:16},
+  {w:'courage', m:'n. 용기', ex:'It takes courage to speak.', em:'말하는 데에는 용기가 필요합니다.', unit:16},
+  {w:'success', m:'n. 성공', ex:'Hard work leads to success.', em:'노력은 성공으로 이어집니다.', unit:16},
+  {w:'distinguish', m:'v. 구별하다', ex:'Distinguish between right and wrong.', em:'옳고 그름을 구별하세요.', unit:16},
+  {w:'navigation', m:'n. 항해, 운항', ex:'Use GPS for easy navigation.', em:'쉬운 항해를 위해 GPS를 사용하세요.', unit:16},
+  {w:'alter', m:'v. 바꾸다, 고치다', ex:'You cannot alter the plan.', em:'당신은 그 계획을 바꿀 수 없습니다.', unit:16},
+  {w:'positive', m:'adj. 긍정적인; (검사 결과가) 양성의', ex:'Always stay in positive mind.', em:'항상 긍정적인 마음을 유지하세요.', unit:16},
+  {w:'essential', m:'adj. 필수의, 본질적인', ex:'Water is essential for health.', em:'물은 건강에 필수적입니다.', unit:16},
+  {w:'participate', m:'v. 참여하다, 참가하다', ex:'Please participate in the class.', em:'수업에 참여해 주세요.', unit:17},
+  {w:'recruit', m:'v. 모집하다, 채용하다', ex:'Companies recruit new workers often.', em:'회사들은 종종 새 직원을 채용합니다.', unit:17},
+  {w:'rainforest', m:'n. (열대) 우림', ex:'Monkeys live in the rainforest.', em:'원숭이들은 열대 우림에 삽니다.', unit:17},
+  {w:'stink', m:'v. 악취(냄새)가 나다', ex:'Old socks stink very much.', em:'낡은 양말은 냄새가 아주 많이 납니다.', unit:17},
+  {w:'honestly', m:'adv. 솔직히, 정직하게', ex:'Honestly, I do not know.', em:'솔직히, 나는 모릅니다.', unit:17},
+  {w:'leash', m:'n. 개 줄, 가죽끈', ex:'Keep the dog on leash.', em:'개 줄을 매 두세요.', unit:17},
+  {w:'harmful', m:'adj. 해로운', ex:'Smoking is harmful to health.', em:'흡연은 건강에 해롭습니다.', unit:17},
+  {w:'latitude', m:'n. (지리) 위도', ex:'Seoul is at this latitude.', em:'서울은 이 위도에 있습니다.', unit:17},
+  {w:'binoculars', m:'n. 쌍안경', ex:'I look through my binoculars.', em:'나는 쌍안경으로 봅니다.', unit:17},
+  {w:'sprout', m:'v. 싹이 나다', ex:'Seeds will sprout in spring.', em:'씨앗이 봄에 싹이 날 것입니다.', unit:17},
+  {w:'instant', m:'adj. 즉각적인', ex:'I want an instant answer.', em:'나는 즉각적인 답변을 원합니다.', unit:17},
+  {w:'offspring', m:'n. 자손, 새끼', ex:'Animals care for their offspring.', em:'동물들은 자신의 새끼를 돌봅니다.', unit:17},
+  {w:'conference', m:'n. 회의', ex:'We attended a peace conference.', em:'우리는 평화 회담에 참석했습니다.', unit:17},
+  {w:'accord', m:'v. 일치하다, 부합하다', ex:'Our ideas are in accord.', em:'우리의 생각은 일치합니다.', unit:17},
+  {w:'foreign', m:'adj. 외국의', ex:'I like learning foreign languages.', em:'나는 외국어 배우는 것을 좋아합니다.', unit:17},
+  {w:'primitive', m:'adj. 원시의, 초기의', ex:'They used some primitive tools.', em:'그들은 몇 가지 원시적인 도구를 사용했습니다.', unit:17},
+  {w:'awkward', m:'adj. 어색한, 서투른', ex:'I felt awkward with him.', em:'나는 그와 함께 있어 어색했습니다.', unit:17},
+  {w:'internal', m:'adj. 내부의', ex:'Check the internal engine parts.', em:'내부의 엔진 부품들을 확인하세요.', unit:17},
+  {w:'resolve', m:'v. 결심하다; 해결하다', ex:'We must resolve the problem.', em:'우리는 문제를 해결해야 합니다.', unit:17},
+  {w:'nod', m:'v. (고개를) 끄덕이다', ex:'He gave a quiet nod.', em:'그는 조용히 고개를 끄덕였습니다.', unit:17},
+  {w:'evolve', m:'v. 진화하다, 발전하다', ex:'Humans evolve over long time.', em:'인간은 오랜 시간에 걸쳐 진화합니다.', unit:17},
+  {w:'diplomat', m:'n. 외교관', ex:'He works as a diplomat.', em:'그는 외교관으로 일합니다.', unit:17},
+  {w:'nationality', m:'n. 국적, 국민', ex:'What is your current nationality?', em:'당신의 현재 국적은 무엇입니까?', unit:17},
+  {w:'boundary', m:'n. 경계, 영역', ex:'Respect the boundary between us.', em:'우리 사이의 경계를 존중하세요.', unit:17},
+  {w:'advertise', m:'v. 광고하다, 홍보하다', ex:'They advertise their new products.', em:'그들은 신제품을 홍보합니다.', unit:17},
+  {w:'halfway', m:'adj. 중간의, 절반의', ex:'We are halfway there now.', em:'우리는 이제 중간 지점에 왔습니다.', unit:17},
+  {w:'preference', m:'n. 더 좋아함, 선호', ex:'What is your food preference?', em:'당신의 음식 선호는 무엇입니까?', unit:17},
+  {w:'flexible', m:'adj. 잘 구부러지는, 유연한; 융통성 있는', ex:'This rubber is very flexible.', em:'이 고무는 매우 잘 구부러집니다.', unit:17},
+  {w:'silent', m:'adj. 조용한', ex:'The library is very silent.', em:'도서관은 매우 조용합니다.', unit:18},
+  {w:'blast', m:'n. 폭발', ex:'We heard a loud blast.', em:'우리는 큰 폭발음을 들었습니다.', unit:18},
+  {w:'labor', m:'n. 노동(력), 근로', ex:'He spent years in labor.', em:'그는 수년간 노동하며 보냈습니다.', unit:18},
+  {w:'pause', m:'n. 멈춤', ex:'Take a short coffee pause.', em:'짧은 커피 휴식 시간을 가지세요.', unit:18},
+  {w:'moss', m:'n. (식물) 이끼', ex:'The rock is covered moss.', em:'그 바위는 이끼로 덮여 있습니다.', unit:18},
+  {w:'honeymoon', m:'n. 신혼여행', ex:'They went on their honeymoon.', em:'그들은 신혼여행을 떠났습니다.', unit:18},
+  {w:'numb', m:'adj. 감각이 없는', ex:'My fingers felt very numb.', em:'내 손가락이 감각이 없었습니다.', unit:18},
+  {w:'tropical', m:'adj. 열대의', ex:'I like sweet tropical fruits.', em:'나는 달콤한 열대 과일을 좋아합니다.', unit:18},
+  {w:'rebuild', m:'v. 다시 짓다, 재건하다', ex:'We must rebuild the house.', em:'우리는 집을 다시 지어야 합니다.', unit:18},
+  {w:'severe', m:'adj. 심각한, 가혹한', ex:'He had a severe headache.', em:'그는 심각한 두통을 앓았습니다.', unit:18},
+  {w:'flourish', m:'v. 번영하다, 번창하다', ex:'The flowers flourish in sun.', em:'꽃들이 햇빛 속에서 번창합니다.', unit:18},
+  {w:'insight', m:'n. 통찰력, 이해', ex:'His book gives deep insight.', em:'그의 책은 깊은 통찰력을 줍니다.', unit:18},
+  {w:'obey', m:'v. 복종하다, 따르다', ex:'Children must obey their parents.', em:'아이들은 부모님께 복종해야 합니다.', unit:18},
+  {w:'brook', m:'n. 시내, 개울', ex:'Water flows in the brook.', em:'물이 시내에서 흐릅니다.', unit:18},
+  {w:'chairperson', m:'n. 의장, 회장', ex:'She is the new chairperson.', em:'그녀가 새로운 의장입니다.', unit:18},
+  {w:'neglect', m:'v. 소홀히 하다, 방치하다', ex:'Do not neglect your health.', em:'건강을 소홀히 하지 마세요.', unit:18},
+  {w:'generate', m:'v. 발생시키다, 만들어 내다', ex:'Wind can generate clean power.', em:'바람은 깨끗한 전력을 만들어 낼 수 있습니다.', unit:18},
+  {w:'nuclear', m:'adj. 핵의, 원자력의', ex:'Nuclear energy is very strong.', em:'원자력 에너지는 매우 강력합니다.', unit:18},
+  {w:'hollow', m:'adj. 속이 빈, 공허한', ex:'The old tree is hollow.', em:'그 오래된 나무는 속이 비었습니다.', unit:18},
+  {w:'reception', m:'n. 접대, 환영 (연회)', ex:'We had a wedding reception.', em:'우리는 결혼 피로연을 열었습니다.', unit:18},
+  {w:'renowned', m:'adj. 유명한, 명성 있는', ex:'He is a renowned artist.', em:'그는 유명한 예술가입니다.', unit:18},
+  {w:'pronunciation', m:'n. 발음', ex:'Check your English pronunciation now.', em:'지금 당신의 영어 발음을 확인하세요.', unit:18},
+  {w:'copper', m:'n. (광물) 구리', ex:'Coins are made of copper.', em:'동전은 구리로 만들어집니다.', unit:18},
+  {w:'naughty', m:'adj. 버릇없는, 장난이 심한', ex:'Stop being such naughty boy.', em:'그렇게 장난꾸러기처럼 굴지 마세요.', unit:18},
+  {w:'immigration', m:'n. (다른 나라로 온) 이민', ex:'Go through the immigration office.', em:'출입국 관리소로 가세요.', unit:18},
+  {w:'squeeze', m:'v. (쥐어) 짜다', ex:'Squeeze the lemon juice out.', em:'레몬 주스를 짜내세요.', unit:18},
+  {w:'refugee', m:'n. 난민, 망명자', ex:'They helped the war refugee.', em:'그들은 전쟁 난민을 도왔습니다.', unit:18},
+  {w:'blend', m:'v. 섞다', ex:'Blend the fruit and milk.', em:'과일과 우유를 섞으세요.', unit:18},
+  {w:'credit', m:'n. 외상(신용) 거래', ex:'Can I buy on credit?', em:'외상으로 살 수 있을까요?', unit:19},
+  {w:'peer', m:'n. 또래, 동료', ex:'I talk with my peer.', em:'나는 또래 친구와 이야기합니다.', unit:19},
+  {w:'harsh', m:'adj. 가혹한, 혹독한', ex:'Winter weather is very harsh.', em:'겨울 날씨는 매우 혹독합니다.', unit:19},
+  {w:'crisis', m:'n. 위기', ex:'We face a global crisis.', em:'우리는 세계적인 위기에 직면했습니다.', unit:19},
+  {w:'referee', m:'n. (운동 경기의) 심판', ex:'The referee blew his whistle.', em:'심판이 호루라기를 불었습니다.', unit:19},
+  {w:'strict', m:'adj. 엄격한', ex:'My father is very strict.', em:'나의 아버지는 매우 엄격합니다.', unit:19},
+  {w:'import', m:'v. 수입하다', ex:'We import oil from abroad.', em:'우리는 해외에서 석유를 수입합니다.', unit:19},
+  {w:'occupation', m:'n. 직업', ex:'What is your current occupation?', em:'당신의 현재 직업은 무엇입니까?', unit:19},
+  {w:'deposit', m:'n. 예금, 예치금', ex:'Make a small bank deposit.', em:'은행에 소액을 예금하세요.', unit:19},
+  {w:'odd', m:'adj. 이상한; 홀수의', ex:'That is an odd number.', em:'그것은 홀수입니다.', unit:19},
+  {w:'define', m:'v. (뜻을) 정의하다', ex:'Please define this difficult word.', em:'이 어려운 단어를 정의해 주세요.', unit:19},
+  {w:'penalty', m:'n. 처벌, 불이익', ex:'You must pay the penalty.', em:'당신은 처벌을 받아야 합니다.', unit:19},
+  {w:'identify', m:'v. 식별하다, 확인하다', ex:'Can you identify this person?', em:'이 사람을 식별할 수 있나요?', unit:19},
+  {w:'shallow', m:'adj. 얕은', ex:'The water is very shallow.', em:'물이 매우 얕습니다.', unit:19},
+  {w:'politics', m:'n. 정치, 정치학', ex:'I am interested in politics.', em:'나는 정치에 관심이 있습니다.', unit:19},
+  {w:'abroad', m:'adv. 해외에, 해외로', ex:'She wants to study abroad.', em:'그녀는 해외에서 공부하고 싶어 합니다.', unit:19},
+  {w:'convention', m:'n. 관습, 관례', ex:'Follow the social convention here.', em:'여기서는 사회적 관습을 따르세요.', unit:19},
+  {w:'reed', m:'n. (식물) 갈대', ex:'Reeds grow near the river.', em:'갈대들이 강 근처에서 자랍니다.', unit:19},
+  {w:'hopeless', m:'adj. 절망적인', ex:'The situation felt very hopeless.', em:'상황이 매우 절망적으로 느껴졌습니다.', unit:19},
+  {w:'operate', m:'v. (기계를) 조작하다; 수술하다', ex:'I can operate this machine.', em:'나는 이 기계를 조작할 수 있습니다.', unit:19},
+  {w:'conclude', m:'v. 결론 내리다', ex:'We conclude the meeting now.', em:'우리는 이제 회의를 결론 맺습니다.', unit:19},
+  {w:'concentrate', m:'v. 집중하다', ex:'Concentrate on your work now.', em:'지금 당신의 일에 집중하세요.', unit:19},
+  {w:'nutrient', m:'n. 영양소, 영양분', ex:'Milk has many healthy nutrient.', em:'우유는 건강에 좋은 많은 영양소를 가지고 있습니다.', unit:19},
+  {w:'improvement', m:'n. 향상, 개선', ex:'We see a great improvement.', em:'우리는 큰 향상을 봅니다.', unit:19},
+  {w:'scholarship', m:'n. 장학금', ex:'He won a college scholarship.', em:'그는 대학 장학금을 받았습니다.', unit:19},
+  {w:'stutter', m:'v. 말을 더듬다', ex:'He has a slight stutter.', em:'그는 말을 약간 더듬습니다.', unit:19},
+  {w:'infection', m:'n. 감염, 전염(병)', ex:'Wash hands to avoid infection.', em:'감염을 피하기 위해 손을 씻으세요.', unit:19},
+  {w:'elect', m:'v. (선거로) 선출하다', ex:'We elect a new leader.', em:'우리는 새로운 리더를 선출합니다.', unit:20},
+  {w:'survey', m:'n. 설문 조사', ex:'Fill out the school survey.', em:'학교 설문 조사를 작성하세요.', unit:20},
+  {w:'dynamic', m:'adj. 활기찬, 활동적인', ex:'He is a dynamic person.', em:'그는 활기찬 사람입니다.', unit:20},
+  {w:'theory', m:'n. 이론', ex:'This is a scientific theory.', em:'이것은 과학적 이론입니다.', unit:20},
+  {w:'bless', m:'v. 축복하다', ex:'God bless you and family.', em:'신이 당신과 가족을 축복하기를.', unit:20},
+  {w:'hatch', m:'v. (알이) 부화하다, 깨다', ex:'The eggs will hatch soon.', em:'알들이 곧 부화할 것입니다.', unit:20},
+  {w:'strategy', m:'n. 전략, 전술', ex:'We need a good strategy.', em:'우리는 좋은 전략이 필요합니다.', unit:20},
+  {w:'mend', m:'v. 수리하다, 수선하다', ex:'I will mend my clothes.', em:'내가 내 옷을 수선할 것입니다.', unit:20},
+  {w:'revolution', m:'n. 혁명, 큰 변혁', ex:'The digital revolution changed life.', em:'디지털 혁명이 삶을 바꿨습니다.', unit:20},
+  {w:'relative', m:'n. 친척; adj. 상대적인, 비교적인', ex:'She is my close relative.', em:'그녀는 나의 가까운 친척입니다.', unit:20},
+  {w:'atomic', m:'adj. 원자의, 원자력의', ex:'We study the atomic structure.', em:'우리는 원자 구조를 공부합니다.', unit:20},
+  {w:'slender', m:'adj. 날씬한', ex:'She has a slender body.', em:'그녀는 날씬한 몸을 가지고 있습니다.', unit:20},
+  {w:'employ', m:'v. 고용하다', ex:'They employ many young people.', em:'그들은 많은 젊은이를 고용합니다.', unit:20},
+  {w:'affect', m:'v. 영향을 주다', ex:'Stress can affect your health.', em:'스트레스는 건강에 영향을 줄 수 있습니다.', unit:20},
+  {w:'province', m:'n. (행정 단위인) 도, 주', ex:'He lives in this province.', em:'그는 이 도에 삽니다.', unit:20},
+  {w:'confront', m:'v. 직면하다, 맞서다', ex:'Confront your fears with courage.', em:'용기를 가지고 당신의 두려움에 맞서세요.', unit:20},
+  {w:'religion', m:'n. 종교', ex:'Freedom of religion is important.', em:'종교의 자유는 중요합니다.', unit:20},
+  {w:'innovate', m:'v. 혁신하다', ex:'We must innovate for future.', em:'우리는 미래를 위해 혁신해야 합니다.', unit:20},
+  {w:'conquer', m:'v. 정복하다; 극복하다', ex:'They want to conquer space.', em:'그들은 우주를 정복하고 싶어 합니다.', unit:20},
+  {w:'domestic', m:'adj. 국내의, 가정의', ex:'This is a domestic flight.', em:'이것은 국내선 비행기입니다.', unit:20},
+  {w:'illness', m:'n. 병, 질환', ex:'He recovered from serious illness.', em:'그는 심각한 병에서 회복되었습니다.', unit:20},
+  {w:'ostrich', m:'n. 타조', ex:'The ostrich can run fast.', em:'타조는 빨리 달릴 수 있습니다.', unit:20},
+  {w:'cathedral', m:'n. (대)성당', ex:'We visited the old cathedral.', em:'우리는 그 오래된 성당을 방문했습니다.', unit:20},
+  {w:'literary', m:'adj. 문학의', ex:'I like reading literary works.', em:'나는 문학 작품 읽는 것을 좋아합니다.', unit:20},
+  {w:'sacrifice', m:'n. 희생', ex:'Parents sacrifice for their children.', em:'부모님은 자녀를 위해 희생합니다.', unit:20},
+  {w:'sympathy', m:'n. 동정심, 측은히 여김', ex:'I have sympathy for him.', em:'나는 그에게 동정심을 느낍니다.', unit:20},
+  {w:'adequate', m:'adj. 충분한, 적당한', ex:'We have an adequate supply.', em:'우리는 충분한 공급량이 있습니다.', unit:20},
+  {w:'port', m:'n. 항구', ex:'The ship left the port.', em:'배가 항구를 떠났습니다.', unit:21},
+  {w:'romantic', m:'adj. 낭만적인', ex:'We had a romantic dinner.', em:'우리는 낭만적인 저녁 식사를 했습니다.', unit:21},
+  {w:'motion', m:'n. 움직임, 동작', ex:'I saw a sudden motion.', em:'나는 갑작스러운 움직임을 보았습니다.', unit:21},
+  {w:'emotion', m:'n. 감정', ex:'Love is a strong emotion.', em:'사랑은 강한 감정입니다.', unit:21},
+  {w:'amount', m:'n. 양, 총액', ex:'Pay the full amount now.', em:'지금 총액을 지불하세요.', unit:21},
+  {w:'leadership', m:'n. 지도력, 리더십', ex:'He has a great leadership.', em:'그는 뛰어난 지도력을 가지고 있습니다.', unit:21},
+  {w:'social', m:'adj. 사회의', ex:'Humans are very social animals.', em:'인간은 매우 사회적인 동물입니다.', unit:21},
+  {w:'silence', m:'n. 고요, 침묵', ex:'There was a long silence.', em:'긴 침묵이 있었습니다.', unit:21},
+  {w:'downtown', m:'adv. 시내에, 시내로', ex:'Let\'s go to downtown today.', em:'오늘 시내에 갑시다.', unit:21},
+  {w:'tradition', m:'n. 전통', ex:'Follow the old family tradition.', em:'오래된 가족 전통을 따르세요.', unit:21},
+  {w:'product', m:'n. 생산물, 상품', ex:'This is a natural product.', em:'이것은 천연 제품입니다.', unit:21},
+  {w:'steel', m:'n. 강철', ex:'The bridge is made steel.', em:'그 다리는 강철로 만들어졌습니다.', unit:21},
+  {w:'capital', m:'n. (나라의) 수도', ex:'Paris is the capital city.', em:'파리는 수도입니다.', unit:21},
+  {w:'parade', m:'n. 행진, 퍼레이드', ex:'We watched the Christmas parade.', em:'우리는 크리스마스 퍼레이드를 보았습니다.', unit:21},
+  {w:'enroll', m:'v. 등록하다', ex:'Enroll in the English class.', em:'영어 수업에 등록하세요.', unit:21},
+  {w:'contain', m:'v. 포함하다, 들어 있다', ex:'Boxes contain many small gifts.', em:'상자들에 많은 작은 선물이 들어 있습니다.', unit:21},
+  {w:'formal', m:'adj. 공식의, 격식을 차린', ex:'Wear a formal suit today.', em:'오늘 격식을 차린 정장을 입으세요.', unit:21},
+  {w:'aim', m:'v. 겨누다, 조준하다; n. 목표', ex:'Aim for the top score.', em:'최고 점수를 목표로 하세요.', unit:21},
+  {w:'consultant', m:'n. 상담가', ex:'I talked to a consultant.', em:'나는 상담가와 이야기했습니다.', unit:21},
+  {w:'outfit', m:'n. 복장, 의상', ex:'I like your new outfit.', em:'당신의 새 복장이 마음에 듭니다.', unit:21},
+  {w:'legal', m:'adj. 법적인, 적법한', ex:'Seek some professional legal advice.', em:'전문적인 법적 조언을 구하세요.', unit:21},
+  {w:'rescue', m:'v. 구출하다, 구조하다', ex:'Brave men rescue the cat.', em:'용감한 사람들이 고양이를 구조합니다.', unit:21},
+  {w:'toxic', m:'adj. 독이 있는, 독성의', ex:'Some plants have toxic leaves.', em:'어떤 식물들은 독성이 있는 잎을 가집니다.', unit:21},
+  {w:'stressful', m:'adj. 스트레스가 많은', ex:'Life can be very stressful.', em:'인생은 매우 스트레스가 많을 수 있습니다.', unit:21},
+  {w:'prescribe', m:'v. (약을) 처방하다', ex:'Doctors prescribe medicine for patients.', em:'의사들은 환자들에게 약을 처방합니다.', unit:21},
+  {w:'vocal', m:'adj. 목소리의, 노래의', ex:'She has great vocal skills.', em:'그녀는 뛰어난 목소리 기술을 가지고 있습니다.', unit:21},
+  {w:'environment', m:'n. 환경', ex:'Protect our natural environment now.', em:'지금 우리의 자연환경을 보호하세요.', unit:21},
+  {w:'position', m:'n. 위치; 자세', ex:'Change your sleeping position often.', em:'잠자는 자세를 자주 바꾸세요.', unit:21},
+  {w:'teenager', m:'n. 십 대', ex:'He is a typical teenager.', em:'그는 전형적인 십 대입니다.', unit:22},
+  {w:'fortnight', m:'n. 2주일', ex:'I stayed there for fortnight.', em:'나는 그곳에 2주일 동안 머물렀습니다.', unit:22},
+  {w:'ash', m:'n. (불에 타고 남은) 재', ex:'The volcano produced grey ash.', em:'화산이 회색 재를 뿜어냈습니다.', unit:22},
+  {w:'differ', m:'v. 다르다', ex:'Our tastes differ from theirs.', em:'우리의 취향은 그들의 것과 다릅니다.', unit:22},
+  {w:'quit', m:'v. 그만두다', ex:'I decided to quit smoking.', em:'나는 담배를 그만두기로 했습니다.', unit:22},
+  {w:'succeed', m:'v. 성공하다', ex:'You will succeed in life.', em:'당신은 인생에서 성공할 것입니다.', unit:22},
+  {w:'tackle', m:'n. 태클, 공 뺏기', ex:'The player made a tackle.', em:'그 선수가 태클을 걸었습니다.', unit:22},
+  {w:'loose', m:'adj. 헐거운, 느슨한', ex:'The tooth is very loose.', em:'이빨이 매우 흔들립니다.', unit:22},
+  {w:'limit', m:'n. 한계, 제한; v. 제한하다', ex:'There is no speed limit.', em:'속도 제한이 없습니다.', unit:22},
+  {w:'stroller', m:'n. 유모차', ex:'Push the baby in stroller.', em:'유모차에 아기를 태워 미세요.', unit:22},
+  {w:'accent', m:'n. 억양, 말투', ex:'He has a strong accent.', em:'그는 억양이 강합니다.', unit:22},
+  {w:'expert', m:'n. 전문가', ex:'Ask the medical expert now.', em:'지금 의료 전문가에게 물어보세요.', unit:22},
+  {w:'sudden', m:'adj. 갑작스러운', ex:'I heard a sudden noise.', em:'갑작스러운 소음을 들었습니다.', unit:22},
+  {w:'kidnap', m:'v. 납치하다', ex:'Someone tried to kidnap her.', em:'누군가 그녀를 납치하려 했습니다.', unit:22},
+  {w:'tribe', m:'n. 종족, 부족', ex:'They belong to a tribe.', em:'그들은 한 종족에 속합니다.', unit:22},
+  {w:'faraway', m:'adj. 먼, 멀리 떨어진', ex:'They live in faraway land.', em:'그들은 멀리 떨어진 땅에 삽니다.', unit:22},
+  {w:'imagination', m:'n. 상상력, 상상', ex:'Use your creative imagination now.', em:'지금 당신의 창의적인 상상력을 사용하세요.', unit:22},
+  {w:'structure', m:'n. 구조; 건축물', ex:'The building has unique structure.', em:'그 건물은 독특한 구조를 가지고 있습니다.', unit:22},
+  {w:'abuse', m:'v. 악용하다, 남용하다; 학대하다', ex:'Do not abuse your power.', em:'당신의 권력을 남용하지 마세요.', unit:22},
+  {w:'absorb', m:'v. 흡수하다', ex:'Sponges absorb water very well.', em:'스펀지는 물을 아주 잘 흡수합니다.', unit:22},
+  {w:'inquiry', m:'n. 질문, 문의', ex:'I made a business inquiry.', em:'나는 사업 문의를 했습니다.', unit:22},
+  {w:'miracle', m:'n. 기적', ex:'It was a true miracle.', em:'그것은 진정한 기적이었습니다.', unit:22},
+  {w:'unexpected', m:'adj. 예상 밖의, 예기치 않은', ex:'I got an unexpected gift.', em:'나는 예기치 않은 선물을 받았습니다.', unit:22},
+  {w:'glance', m:'v. 흘낏 보다', ex:'He took a quick glance.', em:'그는 빠르게 흘낏 보았습니다.', unit:22},
+  {w:'technique', m:'n. 기법, 기술', ex:'Use the correct painting technique.', em:'올바른 그림 기법을 사용하세요.', unit:22},
+  {w:'parental', m:'adj. 부모의', ex:'They need some parental care.', em:'그들은 부모의 보살핌이 필요합니다.', unit:22},
+  {w:'myth', m:'n. 신화', ex:'Greek myth is very interesting.', em:'그리스 신화는 매우 흥미롭습니다.', unit:22},
+  {w:'charity', m:'n. 자선 (단체)', ex:'Please give money to charity.', em:'자선 단체에 돈을 기부하세요.', unit:22},
+  {w:'talent', m:'n. 재능', ex:'She has a natural talent.', em:'그녀는 타고난 재능이 있습니다.', unit:23},
+  {w:'motive', m:'n. 동기, 이유', ex:'What was his hidden motive?', em:'그의 숨겨진 동기는 무엇이었습니까?', unit:23},
+  {w:'local', m:'adj. 지역의, 현지의', ex:'Eat fresh and local food.', em:'신선한 현지 음식을 드세요.', unit:23},
+  {w:'submarine', m:'n. 잠수함', ex:'The submarine went deep down.', em:'잠수함이 깊이 내려갔습니다.', unit:23},
+  {w:'citizen', m:'n. 시민', ex:'I am a Korean citizen.', em:'나는 한국 시민입니다.', unit:23},
+  {w:'oxygen', m:'n. (화학) 산소', ex:'Humans need oxygen to live.', em:'인간은 살기 위해 산소가 필요합니다.', unit:23},
+  {w:'contract', m:'n. 계약, 계약서', ex:'Sign the new work contract.', em:'새로운 업무 계약서에 서명하세요.', unit:23},
+  {w:'display', m:'v. 전시하다, 나타내다', ex:'They display flowers in shop.', em:'그들은 가게에 꽃을 전시합니다.', unit:23},
+  {w:'passion', m:'n. 열정, 정열', ex:'He has passion for music.', em:'그는 음악에 대한 열정이 있습니다.', unit:23},
+  {w:'pressure', m:'n. 압박, 압력', ex:'I feel a high pressure.', em:'나는 높은 압박감을 느낍니다.', unit:23},
+  {w:'bloom', m:'v. 꽃을 피우다', ex:'Flowers bloom in early spring.', em:'꽃들이 이른 봄에 핍니다.', unit:23},
+  {w:'rod', m:'n. 막대', ex:'He used a fishing rod.', em:'그는 낚싯대를 사용했습니다.', unit:23},
+  {w:'suppose', m:'v. 가정하다, 상상하다', ex:'Suppose you have much money.', em:'당신에게 돈이 많다고 가정해 보세요.', unit:23},
+  {w:'wealth', m:'n. 부, 재산', ex:'Health is better than wealth.', em:'건강이 부보다 낫습니다.', unit:23},
+  {w:'admit', m:'v. 인정하다', ex:'I admit my old mistake.', em:'나는 나의 예전 실수를 인정합니다.', unit:23},
+  {w:'vision', m:'n. 상상, 환상; 시력', ex:'He has a clear vision.', em:'그는 명확한 환상을 가지고 있습니다.', unit:23},
+  {w:'bold', m:'adj. 대담한, 용감한', ex:'She made a bold move.', em:'그녀는 대담한 행동을 했습니다.', unit:23},
+  {w:'interval', m:'n. (장소·시간의) 간격', ex:'Take a break at interval.', em:'간격을 두고 휴식을 취하세요.', unit:23},
+  {w:'aspire', m:'v. 열망하다, 갈망하다', ex:'I aspire to be great.', em:'나는 위대해지기를 열망합니다.', unit:23},
+  {w:'typical', m:'adj. 대표적인, 전형적인', ex:'This is a typical case.', em:'이것은 전형적인 사례입니다.', unit:23},
+  {w:'drip', m:'v. 똑똑 떨어지다', ex:'Water began to drip down.', em:'물이 똑똑 떨어지기 시작했습니다.', unit:23},
+  {w:'pollution', m:'n. 오염', ex:'Air pollution is a problem.', em:'대기 오염은 문제입니다.', unit:23},
+  {w:'mental', m:'adj. 정신의, 마음의', ex:'He has a strong mental.', em:'그는 강한 정신을 가지고 있습니다.', unit:23},
+  {w:'heritage', m:'n. (앞 세대가 물려주는 사물·문화) 유산', ex:'Protect our cultural heritage now.', em:'지금 우리의 문화유산을 보호하세요.', unit:23},
+  {w:'average', m:'n. 평균; adj. 보통의, 일반적인', ex:'He is an average student.', em:'그는 보통의 학생입니다.', unit:23},
+  {w:'modern', m:'adj. 현대의', ex:'I like the modern art.', em:'나는 현대 예술을 좋아합니다.', unit:24},
+  {w:'horrible', m:'adj. 무서운, 끔찍한', ex:'I had a horrible dream.', em:'나는 끔찍한 꿈을 꾸었습니다.', unit:24},
+  {w:'pale', m:'adj. (색깔이) 옅은, 연한', ex:'Her face turned very pale.', em:'그녀의 얼굴이 매우 창백해졌습니다.', unit:24},
+  {w:'crew', m:'n. 승무원', ex:'The ship has a crew.', em:'그 배에는 승무원이 있습니다.', unit:24},
+  {w:'cell', m:'n. 세포', ex:'We study the plant cell.', em:'우리는 식물 세포를 공부합니다.', unit:24},
+  {w:'depressed', m:'adj. 우울한', ex:'He felt very depressed today.', em:'그는 오늘 매우 우울했습니다.', unit:24},
+  {w:'period', m:'n. 기간, 시기', ex:'It was a difficult period.', em:'그것은 어려운 시기였습니다.', unit:24},
+  {w:'exist', m:'v. 존재하다', ex:'Does life exist on Mars?', em:'화성에 생명체가 존재합니까?', unit:24},
+  {w:'rubber', m:'n. 고무', ex:'These tires are made rubber.', em:'이 타이어들은 고무로 만들어졌습니다.', unit:24},
+  {w:'brotherhood', m:'n. 형제애, 인류애', ex:'We share a strong brotherhood.', em:'우리는 강한 형제애를 나눕니다.', unit:24},
+  {w:'payment', m:'n. 지불, 납부', ex:'Make the monthly payment now.', em:'지금 월간 지불을 하세요.', unit:24},
+  {w:'instance', m:'n. 사례, 경우', ex:'Give me a single instance.', em:'나에게 사례를 하나 들어주세요.', unit:24},
+  {w:'suitable', m:'adj. 적당한, 적절한', ex:'This dress is not suitable.', em:'이 드레스는 적절하지 않습니다.', unit:24},
+  {w:'vapor', m:'n. 증기, 수증기', ex:'Water vapor rises from pot.', em:'냄비에서 수증기가 올라옵니다.', unit:24},
+  {w:'target', m:'n. 목표; v. 대상으로 삼다', ex:'Hit the target with arrow.', em:'화살로 목표를 맞히세요.', unit:24},
+  {w:'convince', m:'v. 납득시키다, 확신시키다', ex:'I will convince him soon.', em:'나는 곧 그를 납득시킬 것입니다.', unit:24},
+  {w:'vary', m:'v. 다르다', ex:'Prices vary from shop to shop.', em:'가격은 가게마다 다릅니다.', unit:24},
+  {w:'overcome', m:'v. 극복하다', ex:'You can overcome any fear.', em:'당신은 어떤 두려움도 극복할 수 있습니다.', unit:24},
+  {w:'technology', m:'n. 기술', ex:'Technology changes our daily lives.', em:'기술은 우리의 일상을 바꿉니다.', unit:24},
+  {w:'memorize', m:'v. 암기하다, 외우다', ex:'Memorize these five new words.', em:'이 다섯 개의 새 단어를 암기하세요.', unit:24},
+  {w:'departure', m:'n. 출발', ex:'Check the flight departure time.', em:'비행기 출발 시간을 확인하세요.', unit:24},
+  {w:'military', m:'adj. 군사의', ex:'He is in military service.', em:'그는 군 복무 중입니다.', unit:24},
+  {w:'judge', m:'n. 판사; v. 판단하다', ex:'Do not judge people fast.', em:'사람들을 빨리 판단하지 마세요.', unit:24},
+  {w:'effort', m:'n. 노력', ex:'Success requires a lot effort.', em:'성공은 많은 노력을 필요로 합니다.', unit:25},
+  {w:'pit', m:'n. 구덩이', ex:'He dug a deep pit.', em:'그는 깊은 구덩이를 팠습니다.', unit:25},
+  {w:'highlight', m:'v. 강조하다', ex:'Highlight the important key points.', em:'중요한 핵심 요점들을 강조하세요.', unit:25},
+  {w:'recipe', m:'n. 조리법, 요리법', ex:'Follow this simple cake recipe.', em:'이 간단한 케이크 조리법을 따르세요.', unit:25},
+  {w:'original', m:'adj. 독창적인', ex:'This is an original idea.', em:'이것은 독창적인 아이디어입니다.', unit:25},
+  {w:'layer', m:'n. 층, 겹', ex:'The cake has three layer.', em:'그 케이크는 세 층으로 되어 있습니다.', unit:25},
+  {w:'rear', m:'n. 뒤쪽', ex:'Sit in the rear seat.', em:'뒤쪽 좌석에 앉으세요.', unit:25},
+  {w:'lawyer', m:'n. 변호사', ex:'He is a famous lawyer.', em:'그는 유명한 변호사입니다.', unit:25},
+  {w:'favor', m:'n. 호의, 친절', ex:'Can you do a favor?', em:'호의를 베풀어 줄 수 있나요?', unit:25},
+  {w:'device', m:'n. 장치, 기구', ex:'This is a smart device.', em:'이것은 스마트 장치입니다.', unit:25},
+  {w:'brief', m:'adj. 짧은, 간략한', ex:'Give me a brief report.', em:'나에게 간략한 보고를 하세요.', unit:25},
+  {w:'lecture', m:'n. 강의, 강연', ex:'I attended a science lecture.', em:'나는 과학 강의에 참석했습니다.', unit:25},
+  {w:'hump', m:'n. 혹, 솟아오른 곳', ex:'Camels have a large hump.', em:'낙타는 큰 혹을 가지고 있습니다.', unit:25},
+  {w:'scold', m:'v. 야단치다, 꾸짖다', ex:'Do not scold the child.', em:'아이를 야단치지 마세요.', unit:25},
+  {w:'surface', m:'n. 표면', ex:'The water surface is calm.', em:'수면이 평온합니다.', unit:25},
+  {w:'vendor', m:'n. 판매인', ex:'I bought food from vendor.', em:'나는 판매인에게서 음식을 샀습니다.', unit:25},
+  {w:'fireproof', m:'adj. 불에 타지 않는', ex:'Wear a fireproof suit now.', em:'지금 불에 타지 않는 옷을 입으세요.', unit:25},
+  {w:'university', m:'n. 대학', ex:'She studies at the university.', em:'그녀는 대학에서 공부합니다.', unit:25},
+  {w:'measure', m:'v. 측정하다, 재다', ex:'Measure the length of desk.', em:'책상의 길이를 재세요.', unit:25},
+  {w:'column', m:'n. (신문 등의) 칼럼, 사설; 기둥', ex:'Read the daily news column.', em:'일일 뉴스 칼럼을 읽으세요.', unit:25},
+  {w:'childhood', m:'n. 어린 시절', ex:'I had a happy childhood.', em:'나는 행복한 어린 시절을 보냈습니다.', unit:25},
+  {w:'vocation', m:'n. 직업, 천직', ex:'Teaching is my true vocation.', em:'가르치는 것은 나의 진정한 천직입니다.', unit:25},
+  {w:'hibernate', m:'v. 겨울잠을 자다', ex:'Bears hibernate during the winter.', em:'곰들은 겨울 동안 겨울잠을 잡니다.', unit:25},
+  {w:'dictionary', m:'n. 사전', ex:'Use a dictionary for words.', em:'단어를 위해 사전을 사용하세요.', unit:25},
+  {w:'description', m:'n. 서술, 묘사', ex:'Give a clear job description.', em:'명확한 직무 서술을 하세요.', unit:25},
+  {w:'composer', m:'n. 작곡가', ex:'Mozart was a famous composer.', em:'모차르트는 유명한 작곡가였습니다.', unit:25},
+  {w:'rainfall', m:'n. 강우(량)', ex:'We had a heavy rainfall.', em:'폭우가 내렸습니다.', unit:25},
+  {w:'gap', m:'n. 틈, 차이', ex:'There is a wide gap.', em:'넓은 차이가 있습니다.', unit:25},
+  {w:'region', m:'n. 지역, 지방', ex:'They live in this region.', em:'그들은 이 지역에 삽니다.', unit:26},
+  {w:'gardener', m:'n. 정원사', ex:'The gardener waters the flowers.', em:'정원사가 꽃에 물을 줍니다.', unit:26},
+  {w:'crime', m:'n. 범죄', ex:'Stealing is a serious crime.', em:'훔치는 것은 심각한 범죄입니다.', unit:26},
+  {w:'punish', m:'v. 처벌하다, 벌주다', ex:'The law will punish them.', em:'법이 그들을 처벌할 것입니다.', unit:26},
+  {w:'arrest', m:'v. 체포하다', ex:'Police will arrest the thief.', em:'경찰이 그 도둑을 체포할 것입니다.', unit:26},
+  {w:'patch', m:'n. (덧대는) 조각', ex:'Put a patch on jeans.', em:'청바지에 조각을 덧대세요.', unit:26},
+  {w:'dramatic', m:'adj. 극적인', ex:'The movie had dramatic ending.', em:'그 영화는 극적인 결말을 가졌습니다.', unit:26},
+  {w:'survive', m:'v. 생존하다, 살아남다', ex:'Many plants survive in desert.', em:'많은 식물이 사막에서 생존합니다.', unit:26},
+  {w:'concept', m:'n. 개념, 생각', ex:'I understand the new concept.', em:'나는 그 새로운 개념을 이해합니다.', unit:26},
+  {w:'effective', m:'adj. 효과적인', ex:'This is an effective way.', em:'이것은 효과적인 방법입니다.', unit:26},
+  {w:'lottery', m:'n. 복권', ex:'He won the first lottery.', em:'그는 첫 번째 복권에 당첨되었습니다.', unit:26},
+  {w:'precise', m:'adj. 정확한, 정밀한', ex:'Give me the precise measurement.', em:'나에게 정확한 측정치를 주세요.', unit:26},
+  {w:'resident', m:'n. 거주자, 주민', ex:'He is a local resident.', em:'그는 지역 거주자입니다.', unit:26},
+  {w:'assign', m:'v. 할당하다, 배정하다', ex:'Teachers assign homework every day.', em:'선생님들이 매일 숙제를 배정합니다.', unit:26},
+  {w:'sculptor', m:'n. 조각가', ex:'The sculptor carved the stone.', em:'조각가가 돌을 깎았습니다.', unit:26},
+  {w:'income', m:'n. 수입, 소득', ex:'He has a stable income.', em:'그는 안정적인 수입이 있습니다.', unit:26},
+  {w:'endure', m:'v. 참다, 견디다', ex:'You must endure the pain.', em:'당신은 통증을 참아야 합니다.', unit:26},
+  {w:'recite', m:'v. 암송하다', ex:'Children recite poems in class.', em:'아이들이 수업 시간에 시를 암송합니다.', unit:26},
+  {w:'practical', m:'adj. 실제적인, 실용적인', ex:'This is a practical tool.', em:'이것은 실용적인 도구입니다.', unit:26},
+  {w:'announcement', m:'n. 발표', ex:'Listen to the loud announcement.', em:'큰 소리로 나오는 발표를 들으세요.', unit:26},
+  {w:'disgusting', m:'adj. 역겨운', ex:'The smell was truly disgusting.', em:'그 냄새는 정말 역겨웠습니다.', unit:26},
+  {w:'criterion', m:'n. 기준, 표준', ex:'What is the main criterion?', em:'주요 기준은 무엇입니까?', unit:26},
+  {w:'emphasize', m:'v. 강조하다', ex:'Emphasize the most important words.', em:'가장 중요한 단어들을 강조하세요.', unit:26},
+  {w:'restrict', m:'v. 제한하다, 한정하다', ex:'They restrict access to building.', em:'그들은 건물 출입을 제한합니다.', unit:26},
+  {w:'colleague', m:'n. (직업상의) 동료', ex:'He is my work colleague.', em:'그는 내 직장 동료입니다.', unit:26},
+  {w:'entertain', m:'v. 즐겁게 해주다', ex:'Clowns entertain the young children.', em:'광대들이 어린아이들을 즐겁게 해줍니다.', unit:26},
+  {w:'relationship', m:'n. 관계', ex:'We have a good relationship.', em:'우리는 좋은 관계를 맺고 있습니다.', unit:26},
+  {w:'accompany', m:'v. 동행하다, 수반하다; 반주하다', ex:'I will accompany you home.', em:'내가 당신의 집까지 동행하겠습니다.', unit:26},
+  {w:'duty', m:'n. 의무, 임무', ex:'It is my legal duty.', em:'그것은 나의 법적 의무입니다.', unit:27},
+  {w:'entry', m:'n. 입장, 입구', ex:'The entry is over there.', em:'입구는 저기에 있습니다.', unit:27},
+  {w:'riddle', m:'n. 수수께끼', ex:'Solve this difficult word riddle.', em:'이 어려운 단어 수수께끼를 푸세요.', unit:27},
+  {w:'rotate', m:'v. 회전시키다', ex:'The tires rotate very fast.', em:'타이어가 매우 빨리 회전합니다.', unit:27},
+  {w:'reform', m:'v. 개혁하다', ex:'The government will reform laws.', em:'정부가 법을 개혁할 것입니다.', unit:27},
+  {w:'press', m:'v. 누르다; n. 언론', ex:'Press the red button now.', em:'지금 빨간 버튼을 누르세요.', unit:27},
+  {w:'noble', m:'adj. 고귀한, 고결한', ex:'He has a noble heart.', em:'그는 고결한 마음을 가지고 있습니다.', unit:27},
+  {w:'poetic', m:'adj. 시의, 시적인', ex:'She has a poetic mind.', em:'그녀는 시적인 마음을 가지고 있습니다.', unit:27},
+  {w:'joint', m:'n. 관절, 연결 부위', ex:'My knee joint is sore.', em:'내 무릎 관절이 아픕니다.', unit:27},
+  {w:'expand', m:'v. 확장하다, 팽창하다', ex:'The company wants to expand.', em:'그 회사는 확장하기를 원합니다.', unit:27},
+  {w:'orphan', m:'n. (부모가 없는) 고아', ex:'They helped a young orphan.', em:'그들은 어린 고아를 도왔습니다.', unit:27},
+  {w:'approve', m:'v. 승인하다, 찬성하다', ex:'I hope you approve this.', em:'당신이 이것을 찬성하기를 바랍니다.', unit:27},
+  {w:'spiral', m:'adj. 나선형의', ex:'Look at the spiral stairs.', em:'나선형 계단을 보세요.', unit:27},
+  {w:'censor', m:'v. 검열하다', ex:'They censor the movie content.', em:'그들은 영화 내용을 검열합니다.', unit:27},
+  {w:'fierce', m:'adj. 사나운', ex:'The lion is a fierce animal.', em:'사자는 사나운 동물입니다.', unit:27},
+  {w:'exceed', m:'v. 넘다, 초과하다', ex:'Do not exceed speed limit.', em:'속도 제한을 넘지 마세요.', unit:27},
+  {w:'antique', m:'n. 골동품; adj. 골동품인', ex:'I bought an antique clock.', em:'나는 골동품 시계를 샀습니다.', unit:27},
+  {w:'shrink', m:'v. 줄어들다, 오그라들다', ex:'This shirt will not shrink.', em:'이 셔츠는 줄어들지 않을 것입니다.', unit:27},
+  {w:'source', m:'n. 근원, 원천', ex:'Water is the source life.', em:'물은 생명의 근원입니다.', unit:27},
+  {w:'perceive', m:'v. 알아차리다, 인지하다', ex:'Humans perceive light and sound.', em:'인간은 빛과 소리를 인지합니다.', unit:27},
+  {w:'diverse', m:'adj. 다양한', ex:'We have very diverse opinions.', em:'우리는 매우 다양한 의견을 가지고 있습니다.', unit:27},
+  {w:'shelter', m:'n. 피난처, 대피소', ex:'We found a storm shelter.', em:'우리는 폭풍 대피소를 찾았습니다.', unit:27},
+  {w:'swallow', m:'v. 삼키다', ex:'Swallow the small pill now.', em:'지금 작은 알약을 삼키세요.', unit:27},
+  {w:'quantity', m:'n. 양, 분량', ex:'We need a large quantity.', em:'우리는 많은 양이 필요합니다.', unit:27},
+  {w:'district', m:'n. 지역, 구역', ex:'This is a quiet district.', em:'이곳은 조용한 지역입니다.', unit:27},
+  {w:'candidate', m:'n. 지원자, 후보자', ex:'He is the best candidate.', em:'그는 최고의 후보자입니다.', unit:27},
+  {w:'extinct', m:'adj. 멸종된, 사라진', ex:'The dinosaurs are now extinct.', em:'공룡은 이제 멸종되었습니다.', unit:27},
+  {w:'ruin', m:'v. 망치다, 파괴하다; n. (-s) 유적, 잔해', ex:'Do not ruin the surprise.', em:'깜짝 선물을 망치지 마세요.', unit:27},
+  {w:'gene', m:'n. 유전자', ex:'We study the human gene.', em:'우리는 인간 유전자를 공부합니다.', unit:28},
+  {w:'genre', m:'n. 장르', ex:'What is your favorite genre?', em:'당신이 가장 좋아하는 장르가 무엇입니까?', unit:28},
+  {w:'insert', m:'v. 끼워 넣다', ex:'Insert the coin into slot.', em:'틈에 동전을 끼워 넣으세요.', unit:28},
+  {w:'theme', m:'n. 주제', ex:'The party has a theme.', em:'그 파티는 주제가 있습니다.', unit:28},
+  {w:'honor', m:'n. 명예, 영예', ex:'It is a great honor.', em:'그것은 큰 영예입니다.', unit:28},
+  {w:'sleeve', m:'n. 소매', ex:'Roll up your shirt sleeve.', em:'셔츠 소매를 걷어 올리세요.', unit:28},
+  {w:'invade', m:'v. 침략하다, 침입하다', ex:'They tried to invade us.', em:'그들이 우리를 침략하려 했습니다.', unit:28},
+  {w:'polish', m:'v. (윤이 나도록) 닦다; n. 광택제', ex:'Polish your black leather shoes.', em:'당신의 검은 가죽 신발을 닦으세요.', unit:28},
+  {w:'roar', m:'v. 으르렁거리다', ex:'I heard a lion roar.', em:'사자가 으르렁거리는 소리를 들었습니다.', unit:28},
+  {w:'trial', m:'n. 재판', ex:'The murder trial starts today.', em:'살인 재판이 오늘 시작됩니다.', unit:28},
+  {w:'exhibit', m:'v. 전시하다, 진열하다', ex:'They exhibit old paintings here.', em:'그들은 여기에 오래된 그림들을 전시합니다.', unit:28},
+  {w:'halt', m:'v. 정지하다, 멈추다', ex:'The train came to halt.', em:'기차가 정지했습니다.', unit:28},
+  {w:'frequent', m:'adj. 자주 일어나는, 빈번한', ex:'He is a frequent visitor.', em:'그는 자주 오는 방문객입니다.', unit:28},
+  {w:'analyze', m:'v. 분석하다', ex:'Analyze the data very carefully.', em:'데이터를 매우 주의 깊게 분석하세요.', unit:28},
+  {w:'horizontal', m:'adj. 가로의, 수평의', ex:'Draw a long horizontal line.', em:'긴 가로 선을 그리세요.', unit:28},
+  {w:'sensitive', m:'adj. 민감한, 예민한', ex:'She is very sensitive person.', em:'그녀는 매우 민감한 사람입니다.', unit:28},
+  {w:'extremely', m:'adv. 극도로, 극히', ex:'It is extremely cold today.', em:'오늘은 극도로 춥습니다.', unit:28},
+  {w:'obtain', m:'v. 얻다, 획득하다', ex:'You can obtain useful information.', em:'당신은 유용한 정보를 얻을 수 있습니다.', unit:28},
+  {w:'connection', m:'n. 연결, 관련', ex:'I lost my internet connection.', em:'인터넷 연결이 끊겼습니다.', unit:28},
+  {w:'entertainment', m:'n. 오락(거리), 즐거움', ex:'We need some fun entertainment.', em:'우리는 재미있는 오락거리가 필요합니다.', unit:28},
+  {w:'combine', m:'v. 결합하다, 조합하다', ex:'Combine all the ingredients now.', em:'지금 모든 재료를 결합하세요.', unit:28},
+  {w:'incredible', m:'adj. 믿어지지 않는', ex:'That is an incredible story.', em:'그것은 믿어지지 않는 이야기입니다.', unit:28},
+  {w:'definition', m:'n. 정의, 개념', ex:'Give a clear word definition.', em:'명확한 단어 정의를 내리세요.', unit:28},
+  {w:'polite', m:'adj. 예의 바른, 공손한', ex:'Always be polite to others.', em:'항상 타인에게 예의 바르게 행동하세요.', unit:29},
+  {w:'argument', m:'n. 논쟁, 주장', ex:'They had a loud argument.', em:'그들은 시끄러운 논쟁을 벌였습니다.', unit:29},
+  {w:'conduct', m:'n. 행동, 행위', ex:'He showed a good conduct.', em:'그는 좋은 행동을 보여주었습니다.', unit:29},
+  {w:'alternative', m:'n. 대안, 양자택일', ex:'Is there any other alternative?', em:'다른 대안이 있습니까?', unit:29},
+  {w:'identity', m:'n. 신원, 정체성', ex:'We must protect our identity.', em:'우리는 우리의 정체성을 보호해야 합니다.', unit:29},
+  {w:'consume', m:'v. 소비하다, 소모하다', ex:'Humans consume much energy daily.', em:'인간은 매일 많은 에너지를 소비합니다.', unit:29},
+  {w:'stereotype', m:'n. 고정 관념', ex:'Break the old gender stereotype.', em:'오래된 성 고정 관념을 깨세요.', unit:29},
+  {w:'indicate', m:'v. 가리키다, 나타내다', ex:'Arrows indicate the right way.', em:'화살표가 옳은 길을 가리킵니다.', unit:29},
+  {w:'logic', m:'n. 논리, 논리학', ex:'Use logic to solve this.', em:'이것을 풀기 위해 논리를 사용하세요.', unit:29},
+  {w:'cocoon', m:'n. (누에) 고치', ex:'The worm made a cocoon.', em:'벌레가 고치를 만들었습니다.', unit:29},
+  {w:'profit', m:'n. 이익, 이득', ex:'The shop made a profit.', em:'그 가게는 이익을 냈습니다.', unit:29},
+  {w:'formula', m:'n. 수학 공식, 방식', ex:'Use the correct math formula.', em:'올바른 수학 공식을 사용하세요.', unit:29},
+  {w:'ambition', m:'n. 야망, 열망', ex:'He has a great ambition.', em:'그는 큰 야망이 있습니다.', unit:29},
+  {w:'disappoint', m:'v. 실망시키다', ex:'Do not disappoint your parents.', em:'부모님을 실망시키지 마세요.', unit:29},
+  {w:'remove', m:'v. 제거하다, 없애다', ex:'Remove the old paint now.', em:'지금 오래된 페인트를 제거하세요.', unit:29},
+  {w:'resource', m:'n. 자원, 재원', ex:'Water is a natural resource.', em:'물은 천연자원입니다.', unit:29},
+  {w:'sweep', m:'v. 쓸다, 청소하다', ex:'Please sweep the kitchen floor.', em:'주방 바닥을 쓸어 주세요.', unit:29},
+  {w:'fairly', m:'adv. 꽤, 상당히; 공정하게', ex:'The test was fairly easy.', em:'시험은 꽤 쉬웠습니다.', unit:29},
+  {w:'remote', m:'adj. (거리가) 먼, 원격의', ex:'I live in remote area.', em:'나는 먼 지역에 삽니다.', unit:29},
+  {w:'evidence', m:'n. 증거', ex:'There is no clear evidence.', em:'명확한 증거가 없습니다.', unit:29},
+  {w:'strap', m:'n. 끈, 줄', ex:'Fix the bag with strap.', em:'끈으로 가방을 고정하세요.', unit:29},
+  {w:'profession', m:'n. (전문적) 직업, 직종', ex:'Medicine is a noble profession.', em:'의료는 고귀한 직종입니다.', unit:29},
+  {w:'ignore', m:'v. 무시하다', ex:'Do not ignore my warnings.', em:'나의 경고를 무시하지 마세요.', unit:29},
+  {w:'confirm', m:'v. 확정하다, 확인하다; 입증하다', ex:'Please confirm your flight reservation.', em:'비행기 예약을 확정해 주세요.', unit:29},
+  {w:'examination', m:'n. 시험', ex:'I passed the final examination.', em:'나는 기말시험을 통과했습니다.', unit:29},
+  {w:'abdomen', m:'n. 복부, 배', ex:'He felt pain in abdomen.', em:'그는 복부에 통증을 느꼈습니다.', unit:29},
+  {w:'geography', m:'n. 지리(학)', ex:'I like learning about geography.', em:'나는 지리학에 대해 배우는 것을 좋아합니다.', unit:29},
+  {w:'critical', m:'adj. 비판적인; 중대한, 결정적인', ex:'He is in critical condition.', em:'그는 위중한 상태입니다.', unit:29},
+  {w:'evil', m:'n. 악, 악행', ex:'Fight against the evil forces.', em:'악의 세력에 맞서 싸우세요.', unit:30},
+  {w:'civil', m:'adj. 시민의, 민간인의', ex:'We fight for civil rights.', em:'우리는 시민권을 위해 싸웁니다.', unit:30},
+  {w:'slave', m:'n. 노예', ex:'He was a runaway slave.', em:'그는 도망친 노예였습니다.', unit:30},
+  {w:'mute', m:'adj. 무언의, 소리 없는', ex:'He remained mute during meeting.', em:'그는 회의 동안 무언으로 있었습니다.', unit:30},
+  {w:'criminal', m:'n. 범죄자', ex:'The police caught the criminal.', em:'경찰이 범죄자를 잡았습니다.', unit:30},
+  {w:'robotics', m:'n. 로봇 공학', ex:'I am interested in robotics.', em:'나는 로봇 공학에 관심이 있습니다.', unit:30},
+  {w:'script', m:'n. 대본, 원고', ex:'Read the movie script now.', em:'지금 영화 대본을 읽으세요.', unit:30},
+  {w:'protest', m:'v. 항의하다, 저항하다', ex:'They joined the peaceful protest.', em:'그들은 평화로운 항의에 참여했습니다.', unit:30},
+  {w:'pitch', m:'v. (천막을) 치다, 던지다, 투구하다', ex:'They pitch a tent tonight.', em:'그들은 오늘 밤 천막을 칩니다.', unit:30},
+  {w:'adapt', m:'v. 적응하다, 맞추다', ex:'You must adapt to change.', em:'당신은 변화에 적응해야 합니다.', unit:30},
+  {w:'policy', m:'n. 정책, 방침', ex:'Follow the company safety policy.', em:'회사의 안전 방침을 따르세요.', unit:30},
+  {w:'popularity', m:'n. 인기', ex:'His popularity is growing fast.', em:'그의 인기가 빠르게 성장하고 있습니다.', unit:30},
+  {w:'slippery', m:'adj. 미끄러운', ex:'The road is very slippery.', em:'길이 매우 미끄럽습니다.', unit:30},
+  {w:'tadpole', m:'n. 올챙이', ex:'The tadpole becomes a frog.', em:'올챙이는 개구리가 됩니다.', unit:30},
+  {w:'application', m:'n. 지원서, 신청서', ex:'Send your job application now.', em:'지금 취업 지원서를 보내세요.', unit:30},
+  {w:'annual', m:'adj. 매년의, 연례의', ex:'This is an annual event.', em:'이것은 매년 열리는 행사입니다.', unit:30},
+  {w:'frankly', m:'adv. 솔직하게', ex:'Frankly, I do not like it.', em:'솔직하게 말해서, 나는 그것을 좋아하지 않습니다.', unit:30},
+  {w:'expose', m:'v. 노출하다, 드러내다', ex:'Do not expose skin to sun.', em:'피부를 태양에 노출하지 마세요.', unit:30},
+  {w:'interpret', m:'v. 해석하다; 통역하다', ex:'Can you interpret this dream?', em:'이 꿈을 해석할 수 있나요?', unit:30},
+  {w:'alert', m:'v. 위험을 알리다', ex:'They alert people of danger.', em:'그들은 사람들에게 위험을 알립니다.', unit:30},
+  {w:'urgent', m:'adj. 긴급한, 응급의', ex:'I have an urgent message.', em:'나는 긴급한 메시지가 있습니다.', unit:30},
+  {w:'salmon', m:'n. (물고기) 연어', ex:'Salmon swim back to rivers.', em:'연어는 강으로 다시 헤엄쳐 돌아갑니다.', unit:30},
+  {w:'skeleton', m:'n. 뼈대, 골격', ex:'Humans have a bone skeleton.', em:'인간은 뼈로 된 골격을 가지고 있습니다.', unit:30},
+  {w:'generation', m:'n. 세대', ex:'Every generation has different ideas.', em:'세대마다 서로 다른 생각을 가집니다.', unit:30},
+  {w:'eligible', m:'adj. 자격이 있는', ex:'You are eligible for help.', em:'당신은 도움을 받을 자격이 있습니다.', unit:30},
+  {w:'outstanding', m:'adj. 두드러진, 뛰어난', ex:'He is an outstanding student.', em:'그는 뛰어난 학생입니다.', unit:30},
+  {w:'consumption', m:'n. 소비', ex:'Reduce your daily sugar consumption.', em:'당신의 하루 설탕 소비를 줄이세요.', unit:30},
+  {w:'promote', m:'v. 촉진하다, 홍보하다', ex:'They promote the new film.', em:'그들은 새 영화를 홍보합니다.', unit:30},
+];const enSentData = [
+  {w:'My dad bought a used car in good condition.', m:'나의 아빠는 상태가 좋은 중고차 한 대를 구매했다.', unit:1},
+  {w:'I searched the Internet for additional information about him.', m:'나는 그에 대한 추가 정보를 찾기 위해 인터넷을 검색했다.', unit:1},
+  {w:'Sam was terrified that the plane would crash.', m:'샘은 비행기가 추락할까 봐 두려웠다.', unit:1},
+  {w:'The actor put on a costume for his act.', m:'그 배우는 연기를 위해 의상을 입었다.', unit:1},
+  {w:'Lily showed great ability in playing the piano.', m:'릴리는 피아노 연주에 대단한 재능을 보였다.', unit:1},
+  {w:'Hawaii is made up of eight major islands.', m:'하와이는 8개의 주요 섬들로 이루어져 있다.', unit:1},
+  {w:'Grain prices have risen due to the drought.', m:'가뭄으로 곡물의 가격이 올랐다.', unit:2},
+  {w:'The IT industry has grown rapidly in recent years.', m:'최근 몇 년 동안 IT 산업은 빠르게 성장해왔다.', unit:2},
+  {w:'This cave is a good place to explore with kids.', m:'이 동굴은 아이들과 탐험하기에 좋은 곳이다.', unit:2},
+  {w:'The poison from the snake spread through his body.', m:'뱀의 독이 그의 몸에 퍼졌다.', unit:2},
+  {w:'The man was put in prison for his violent crime.', m:'그 남자는 폭력적인 범죄로 인해 감옥에 갇혔다.', unit:2},
+  {w:'The children were delighted to go to the zoo.', m:'아이들은 동물원에 가는 것을 기뻐했다.', unit:2},
+  {w:'I don\'t know the exact date of the final exam.', m:'나는 기말고사의 정확한 날짜를 모른다.', unit:3},
+  {w:'The players had faith that they would win.', m:'그 선수들은 자신들이 이길 것이라는 믿음을 가지고 있었다.', unit:3},
+  {w:'The little boy was impolite to everyone there.', m:'그 어린 소년은 그곳에 있던 모든 사람들에게 무례했다.', unit:3},
+  {w:'The man needed immediate medical treatment.', m:'그 남자는 즉각적인 의학적 치료가 필요했다.', unit:3},
+  {w:'Paul is responsible for feeding the dog.', m:'폴은 개에게 먹이를 주는 일을 책임지고 있다.', unit:3},
+  {w:'My parents always trust and support me.', m:'나의 부모님은 항상 나를 믿고 지지한다.', unit:3},
+  {w:'Jackson felt freezing even in a wool coat.', m:'잭슨은 양털 코트를 입고도 추웠다.', unit:4},
+  {w:'The fish sculpture is made out of oak.', m:'그 물고기 조각은 참나무로 만들어졌다.', unit:4},
+  {w:'His wisdom comes from a lot of reading.', m:'그의 지혜는 많은 독서에서 비롯된다.', unit:4},
+  {w:'Poor posture can lead to muscular problem.', m:'나쁜 자세는 근육 관련 문제들을 일으킬 수 있다.', unit:4},
+  {w:'We had a pleasant evening playing board games.', m:'우리는 보드 게임을 하면서 즐거운 저녁 시간을 보냈다.', unit:4},
+  {w:'The British explorer tried to find an ancient city.', m:'그 영국 탐험가는 고대 도시를 발굴하려고 노력했다.', unit:4},
+  {w:'The stomach is the organ that helps us digest food.', m:'위는 우리가 음식을 소화하도록 도와주는 기관이다.', unit:5},
+  {w:'She welcomed guests with a respectful attitude.', m:'그녀는 예의 바른 태도로 손님들을 맞았다.', unit:5},
+  {w:'Rivers have played a significant role in the development of cities.', m:'강은 도시의 발전에 중요한 역할을 해 왔다.', unit:5},
+  {w:'The immigrants decided to settle in the big city.', m:'이민자들은 대도시에 정착하기로 결정했다.', unit:5},
+  {w:'Socrates is called the father of Greek philosophy.', m:'소크라테스는 그리스 철학의 아버지로 불린다.', unit:5},
+  {w:'My knees were sore from moving heavy boxes.', m:'무거운 상자들을 옮겨서 나는 무릎이 아팠다.', unit:5},
+  {w:'The purpose of studying history is to understand our past and present.', m:'역사를 공부하는 목적은 우리의 과거와 현재를 이해하기 위함이다.', unit:6},
+  {w:'Paris is a city full of charm and character.', m:'파리는 매력과 개성이 넘치는 도시이다.', unit:6},
+  {w:'I get a regular haircut once a month.', m:'나는 한 달에 한 번 규칙적으로 머리를 자른다.', unit:6},
+  {w:'A computer is certainly a complex machine.', m:'컴퓨터는 확실히 복잡한 기계다.', unit:6},
+  {w:'You can get a broader view through discussion.', m:'너는 토론을 통해 더 넓은 견해를 가질 수 있다.', unit:6},
+  {w:'The bond between Brian and me is very special.', m:'브라이언과 나 사이의 유대는 매우 특별하다.', unit:6},
+  {w:'I called the embassy because I lost my passport.', m:'나는 여권을 잃어버려서 대사관에 전화했다.', unit:7},
+  {w:'She writes poetry in order to express herself.', m:'그녀는 자신을 표현하기 위해 시를 쓴다.', unit:7},
+  {w:'Write a description of your favorite seaside resort.', m:'네가 가장 좋아하는 바닷가 휴양지에 대한 묘사를 써라.', unit:7},
+  {w:'The new TV series is popular among teenagers.', m:'그 새로운 텔레비전 시리즈는 십 대들 사이에서 인기 있다.', unit:7},
+  {w:'Although she is scared of heights, Kelly loves going climbing.', m:'켈리는 높은 곳을 무서워하지만 등산을 좋아한다.', unit:7},
+  {w:'The boss asked his secretary to let him know his next appointment.', m:'그 사장은 비서에게 다음 약속을 알려 달라고 요청했다.', unit:7},
+  {w:'The changing shapes of the Moon are called phase.', m:'달의 변화하는 모양을 위상이라고 한다.', unit:8},
+  {w:'Reading is the best method for gaining knowledge.', m:'독서는 지식을 얻는 가장 좋은 방법이다.', unit:8},
+  {w:'Their service was excellent in every aspect.', m:'그들의 서비스는 모든 면에서 훌륭했다.', unit:8},
+  {w:'My family supported my decision to study abroad.', m:'우리 가족은 유학을 가겠다는 나의 결정을 지지했다.', unit:8},
+  {w:'I gave my seat to a pregnant woman on the bus.', m:'나는 버스에서 임산부에게 자리를 양보했다.', unit:8},
+  {w:'He is only 15, and therefore he can\'t drive.', m:'그는 겨우 15살이고 따라서 운전을 할 수 없다.', unit:8},
+  {w:'After the incident, the boy avoids strangers.', m:'그 사건 이후로 그 소년은 낯선 사람을 피한다.', unit:9},
+  {w:'The population continues to increase in Africa.', m:'아프리카의 인구는 계속해서 증가하고 있다.', unit:9},
+  {w:'Music has been called the universal language.', m:'음악은 세계 공통어라고 불려 왔다.', unit:9},
+  {w:'Cancer destroyed his body but not his spirit.', m:'암은 그의 몸을 망가뜨렸지만 정신은 망가뜨리지 못했다.', unit:9},
+  {w:'Tom is mature and thoughtful for his age.', m:'톰은 나이에 비해 성숙하고 사려 깊다.', unit:9},
+  {w:'He wrote a lyric poem about life and death.', m:'그는 삶과 죽음에 대한 서정시를 한 편 썼다.', unit:9},
+  {w:'You need some background knowledge to understand this book.', m:'이 책을 이해하기 위해서는 약간의 배경지식이 필요하다.', unit:10},
+  {w:'The Earth revolves around its axis once a day.', m:'지구는 하루에 한 번 축을 중심으로 자전한다.', unit:10},
+  {w:'He wrote his signature at the bottom of the page.', m:'그는 페이지의 아랫부분에 서명을 했다.', unit:10},
+  {w:'Washing your hands can prevent many diseases.', m:'손 씻기는 많은 질병을 예방할 수 있다.', unit:10},
+  {w:'Some animals possess the ability to detect earthquakes.', m:'어떤 동물은 지진을 감지하는 능력을 지니고 있다.', unit:10},
+  {w:'The course is especially suitable for beginners.', m:'그 과정은 특히 초보자들에게 적합하다.', unit:10},
+  {w:'Eugene felt relief when his sick mother got better.', m:'유진은 아픈 어머니가 나아졌을 때 안도감을 느꼈다.', unit:11},
+  {w:'I could hear the distant sound of flowing water.', m:'나는 멀리서 들려오는 물 흐르는 소리를 들을 수 있었다.', unit:11},
+  {w:'The priest leads religious services on Sundays.', m:'그 사제는 일요일마다 예배를 이끈다.', unit:11},
+  {w:'Do you think it is possible that aliens exist?', m:'외계인이 존재하는 것이 가능하다고 생각하니?', unit:11},
+  {w:'The Moon looks like a big gray sphere.', m:'달은 커다란 회색 구처럼 보인다.', unit:11},
+  {w:'We should reuse things to reduce trash.', m:'우리는 쓰레기를 줄이기 위해서 물건을 재사용해야 한다.', unit:11},
+  {w:'The navy prevented enemies from landing.', m:'해군은 적이 상륙하는 것을 막았다.', unit:12},
+  {w:'Making a hotel reservation in advance makes your trip easier.', m:'호텔을 미리 예약하면 여행이 더 쉬워진다.', unit:12},
+  {w:'I can\'t solve a math problem without a calculator.', m:'나는 계산기 없이는 수학 문제를 풀 수 없다.', unit:12},
+  {w:'As the war broke out, people\'s primary concern was survival.', m:'전쟁이 나자 사람들의 주된 관심사는 생존이었다.', unit:12},
+  {w:'You\'d better enjoy some relaxation on holiday.', m:'너는 휴일에 좀 쉬는 게 좋겠다.', unit:12},
+  {w:'There weren\'t many jobs due to the bad economy.', m:'불경기라서 일자리가 많지 않았다.', unit:12},
+  {w:'Tom is a reliable person who keeps his word.', m:'톰은 약속을 지키는 믿을 만한 사람이다.', unit:13},
+  {w:'Nuts and seeds are excellent sources of protein.', m:'견과류와 씨앗은 훌륭한 단백질 공급원이다.', unit:13},
+  {w:'Country roads are often narrow and winding.', m:'시골길들은 종종 좁고 구불구불하다.', unit:13},
+  {w:'His hair was too short to cover his forehead.', m:'이마를 덮기에는 그의 머리카락이 너무 짧았다.', unit:13},
+  {w:'James was selfish and wouldn\'t share anything.', m:'제임스는 이기적이었고 어떤 것도 공유하려 하지 않았다.', unit:13},
+  {w:'Their service cannot satisfy the difficult clients.', m:'그들의 서비스는 까다로운 고객들을 만족시키지 못한다.', unit:13},
+  {w:'You\'ll be fined if you spit on the street.', m:'길에 침을 뱉으면 벌금이 부과될 것이다.', unit:14},
+  {w:'The choir is singing in perfect harmony.', m:'합창단이 완벽한 화음으로 노래하고 있다.', unit:14},
+  {w:'My brother is sociable and has many friends.', m:'나의 오빠는 사교적이고 친구가 많다.', unit:14},
+  {w:'Junk food has a negative effect on your health.', m:'정크 푸드는 건강에 부정적인 영향을 미친다.', unit:14},
+  {w:'You can\'t criticize what you don\'t understand.', m:'네가 이해하지 못하는 것을 비난해서는 안 된다.', unit:14},
+  {w:'There was a secret passage in the castle.', m:'그 성에는 비밀 통로가 있었다.', unit:14},
+  {w:'The remains demonstrate that there was a royal palace there.', m:'그 유물들은 그곳에 왕궁이 있었음을 증명한다.', unit:15},
+  {w:'In this story, the narrator is a 10-year-old girl.', m:'이 이야기에서 서술자는 10살 소녀이다.', unit:15},
+  {w:'I worked with Mr. Brown over a span of ten years.', m:'나는 10년이라는 기간에 걸쳐 브라운 씨와 함께 일했다.', unit:15},
+  {w:'There are distinct differences between the twins.', m:'그 쌍둥이들 사이에는 뚜렷한 차이가 있다.', unit:15},
+  {w:'The waiter poured some water on Jay\'s lap.', m:'종업원이 제이의 무릎에 물을 쏟았다.', unit:15},
+  {w:'Oliver is financially independent from his family.', m:'올리버는 가족으로부터 경제적으로 독립했다.', unit:15},
+  {w:'Massage helps relieve the tension in one\'s muscles.', m:'마사지는 근육의 긴장을 푸는 데 도움이 된다.', unit:16},
+  {w:'Lastly, don\'t forget to turn in your report today.', m:'마지막으로 오늘 보고서를 제출하는 것을 잊지 마라.', unit:16},
+  {w:'Exercise is important for improving fitness.', m:'운동은 건강 증진을 위해 중요하다.', unit:16},
+  {w:'These cushions make this place feel cozy.', m:'이 쿠션들이 이 장소를 아늑하게 만든다.', unit:16},
+  {w:'Agriculture is the main industry of the country.', m:'농업은 그 나라의 주된 산업이다.', unit:16},
+  {w:'Oxygen and water are essential for life on the Earth.', m:'산소와 물은 지구의 생명체에게 꼭 필요하다.', unit:16},
+  {w:'Laughing helps people in awkward situations.', m:'웃음은 어색한 상황에서 도움이 된다.', unit:17},
+  {w:'The clerk always handles the money honestly.', m:'그 직원은 항상 정직하게 돈을 처리한다.', unit:17},
+  {w:'I hope everyone will participate in this debate.', m:'나는 모든 사람들이 이 토론에 참여하길 바란다.', unit:17},
+  {w:'The mountains mark the boundary between the two countries.', m:'그 산맥은 두 국가의 경계를 표시한다.', unit:17},
+  {w:'The country has suffered a financial crisis.', m:'그 나라는 금융 위기를 겪고 있다.', unit:17},
+  {w:'He has a strong desire to escape poverty.', m:'그는 가난을 벗어나려는 강한 열망을 가지고 있다.', unit:17},
+  {w:'The couple canceled their honeymoon due to the pandemic.', m:'그 부부는 전염병 때문에 신혼여행을 취소했다.', unit:18},
+  {w:'After a brief pause, they continued climbing the hill.', m:'잠시 멈췄다가 그들은 계속해서 언덕을 올라갔다.', unit:18},
+  {w:'Train your pet how to obey your instructions.', m:'반려동물에게 너의 명령에 따르는 법을 훈련시켜라.', unit:18},
+  {w:'My sister often has a severe cold in the summer.', m:'내 여동생은 여름에 종종 심한 감기에 걸린다.', unit:18},
+  {w:'Many people remained silent at the sad news.', m:'그 슬픈 소식에 많은 사람들이 침묵했다.', unit:18},
+  {w:'Our wedding reception was held in the garden.', m:'우리의 결혼식 피로연은 정원에서 열렸다.', unit:18},
+  {w:'She has the potential to be a good pianist.', m:'그녀는 훌륭한 피아노 연주자가 될 잠재력이 있다.', unit:19},
+  {w:'Politics play an important role in our lives.', m:'정치는 우리의 삶에 중요한 역할을 한다.', unit:19},
+  {w:'I decided to buy the fancy sports car on credit.', m:'나는 그 멋진 스포츠카를 외상으로 사기로 했다.', unit:19},
+  {w:'It was odd that nobody was at school at 9 a.m.', m:'오전 9시에 학교에 아무도 없다는 것이 이상했다.', unit:19},
+  {w:'The referee blew the whistle and called a foul.', m:'심판이 호루라기를 불고 반칙을 선언했다.', unit:19},
+  {w:'Wearing masks can surely be helpful for preventing infection.', m:'마스크 착용이 감염을 예방하는 데 확실히 도움이 될 수 있다.', unit:19},
+  {w:'Science theory can\'t explain everything.', m:'과학 이론이 모든 것을 설명할 수는 없다.', unit:20},
+  {w:'He tied up the package with a long string.', m:'그는 긴 끈으로 소포를 묶었다.', unit:20},
+  {w:'Mathew suffered from an illness for a long time.', m:'매튜는 병으로 오랫동안 고생했다.', unit:20},
+  {w:'The cathedral in our city is a popular attraction among tourists.', m:'우리 도시에 있는 그 성당은 관광객에게 인기 있는 명소다.', unit:20},
+  {w:'She used a red ribbon to bind the cake box.', m:'그녀는 케이크 상자를 묶기 위해 빨간색 리본을 사용했다.', unit:20},
+  {w:'According to a survey, teens enjoy pizzas most.', m:'한 설문 조사에 따르면, 십 대들은 피자를 가장 즐겨 먹는다고 한다.', unit:20},
+  {w:'Greenpeace works to protect the environment.', m:'그린피스는 환경을 보호하기 위해 일한다.', unit:21},
+  {w:'The pilot gave his position to the control tower.', m:'조종사가 관제탑에 자신의 위치를 알렸다.', unit:21},
+  {w:'The consultant recommended that I have surgery.', m:'상담가는 나에게 수술을 받으라고 권했다.', unit:21},
+  {w:'Don\'t touch the machine when it is in motion.', m:'기계가 작동 중일 때 만지지 말아라.', unit:21},
+  {w:'The director changed the actor at the last minute.', m:'감독은 마지막 순간에 배우를 바꾸었다.', unit:21},
+  {w:'She listened to him in silence and did not talk.', m:'그녀는 그의 말을 조용히 들으면서 아무 말도 하지 않았다.', unit:21},
+  {w:'Stephen Hawking was an expert on the universe.', m:'스티븐 호킹은 우주 전문가였다.', unit:22},
+  {w:'The striker was sent off for a high tackle.', m:'그 공격수는 심한 태클 때문에 퇴장당했다.', unit:22},
+  {w:'The reporter\'s inquiry made the mayor nervous.', m:'기자의 질문에 시장은 긴장했다.', unit:22},
+  {w:'Their victory against a championship team was a miracle.', m:'챔피언 팀을 상대로 거둔 그들의 승리는 기적이었다.', unit:22},
+  {w:'She\'s a typical teenager, preferring to be with her friends.', m:'그녀는 자신의 친구들과 있기를 더 좋아하는 평범한 십 대이다.', unit:22},
+  {w:'TV tends to stop us from using our imagination.', m:'텔레비전은 우리가 상상력을 사용하는 것을 막는 경향이 있다.', unit:22},
+  {w:'Jim has a talent for making people laugh.', m:'Jim은 사람들을 웃게 하는 재능이 있다.', unit:23},
+  {w:'The submarine dived to explore the ocean floor.', m:'잠수함은 해저 탐사를 위해 잠수했다.', unit:23},
+  {w:'He told us that his motive for stealing was hunger.', m:'그는 도둑질의 이유가 배고픔이었다고 말했다.', unit:23},
+  {w:'There was a long interval of silence between us.', m:'우리 사이에는 긴 침묵이 흘렀다.', unit:23},
+  {w:'Let\'s suppose that you are in outer space.', m:'네가 우주에 있다고 가정해 보자.', unit:23},
+  {w:'My mom volunteers at the local charity center.', m:'나의 엄마는 지역 자선 단체에서 자원 봉사 활동을 한다.', unit:23},
+  {w:'My target is to win a championship in a boxing match this year.', m:'나의 목표는 올해 권투 시합에서 우승하는 것이다.', unit:24},
+  {w:'They painted the wall with pale blue.', m:'그들은 벽을 연한 파란색으로 칠했다.', unit:24},
+  {w:'Ticket prices vary depending upon the date.', m:'티켓 가격은 날짜에 따라 다르다.', unit:24},
+  {w:'The city has both a traditional and modern look.', m:'그 도시는 전통과 현대의 모습을 둘 다 가지고 있다.', unit:24},
+  {w:'Luckily, he survived the horrible car accident.', m:'다행히도 그는 그 끔찍한 자동차 사고에서 살아남았다.', unit:24},
+  {w:'Payment can be made only by credit card.', m:'지불은 오직 신용 카드로만 할 수 있다.', unit:24},
+  {w:'Firefighters wear fireproof clothing to protect themselves.', m:'소방관은 자신을 보호하기 위해 방화복을 입는다.', unit:25},
+  {w:'The hourglass uses sand to measure time.', m:'모래시계는 시간을 측정하기 위해 모래를 사용한다.', unit:25},
+  {w:'There was heavy rainfall in our city this year.', m:'올해 우리 도시에는 많은 비가 내렸다.', unit:25},
+  {w:'She stirred all ingredients together to make a paste.', m:'그녀는 반죽을 만들기 위해 모든 재료를 함께 저었다.', unit:25},
+  {w:'He made a brief presentation to the class.', m:'그는 반 학생들에게 짧은 발표를 했다.', unit:25},
+  {w:'Charles had a strong desire to be a writer.', m:'찰스는 작가가 되고자 하는 강한 욕망을 가지고 있었다.', unit:25},
+  {w:'He is going to be sent to jail for his crime.', m:'그는 범죄로 인해 감옥에 가게 될 것이다.', unit:26},
+  {w:'There is a relationship between income and health.', m:'소득과 건강 사이에는 관계가 있다.', unit:26},
+  {w:'Jane spends all her income on buying books.', m:'제인은 그녀의 수입을 모두 책 사는 데 써 버린다.', unit:26},
+  {w:'He likes to play the lottery each week just for fun.', m:'그는 단지 재미로 매주 복권을 사는 것을 좋아한다.', unit:26},
+  {w:'The gardener was busy watering the plants.', m:'정원사는 식물에 물을 주느라 바빴다.', unit:26},
+  {w:'Wealth is no criterion of happiness.', m:'부가 행복의 기준은 아니다.', unit:26},
+  {w:'The Queen looked very noble and elegant.', m:'그 여왕은 매우 고귀하고 우아해 보였다.', unit:27},
+  {w:'Just press the red button to turn on the TV.', m:'텔레비전을 켜려면 빨간 버튼을 눌러라.', unit:27},
+  {w:'Fruit is a rich source of vitamins and energy.', m:'과일은 비타민과 에너지의 풍부한 원천이다.', unit:27},
+  {w:'What is acceptable in some countries can be unacceptable in others.', m:'어떤 나라에서 허용되는 것이 다른 나라에서는 허용되지 않을 수 있다.', unit:27},
+  {w:'Cats are not able to perceive some colors.', m:'고양이는 몇 가지 색깔을 인지하지 못한다.', unit:27},
+  {w:'I met diverse people during my trip to India.', m:'나는 인도 여행 중에 다양한 사람들을 만났다.', unit:27},
+  {w:'He seemed to have lost all sensation in his leg.', m:'그는 다리의 모든 감각이 사라져 버린 것 같았다.', unit:28},
+  {w:'She believes she did not receive a fair trial.', m:'그녀는 자신이 공정한 재판을 받지 못했다고 믿는다.', unit:28},
+  {w:'My life in a new land was extremely challenging.', m:'새로운 땅에서의 나의 삶은 극도로 힘들었다.', unit:28},
+  {w:'It is illegal to park your car in the crosswalk.', m:'횡단보도에 차를 주차하는 것은 불법이다.', unit:28},
+  {w:'It was incredible to meet my old friend there.', m:'그곳에서 옛 친구를 만나다니 믿어지지 않았다.', unit:28},
+  {w:'Disneyland provides entertainment to visitors.', m:'디즈니랜드는 방문객들에게 즐거움을 준다.', unit:28},
+  {w:'The wall paintings in the cathedral show both religious and daily scenes.', m:'그 성당의 벽화들은 종교적인 장면과 일상적인 장면을 둘 다 보여 준다.', unit:29},
+  {w:'It\'s the formula for calculating the area of a circle.', m:'그것은 원의 넓이를 계산하는 공식이다.', unit:29},
+  {w:'The assignment was to write an essay on childhood memories.', m:'과제는 어린 시절의 추억에 대한 에세이를 쓰는 것이었다.', unit:29},
+  {w:'It is my ambition to be a millionaire.', m:'백만장자가 되는 것이 나의 야망이다.', unit:29},
+  {w:'People often hide their identity on the Internet.', m:'사람들은 종종 인터넷에서 자신의 정체를 숨긴다.', unit:29},
+  {w:'The entrance examination will be held next week.', m:'입학 시험이 다음 주에 있을 것이다.', unit:29},
+  {w:'The plan aims to promote the reuse of plastic.', m:'그 계획은 플라스틱 재활용을 촉진하는 것을 목표로 한다.', unit:30},
+  {w:'She spoke frankly about her plastic surgery.', m:'그녀는 자신의 성형수술에 대해 솔직하게 말했다.', unit:30},
+  {w:'A bird\'s skeleton is highly adapted for flight.', m:'새의 뼈대는 비행에 매우 적합하다.', unit:30},
+  {w:'As a tadpole changes into a frog, its tail is gradually absorbed.', m:'올챙이가 개구리로 변하면서 꼬리가 점차 흡수된다.', unit:30},
+  {w:'There will be a big change in foreign policy.', m:'외교 정책에 큰 변화가 있을 것이다.', unit:30},
+  {w:'Only 10 students are eligible for a scholarship.', m:'오직 10명의 학생들만 장학금을 받을 자격이 있다.', unit:30},
+];
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        if(type === 'correct') {
+            osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        } else {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        }
+    }
+
+    function playTTS(text) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        msg.rate = 0.8;
+        window.speechSynthesis.speak(msg);
+    }
+
+    // ===================== 모드 전환 =====================
+    let currentMode = 'enWord';
+    function setMode(mode, btn) {
+        currentMode = mode;
+        document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('feedback').innerText = '';
+        if(mode === 'enWord') {
+            document.getElementById('word-mode-ui').style.display = 'block';
+            document.getElementById('sent-mode-ui').style.display = 'none';
+            wordResetUI();
+        } else {
+            document.getElementById('word-mode-ui').style.display = 'none';
+            document.getElementById('sent-mode-ui').style.display = 'block';
+            sentResetUI();
+        }
+    }
+
+    // ===================== 유닛 선택 시스템 =====================
+    const TOTAL_UNITS = 30;
+    let selectedWordUnit = 0;
+    let selectedSentUnit = 0;
+
+    function toggleUnitPanel(mode) {
+        const panel = document.getElementById(mode === 'word' ? 'word-unit-panel' : 'sent-unit-panel');
+        const labelEl = document.getElementById(mode === 'word' ? 'word-unit-label' : 'sent-unit-label');
+        const isOpen = panel.style.display !== 'none';
+        panel.style.display = isOpen ? 'none' : 'block';
+        const cur = mode === 'word' ? selectedWordUnit : selectedSentUnit;
+        const name = cur === 0 ? '전체' : 'Unit' + String(cur).padStart(2, '0');
+        labelEl.textContent = name + (isOpen ? ' ▼' : ' ▲');
+    }
+
+    function updateUnitLabel(mode) {
+        const cur = mode === 'word' ? selectedWordUnit : selectedSentUnit;
+        const name = cur === 0 ? '전체' : 'Unit' + String(cur).padStart(2, '0');
+        const labelEl = document.getElementById(mode === 'word' ? 'word-unit-label' : 'sent-unit-label');
+        if (labelEl) labelEl.textContent = name + ' ▼';
+    }
+
+    function buildUnitButtons(containerId, mode) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        const allBtn = document.createElement('button');
+        allBtn.className = 'btn-unit btn-unit-all' + (mode === 'word' ? (selectedWordUnit === 0 ? ' active' : '') : (selectedSentUnit === 0 ? ' active' : ''));
+        allBtn.textContent = '전체';
+        allBtn.onclick = () => selectUnit(0, mode);
+        container.appendChild(allBtn);
+        for (let i = 1; i <= TOTAL_UNITS; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'btn-unit' + (mode === 'word' ? (selectedWordUnit === i ? ' active' : '') : (selectedSentUnit === i ? ' active' : ''));
+            btn.textContent = 'U' + String(i).padStart(2, '0');
+            btn.id = (mode === 'word' ? 'wunit-' : 'sunit-') + i;
+            btn.onclick = () => selectUnit(i, mode);
+            container.appendChild(btn);
+        }
+    }
+
+    function selectUnit(unitNum, mode) {
+        if (mode === 'word') {
+            selectedWordUnit = unitNum;
+            buildUnitButtons('word-unit-buttons', 'word');
+            document.getElementById('word-unit-panel').style.display = 'none';
+            updateUnitLabel('word');
+            wordResetUI();
+        } else {
+            selectedSentUnit = unitNum;
+            buildUnitButtons('sent-unit-buttons', 'sent');
+            document.getElementById('sent-unit-panel').style.display = 'none';
+            updateUnitLabel('sent');
+            sentResetUI();
+        }
+    }
+
+    function getActiveWordData() {
+        if (selectedWordUnit === 0) return enWordData;
+        return enWordData.filter(d => d.unit === selectedWordUnit);
+    }
+
+    function getActiveSentData() {
+        if (selectedSentUnit === 0) return enSentData;
+        return enSentData.filter(d => d.unit === selectedSentUnit);
+    }
+
+    // ===================== 영어단어 파트 =====================
+    let wordCurrentText = '';
+    let wordIsRevealed = false;
+    let wordQuizOptions = [];
+    let wordHasStarted = false;
+
+    function wordResetUI() {
+        document.getElementById('word-display').innerHTML = '지오야 준비됐니?';
+        document.getElementById('feedback').innerText = '';
+        wordCurrentText = '';
+        wordIsRevealed = false;
+        wordHasStarted = false;
+        document.getElementById('word-btn-area').innerHTML =
+            '<button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>';
+    }
+
+    function wordStartFirst() { wordNextQuiz(); }
+
+    function wordNextQuiz() {
+        const data = getActiveWordData();
+        if (!data || data.length === 0) return;
+        const item = data[Math.floor(Math.random() * data.length)];
+        wordCurrentText = item.w;
+        document.getElementById('word-display').innerHTML = '<span style="font-size:60px;">🤔</span><div style="font-size:18px; color:#888; margin-top:8px;">따라해봐!</div>';
+        document.getElementById('feedback').innerText = '';
+        wordIsRevealed = false;
+        wordHasStarted = true;
+        document.getElementById('word-btn-area').innerHTML =
+            '<div class="btn-main">' +
+            '<button class="action btn-start" onclick="playTTS(wordCurrentText)">다시 듣기 🔊</button>' +
+            '<button class="action btn-show" id="word-answer-btn" onclick="wordShowAnswerAndChange()">정답 확인 ✅</button>' +
+            '</div>';
+        playTTS(wordCurrentText);
+    }
+
+    function wordShowAnswerAndChange() {
+        if (!wordCurrentText) return;
+        wordIsRevealed = true;
+        document.getElementById('word-display').innerHTML = `
+            <div style="font-size:26px; color:#333; margin-bottom:10px;">${wordCurrentText}</div>
+            <button class="btn-meaning" onclick="wordRevealMeaningAndQuiz()">🤔 무슨 뜻? 🤔</button>
+            <div id="quizArea"></div>
+        `;
+        document.getElementById('word-btn-area').innerHTML =
+            '<div class="btn-main">' +
+            '<button class="action btn-start" onclick="playTTS(wordCurrentText)">다시 듣기 🔊</button>' +
+            '<button class="action btn-show" style="background:#2ECC71;" onclick="wordNextQuiz()">다음 문제 ➡️</button>' +
+            '</div>';
+    }
+
+    function highlightWord(sentence, word) {
+        if (!sentence || !word) return sentence;
+        const regex = new RegExp(`(${word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+        return sentence.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    function getPosClass(meaning) {
+        if (/^v\./.test(meaning)) return 'verb';
+        if (/^n\./.test(meaning)) return 'noun';
+        if (/^adj\./.test(meaning)) return 'adj';
+        if (/^adv\./.test(meaning)) return 'adv';
+        if (/^prep\./.test(meaning)) return 'prep';
+        return 'other';
+    }
+
+    // Generate wrong sentence by placing target word in wrong POS position
+    function makeWrongFromSentData(targetWord, targetMeaning, usedSentences) {
+        const reTarget = new RegExp('\\b' + targetWord.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\b', 'i');
+        const posClass = getPosClass(targetMeaning);
+        const pool = enSentData.filter(d => !reTarget.test(d.w) && !usedSentences.includes(d.w));
+        if (pool.length === 0) return null;
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+        const modals = new Set(['will','can','should','would','could','must','may','might','did','does','do','shall']);
+        const articles = new Set(['the','a','an','my','his','her','its','our','their','your','this','that','these','those','no']);
+        const copulas = new Set(['is','are','was','were','looks','seems','feel','feels','felt','become','becomes','became','am']);
+        for (const sentItem of shuffled) {
+            const sentence = sentItem.w;
+            const tokens = sentence.replace(/[.,!?'"]/g, '').split(/\s+/);
+            let verbSlots = [], nounSlots = [], adjSlots = [];
+            for (let i = 1; i < tokens.length; i++) {
+                const prev = tokens[i-1].toLowerCase().replace(/[.,!?'"]/g,'');
+                const cur = tokens[i].replace(/[.,!?'"]/g,'');
+                if (!cur || cur.length < 3) continue;
+                if (/^[A-Z]/.test(cur)) continue;
+                if (/^\d/.test(cur)) continue;
+                if (modals.has(prev)) verbSlots.push(cur);
+                else if (articles.has(prev)) nounSlots.push(cur);
+                else if (copulas.has(prev)) adjSlots.push(cur);
+            }
+            // 품사별 오답 자리 선택 전략:
+            // - verb(동사) 단어 → 관사 뒤 명사 자리에만 삽입 (the examine → 확실히 어색)
+            // - noun(명사) 단어 → modal 뒤 동사 자리에만 삽입 (can referee → 확실히 어색)
+            // - adj(형용사) 단어 → 관사 뒤 명사 자리에만 삽입 (a violent → 확실히 어색)
+            // - adv/prep/other → modal 뒤 또는 관사 뒤
+            // ※ copula 뒤(adjSlots)는 be+명사가 문법적으로 허용되므로 오답 생성에 사용 안 함
+            let pickPool = [];
+            if (posClass === 'verb')       pickPool = [...nounSlots];          // modal 뒤 명사 자리에 동사 삽입
+            else if (posClass === 'noun')  pickPool = [...verbSlots];          // 관사 뒤 동사 자리에 명사 삽입
+            else if (posClass === 'adj')   pickPool = [...nounSlots];          // 관사 뒤 명사 자리에 형용사 삽입
+            else if (posClass === 'adv')   pickPool = [...nounSlots, ...verbSlots];
+            else                           pickPool = [...verbSlots, ...nounSlots];
+            pickPool = [...new Set(pickPool)].filter(w => w.toLowerCase() !== targetWord.toLowerCase());
+            if (pickPool.length === 0) continue;
+            const pick = pickPool[Math.floor(Math.random() * pickPool.length)];
+            const wrongSent = sentence.replace(new RegExp('\\b' + pick.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\b', 'i'), targetWord);
+            if (wrongSent !== sentence) return wrongSent;
+        }
+        return null;
+    }
+
+    function wordRevealMeaningAndQuiz() {
+        const quizArea = document.getElementById('quizArea');
+        const item = enWordData.find(d => d.w === wordCurrentText);
+        if (!item) return;
+        let rawM = item.m;
+        let posMatch = rawM.match(/^([a-z]+\.(?:\s*[a-z]+\.)?)/);
+        let posTag = posMatch ? `<span style="font-size:14px; color:#888; font-weight:normal; background:#f0f0f0; padding:2px 6px; border-radius:6px; margin-right:6px;">${posMatch[1]}</span>` : '';
+        let defText = posMatch ? rawM.slice(posMatch[0].length).trim() : rawM;
+        let html = `<div class="meaning-text">${posTag}${defText}</div>`;
+
+        // 정답 문장: answer key sentence (item.ex)
+        const correctSentence = item.ex;
+
+        // 오답 2개: enSentData 문장에서 품사 불일치 자리에 단어 교체
+        const usedSentences = [correctSentence];
+        let wrong1 = makeWrongFromSentData(wordCurrentText, rawM, usedSentences);
+        if (wrong1) usedSentences.push(wrong1);
+        let wrong2 = makeWrongFromSentData(wordCurrentText, rawM, usedSentences);
+        // fallback: another sent data sentence with word inserted
+        if (!wrong1) {
+            const fb = enSentData.filter(d => !usedSentences.includes(d.w));
+            if (fb.length > 0) wrong1 = fb[Math.floor(Math.random()*fb.length)].w + ' ' + wordCurrentText + '.';
+        }
+        if (!wrong2) {
+            const fb = enSentData.filter(d => !usedSentences.includes(d.w) && d.w !== wrong1);
+            if (fb.length > 0) wrong2 = fb[Math.floor(Math.random()*fb.length)].w.replace(/\.$/, '') + ', ' + wordCurrentText + '.';
+        }
+        if (!wrong1) wrong1 = correctSentence;
+        if (!wrong2) wrong2 = correctSentence;
+
+        wordQuizOptions = [];
+        wordQuizOptions.push({ text: correctSentence, correct: true });
+        wordQuizOptions.push({ text: wrong1, correct: false });
+        wordQuizOptions.push({ text: wrong2, correct: false });
+        wordQuizOptions.sort(() => Math.random() - 0.5);
+
+        html += `<div class="quiz-container"><div class="quiz-title">단어의 쓰임이 올바른 것은?</div>`;
+        wordQuizOptions.forEach((opt, idx) => {
+            let displayText = highlightWord(opt.text, wordCurrentText);
+            html += `<button class="quiz-option" id="wopt-${idx}" onclick="wordCheckAnswer(${opt.correct}, ${idx})">${idx+1}. ${displayText}</button>`;
+        });
+        html += `</div>`;
+        quizArea.innerHTML = html;
+        document.querySelector('.btn-meaning').style.display = 'none';
+    }
+
+    function wordCheckAnswer(isCorrect, idx) {
+        const feedback = document.getElementById('feedback');
+        const alreadyAnswered = !!document.querySelector('.quiz-option[data-answered]');
+        if(isCorrect) {
+            playTTS(wordQuizOptions[idx].text);
+            feedback.innerText = '잘했어 지오야! 👍';
+            feedback.style.color = '#007AFF';
+            if (!alreadyAnswered) {
+                playSound('correct');
+                const targetBtn = document.getElementById(`wopt-${idx}`);
+                if (targetBtn) {
+                    targetBtn.dataset.answered = 'true';
+                    targetBtn.style.background = '#e8f8f5';
+                    targetBtn.style.borderColor = '#27ae60';
+                    document.querySelectorAll('.quiz-option').forEach(b => {
+                        if (!b.dataset.answered) { b.disabled = true; b.onclick = null; }
+                    });
+                    const item = enWordData.find(d => d.w === wordCurrentText);
+                    if (item && item.em) {
+                        targetBtn.innerHTML = targetBtn.innerHTML + ` <span class="option-meaning">(${item.em})</span>`;
+                    }
+                }
+            }
+        } else {
+            if (alreadyAnswered) return;
+            playSound('wrong');
+            feedback.innerText = '다시 생각해보세요! ❌';
+            feedback.style.color = '#e74c3c';
+            const btn = document.getElementById(`wopt-${idx}`);
+            if(btn) btn.style.background = '#fdedec';
+        }
+    }
+
+    // ===================== 영어문장 파트 =====================
+    let sentCurrentItem = null;
+    let userScrambleAnswer = [];
+    let correctWordsSequence = [];
+    let sentHasStarted = false;
+
+    function sentResetUI() {
+        document.getElementById('sent-display').innerText = '지오야 준비됐니?';
+        document.getElementById('sent-meaning-display').innerText = '';
+        document.getElementById('next-btn-wrapper').innerHTML = '';
+        document.getElementById('scramble-area').innerHTML = '';
+        document.getElementById('scramble-wrapper').style.display = 'block';
+        document.getElementById('feedback').innerText = '';
+        userScrambleAnswer = [];
+        sentHasStarted = false;
+        const scrBtn = document.querySelector('#scramble-wrapper .btn-scramble');
+        if (scrBtn) scrBtn.textContent = '문제시작 🧩';
+    }
+
+    function startScramble() {
+        const data = getActiveSentData();
+        sentCurrentItem = data[Math.floor(Math.random() * data.length)];
+        document.getElementById('sent-display').innerHTML = '<span style="font-size:60px;">🤔</span><div style="font-size:18px; color:#888; margin-top:8px;">순서대로 맞춰봐!</div>';
+        document.getElementById('sent-meaning-display').innerText = '';
+        document.getElementById('next-btn-wrapper').innerHTML = '';
+        document.getElementById('scramble-area').innerHTML = '';
+        document.getElementById('scramble-wrapper').style.display = 'none';
+        document.getElementById('feedback').innerText = '';
+        userScrambleAnswer = [];
+        sentHasStarted = true;
+
+        let sentence = sentCurrentItem.w;
+        const hasQuestion = sentence.trimEnd().endsWith('?');
+        const endPunct = hasQuestion ? '?' : '.';
+
+        // 원본 대소문자 유지: 문장부호만 제거하고 단어 원형 보존
+        let rawWords = sentence.trim().replace(/[?.!,;:]/g, '').split(/\s+/).filter(w => w.length > 0);
+
+        // correctWordsSequence: 소문자로 비교용
+        correctWordsSequence = rawWords.map(w => w.toLowerCase());
+        correctWordsSequence.push(endPunct);
+
+        // displayWords: 원본 대소문자 유지
+        let displayWords = [...rawWords];
+        displayWords.push(endPunct);
+
+        const shuffledWords = [...displayWords].sort(() => Math.random() - 0.5);
+        const area = document.getElementById('scramble-area');
+        shuffledWords.forEach(word => {
+            const chip = document.createElement('div');
+            chip.className = 'word-chip';
+            chip.innerText = word;  // 원본 대소문자 그대로
+            chip.onclick = () => selectWord(chip);
+            area.appendChild(chip);
+        });
+    }
+
+    function selectWord(chip) {
+        if (chip.classList.contains('selected')) return;
+        const clickedWordLower = chip.innerText.toLowerCase();
+        const targetWord = correctWordsSequence[userScrambleAnswer.length].toLowerCase();
+
+        if (clickedWordLower === targetWord) {
+            chip.classList.add('selected');
+            userScrambleAnswer.push(chip.innerText);
+            if (userScrambleAnswer.length === correctWordsSequence.length) {
+                playTTS(sentCurrentItem.w);
+                const feedbackEl = document.getElementById('feedback');
+                feedbackEl.innerText = '잘했어 지오야! 👍';
+                feedbackEl.style.color = '#007AFF';
+                document.getElementById('sent-display').innerText = sentCurrentItem.w;
+                document.getElementById('scramble-area').innerHTML = '';
+                document.getElementById('next-btn-wrapper').innerHTML =
+                    `<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">` +
+                    `<button class="btn-next-inline" style="background:#4CB9E7;box-shadow:0 3px 0 #2a9abf;" onclick="playTTS(sentCurrentItem.w)">다시 듣기 🔊</button>` +
+                    `<button class="btn-next-inline" style="background:#F1C40F;color:#333;box-shadow:0 3px 0 #d4a017;" onclick="showSentMeaning()">무슨 뜻? 🤔</button>` +
+                    `</div>`;
+            }
+        } else {
+            playSound('wrong');
+            document.getElementById('feedback').innerText = '어라? 다시 해보자!';
+        }
+    }
+
+    function showSentMeaning() {
+        document.getElementById('sent-meaning-display').innerText = '(' + sentCurrentItem.m + ')';
+        document.getElementById('next-btn-wrapper').innerHTML =
+            `<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">` +
+            `<button class="btn-next-inline" style="background:#4CB9E7;box-shadow:0 3px 0 #2a9abf;" onclick="playTTS(sentCurrentItem.w)">다시 듣기 🔊</button>` +
+            `<button class="btn-next-inline" onclick="startScramble()">다음 문제 ➡️</button>` +
+            `</div>`;
+    }
+
+    // ===================== 초기화 =====================
+    buildUnitButtons('word-unit-buttons', 'word');
+    buildUnitButtons('sent-unit-buttons', 'sent');
+
+</script>
+</body>
+</html>
