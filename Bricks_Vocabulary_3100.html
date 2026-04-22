@@ -51,6 +51,9 @@
         .btn-unit.active { background: #4CB9E7; color: white; border-color: #4CB9E7; }
         .btn-unit-all { background: #FFD384; border-color: #e6b800; color: #855b1b; }
         .btn-unit-all.active { background: #e6b800; color: #5a3e00; }
+        .remaining-count { display: inline-block; background: #FFD384; color: #7a5200; font-size: 14px; font-weight: bold; padding: 5px 14px; border-radius: 20px; margin-bottom: 10px; }
+        .btn-retry { background: #6C5CE7; color: white; border: none; border-radius: 20px; padding: 16px 30px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 0 #4834d4; }
+        .all-done-msg { font-size: 20px; font-weight: bold; color: #2ECC71; margin: 20px 0 10px; }
     </style>
 </head>
 <body>
@@ -72,6 +75,7 @@
                 <div id="word-unit-buttons" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
             </div>
         </div>
+        <div id="word-remaining" style="text-align:center; min-height:30px;"></div>
         <div id="word-display">지오야 준비됐니?</div>
         <div id="word-btn-area">
             <button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>
@@ -89,6 +93,7 @@
                 <div id="sent-unit-buttons" style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
             </div>
         </div>
+        <div id="sent-remaining" style="text-align:center; min-height:30px;"></div>
         <div id="sent-display-container">
             <div id="sent-display">지오야 준비됐니?</div>
             <div id="sent-meaning-display"></div>
@@ -1146,32 +1151,59 @@
     let wordCurrentText = '';
     let wordIsRevealed = false;
     let wordQuizOptions = [];
-    let wordHasStarted = false; // 첫 문제 이후 true
+    let wordHasStarted = false;
+    let wordQueue = [];
+    let wordTotalCount = 0;
 
     function wordResetUI() {
         document.getElementById('word-display').innerHTML = '지오야 준비됐니?';
         document.getElementById('feedback').innerText = '';
+        document.getElementById('word-remaining').innerHTML = '';
         wordCurrentText = '';
         wordIsRevealed = false;
         wordHasStarted = false;
+        wordQueue = [];
+        wordTotalCount = 0;
         document.getElementById('word-btn-area').innerHTML =
             '<button class="action btn-start" style="width:100%;" onclick="wordStartFirst()">문제 시작 🚀</button>';
     }
 
+    function wordShuffleQueue() {
+        const data = getActiveWordData();
+        wordQueue = [...data].sort(() => Math.random() - 0.5);
+        wordTotalCount = wordQueue.length;
+    }
+
+    function wordUpdateRemaining() {
+        const el = document.getElementById('word-remaining');
+        if (wordTotalCount > 0) {
+            el.innerHTML = `<span class="remaining-count">남은문제 : ${wordQueue.length}개</span>`;
+        } else {
+            el.innerHTML = '';
+        }
+    }
+
     function wordStartFirst() {
+        wordShuffleQueue();
         wordNextQuiz();
     }
 
     function wordNextQuiz() {
-        const data = getActiveWordData();
-        if (!data || data.length === 0) return;
-        const item = data[Math.floor(Math.random() * data.length)];
+        if (wordQueue.length === 0) {
+            document.getElementById('word-remaining').innerHTML = `<span class="remaining-count">남은문제 : 0개</span>`;
+            document.getElementById('word-display').innerHTML = '<div class="all-done-msg">🎉 이번 Unit의 문제를 모두 풀었습니다! 🎉</div>';
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('word-btn-area').innerHTML =
+                '<button class="btn-retry" onclick="wordStartFirst()">이번 Unit 다시 풀기 🔄</button>';
+            return;
+        }
+        const item = wordQueue.pop();
+        wordUpdateRemaining();
         wordCurrentText = item.w;
         document.getElementById('word-display').innerHTML = '<span style="font-size:60px;">🤔</span><div style="font-size:18px; color:#888; margin-top:8px;">따라해봐!</div>';
         document.getElementById('feedback').innerText = '';
         wordIsRevealed = false;
         wordHasStarted = true;
-        // Show 다시듣기 + 정답확인 buttons
         document.getElementById('word-btn-area').innerHTML =
             '<div class="btn-main">' +
             '<button class="action btn-start" onclick="playTTS(wordCurrentText)">다시 듣기 🔊</button>' +
@@ -1450,6 +1482,8 @@
     let userScrambleAnswer = [];
     let correctWordsSequence = [];
     let sentHasStarted = false;
+    let sentQueue = [];
+    let sentTotalCount = 0;
 
     function sentResetUI() {
         document.getElementById('sent-display').innerText = '지오야 준비됐니?';
@@ -1458,16 +1492,58 @@
         document.getElementById('scramble-area').innerHTML = '';
         document.getElementById('scramble-wrapper').style.display = 'block';
         document.getElementById('feedback').innerText = '';
+        document.getElementById('sent-remaining').innerHTML = '';
         userScrambleAnswer = [];
         sentHasStarted = false;
-        // 문제보기 버튼 텍스트 초기화
+        sentQueue = [];
+        sentTotalCount = 0;
         const scrBtn = document.querySelector('#scramble-wrapper .btn-scramble');
-        if (scrBtn) scrBtn.textContent = '문제시작 🧩';
+        if (scrBtn) { scrBtn.textContent = '문제시작 🧩'; scrBtn.onclick = startScramble; }
+    }
+
+    function sentShuffleQueue() {
+        const data = getActiveSentData();
+        sentQueue = [...data].sort(() => Math.random() - 0.5);
+        sentTotalCount = sentQueue.length;
+    }
+
+    function sentUpdateRemaining() {
+        const el = document.getElementById('sent-remaining');
+        if (sentTotalCount > 0) {
+            el.innerHTML = `<span class="remaining-count">남은문제 : ${sentQueue.length}개</span>`;
+        } else {
+            el.innerHTML = '';
+        }
+    }
+
+    function sentRestartUnit() {
+        sentTotalCount = 0;
+        sentQueue = [];
+        const scrBtn = document.querySelector('#scramble-wrapper .btn-scramble');
+        if (scrBtn) { scrBtn.textContent = '문제시작 🧩'; scrBtn.onclick = startScramble; }
+        startScramble();
     }
 
     function startScramble() {
-        const data = getActiveSentData();
-        sentCurrentItem = data[Math.floor(Math.random() * data.length)];
+        if (sentQueue.length === 0 && sentTotalCount === 0) {
+            sentShuffleQueue();
+        }
+        if (sentQueue.length === 0) {
+            document.getElementById('sent-remaining').innerHTML = `<span class="remaining-count">남은문제 : 0개</span>`;
+            document.getElementById('sent-display').innerHTML = '<div class="all-done-msg">🎉 이번 Unit의 문제를 모두 풀었습니다! 🎉</div>';
+            document.getElementById('sent-meaning-display').innerText = '';
+            document.getElementById('next-btn-wrapper').innerHTML = '';
+            document.getElementById('scramble-area').innerHTML = '';
+            document.getElementById('scramble-wrapper').style.display = 'block';
+            document.getElementById('feedback').innerText = '';
+            const scrBtn = document.querySelector('#scramble-wrapper .btn-scramble');
+            if (scrBtn) { scrBtn.textContent = '이번 Unit 다시 풀기 🔄'; scrBtn.onclick = sentRestartUnit; }
+            return;
+        }
+
+        sentCurrentItem = sentQueue.pop();
+        sentUpdateRemaining();
+
         document.getElementById('sent-display').innerHTML = '<span style="font-size:60px;">🤔</span><div style="font-size:18px; color:#888; margin-top:8px;">순서대로 맞춰봐!</div>';
         document.getElementById('sent-meaning-display').innerText = '';
         document.getElementById('next-btn-wrapper').innerHTML = '';
@@ -1528,10 +1604,12 @@
 
     function showSentMeaning() {
         document.getElementById('sent-meaning-display').innerText = '(' + sentCurrentItem.m + ')';
+        const isLast = sentQueue.length === 0;
+        const nextBtnLabel = isLast ? '결과 보기 🏁' : '다음 문제 ➡️';
         document.getElementById('next-btn-wrapper').innerHTML =
             `<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">` +
             `<button class="btn-next-inline" style="background:#4CB9E7;box-shadow:0 3px 0 #2a9abf;" onclick="playTTS(sentCurrentItem.w)">다시 듣기 🔊</button>` +
-            `<button class="btn-next-inline" onclick="startScramble()">다음 문제 ➡️</button>` +
+            `<button class="btn-next-inline" onclick="startScramble()">${nextBtnLabel}</button>` +
             `</div>`;
     }
 
